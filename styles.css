@@ -33,3 +33,53 @@ button{font:inherit}
 .lion-title span{font-size:16px;color:var(--cyan);vertical-align:top;letter-spacing:0}
 .lion-subtitle{z-index:2;font-size:9px;letter-spacing:3px;color:#d6e8e8;margin-top:7px}
 @media(max-width:360px){.lion-hero{height:190px}.lion-hero img{height:205px;top:-20px}.lion-title{font-size:30px}}
+
+/* Reference-match layout: lion hero, luminous glass panels, signal chips */
+.topbar{display:none!important}
+.shell{max-width:500px;padding-left:12px;padding-right:12px;background:radial-gradient(ellipse at 50% 12%,#103b4a 0,#061723 48%,#030a11 100%)}
+.reference-top{height:46px;position:absolute;top:0;left:0;right:0;z-index:4;display:flex;align-items:center;justify-content:space-between;padding:0 22px;max-width:500px;margin:auto}
+.reference-top .menu-button{border:0;background:none;color:#efffff;font-size:27px;padding:2px 8px}
+.reference-top .demo-chip{border-color:#d9a94c;color:#fff1c8;background:#241c11;font-size:10px;padding:7px 12px}
+.reference-top .demo-chip i{display:inline-block;width:7px;height:7px;background:#ffc54f;border-radius:50%;margin-right:6px;box-shadow:0 0 9px #ffc54f}
+.lion-hero{height:370px;position:relative;margin:0 -12px 0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 10px 24px;background:radial-gradient(ellipse at 50% 38%,#15515d 0,#082331 48%,#030b13 100%);border:0}
+.lion-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,10,17,.08) 0%,rgba(3,10,17,0) 55%,#050b13 100%);z-index:1;pointer-events:none}
+.lion-hero:after{content:"";position:absolute;left:15%;right:15%;bottom:16px;height:2px;background:linear-gradient(90deg,transparent,#18e7dc,#f0bd5c,#18e7dc,transparent);box-shadow:0 0 16px #20e6cf;z-index:2}
+.lion-hero img{position:absolute;width:100%;height:330px;top:18px;left:50%;transform:translateX(-50%);object-fit:contain;object-position:center;filter:drop-shadow(0 0 18px #20e6cf66)}
+.lion-title{z-index:2;font:700 58px 'Space Grotesk';letter-spacing:9px;color:#f5c66c;text-shadow:0 0 18px #e6a84c88,0 2px 1px #4a2811;line-height:.98}
+.lion-title span{font-size:22px;color:var(--cyan);vertical-align:top;letter-spacing:0}
+.lion-subtitle{z-index:2;font-size:12px;letter-spacing:4px;color:#e7f5f3;margin-top:9px}
+.hero{padding:20px 13px 20px}
+.hero .overline{font-size:11px}
+.hero h1{font-size:31px}
+.hero p{font-size:13px;color:#c0d2d8}
+.ai-orb{display:none}
+.market{padding:17px 16px 14px;border:1px solid #2a7580;border-radius:22px;box-shadow:0 0 20px #18e6d51c,inset 0 0 20px #20e6cf0b;background:linear-gradient(145deg,#0c2634f2,#06141ff5)}
+.panel-heading h2{font-size:20px}
+.big-price{font-size:31px}
+.chart-wrap{height:160px;margin-top:12px}
+.chart-grid{color:#78929d}
+.chart-grid span{border-bottom:1px dashed #23434d}
+.price-chart{left:31px;width:calc(100% - 31px)}
+.range-tabs button{font-size:11px;padding:8px 11px}
+.range-tabs button.selected{outline:1px solid #20e6cf;background:#0c4949;box-shadow:0 0 13px #20e6cf77;color:#fff}
+.signal{padding:18px 15px;border:1px solid #26a4a0;border-radius:22px;box-shadow:0 0 18px #20e6cf30,inset 0 0 18px #20e6cf0c;background:linear-gradient(145deg,#0c2735,#07151f)}
+.signal-main{margin:16px 0 15px}
+.signal-verdict{display:flex;align-items:center;gap:12px;min-width:0}
+.eye-mark{width:54px;height:54px;flex:0 0 54px;border-radius:50%;display:grid;place-items:center;border:2px solid #f0bd56;color:#ffd36b;font-size:31px;text-shadow:0 0 13px #ffc24c;box-shadow:0 0 15px #ffc24c55}
+.signal-word{font-size:25px;color:#ffcf62;letter-spacing:.2px}
+.signal-main p{font-size:11px}
+.score-ring{width:76px;height:76px;border:3px solid #19d9cf;box-shadow:0 0 16px #20e6cf33,inset 0 0 15px #20e6cf20}
+.score-ring strong{font-size:25px}
+.filter-chips{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0 14px}
+.filter-chips span{border-radius:20px;padding:7px 10px;font-size:9px;white-space:nowrap}
+.filter-chips .ok{border:1px solid #10d9c7;color:#bafbf1;background:#063a3b}
+.filter-chips .wait{border:1px solid #d9a94c;color:#ffdb91;background:#332718}
+.signal-note{font-size:11px;line-height:1.55;border:1px solid #23505a;border-radius:15px;padding:12px;background:#081d29;color:#c3d9df}
+.signal-footer{display:none}
+.dock{max-width:500px;padding-top:12px;border-top:1px solid #24616a;background:rgba(3,13,21,.97)}
+.dock button{font-size:10px}
+.dock button span{font-size:24px;line-height:25px}
+.watch-grid{gap:10px}
+.watch-card{border-color:#24515d;box-shadow:inset 0 0 14px #20e6cf08}
+@media(max-width:380px){.lion-hero{height:320px}.lion-hero img{height:285px;top:14px}.lion-title{font-size:50px}.lion-subtitle{font-size:10px;letter-spacing:3px}.hero h1{font-size:28px}.signal-word{font-size:21px}.filter-chips{gap:5px}.filter-chips span{font-size:8px;padding:6px 8px}}
+@media(min-width:520px){.reference-top{position:relative}.lion-hero{margin-top:-46px}}
