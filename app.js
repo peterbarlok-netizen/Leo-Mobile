@@ -151,16 +151,16 @@ function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
  const old200=ema(closes.slice(0,-20),200);
  const weekEma50=ema(weeklyCloses,50);
  const momentum=rsi(closes,14);
- const pivots=findPivotLows(daily),lastPivot=pivots.at(-1),previousPivot=pivots.at(-2);
+ const pivots=findPivotLows(closedDaily),lastPivot=pivots.at(-1),previousPivot=pivots.at(-2);
  const btcCloses=closedBtc.map(c=>Number(c[4]));
  const assetReturn=closes.length>=21?price/closes.at(-21)-1:null;
  const btcReturn=btcCloses.length>=21?btcCloses.at(-1)/btcCloses.at(-21)-1:null;
  const avgVolume=volumes.length>=21?volumes.slice(-21,-1).reduce((a,b)=>a+b,0)/20:null;
- const resistance=closedDaily.slice(-21).reduce((m,c)=>Math.max(m,Number(c[2])),0);
+ const resistance=closedDaily.slice(-21,-1).reduce((m,c)=>Math.max(m,Number(c[2])),0);
  const stop=lastPivot?.value??Math.min(...closedDaily.slice(-20).map(c=>Number(c[3])));
  const risk=price-stop,reward=resistance-price;
  const pullback=e20&&e50?Math.min(Math.abs(price-e20)/e20,Math.abs(price-e50)/e50)<=.025&&price>=e50:null;
- const breakout=closedDaily.length>=4?closes.at(-1)>Math.max(...closedDaily.slice(-4).map(c=>Number(c[2]))):null;
+ const breakout=closedDaily.length>=4?closes.at(-1)>Math.max(...closedDaily.slice(-4,-1).map(c=>Number(c[2]))):null;
  const criteria=[
   resultItem('daily-trend','Tagestrend',e200?price>e200:null,'Schlusskurs '+(e200?'':'/ EMA 200 nicht verfügbar')),
   resultItem('ema-alignment','EMA-Ausrichtung',e20&&e50?e20>e50:null,'EMA 20 über EMA 50'),
@@ -185,7 +185,7 @@ async function refreshAnalysis(){
   const [daily,weekly,btcDaily]=await Promise.all([
    getJson('/klines?symbol='+encodeURIComponent(symbol)+'&interval=1d&limit=240'),
    getJson('/klines?symbol='+encodeURIComponent(symbol)+'&interval=1w&limit=80'),
-   symbol==='BTCUSDT'?getJson('/klines?symbol=BTCUSDT&interval=1d&limit=30'):getJson('/klines?symbol=BTCUSDT&interval=1d&limit=30')
+   getJson('/klines?symbol=BTCUSDT&interval=1d&limit=30')
   ]);
   if(request!==analysisRequest||symbol!==selectedSymbol)return;
   window.leoAnalysis=evaluateLeoCriteria(symbol,daily,weekly,btcDaily);
