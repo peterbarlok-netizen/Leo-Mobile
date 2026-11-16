@@ -1,5 +1,5 @@
-const CACHE='leo-mobile-v19';
-const FILES=['./','./index.html','./styles.css?v=19','./app.js?v=19','./manifest.webmanifest','./assets/leo-cyber-hero-1.jpg'];
+const CACHE='leo-mobile-v20';
+const FILES=['./','./index.html','./styles.css?v=20','./app.js?v=20','./manifest.webmanifest','./assets/leo-cyber-hero-1.jpg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('leo-mobile-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{if(event.request.method==='GET')event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request)));});
