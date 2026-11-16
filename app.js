@@ -172,7 +172,7 @@ function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
   resultItem('volume','Volumen über Durchschnitt',avgVolume!==null?volumes.at(-1)>avgVolume:null,'Letzte Tageskerze über 20-Tage-Volumendurchschnitt'),
   resultItem('pullback','Pullback EMA 20/50',pullback,pullback===null?'EMA-Daten fehlen':'Nähe zu EMA 20/50 innerhalb 2,5%'),
   resultItem('breakout','Ausbruch bestätigt',breakout,'Schlusskurs über Hoch der vorherigen drei Tageskerzen'),
-  resultItem('risk-reward','Chance-Risiko mindestens 2:1',risk>0&&reward>0?reward/risk>=2:null,risk>0&&reward>0?'Berechnetes CRV '+(reward/risk).toFixed(2)+':1':'Kein belastbares Ziel-/Stop-Niveau')
+  resultItem('risk-reward','Chance-Risiko mindestens 2:1',Number.isFinite(risk)&&Number.isFinite(reward)&&risk>0&&reward>0?reward/risk>=2:null,risk>0&&reward>0?'Berechnetes CRV '+(reward/risk).toFixed(2)+':1':'Kein belastbares Ziel-/Stop-Niveau')
  ];
  const ready=criteria.every(x=>x.passed!==null);
  const passed=criteria.filter(x=>x.passed===true).length;
@@ -189,14 +189,65 @@ async function refreshAnalysis(){
   ]);
   if(request!==analysisRequest||symbol!==selectedSymbol)return;
   window.leoAnalysis=evaluateLeoCriteria(symbol,daily,weekly,btcDaily);
+  renderFilterSummary(window.leoAnalysis);
   window.dispatchEvent(new CustomEvent('leo-analysis-updated',{detail:window.leoAnalysis}));
  }catch(error){
   if(request===analysisRequest){
    window.leoAnalysis={symbol,total:11,ready:false,signalEligible:false,criteria:[],error:String(error),evaluatedAt:new Date().toISOString()};
+   renderFilterSummary(window.leoAnalysis);
    console.warn('LEO 11-point analysis unavailable:',error);
   }
  }
 }
+
+
+/* Connect the existing six dashboard filters to the eleven calculated checks. */
+const filterGroups=[
+ {name:'Trend',ids:['daily-trend','ema-alignment','ema200-rising','weekly-filter']},
+ {name:'Momentum',ids:['rsi-range','relative-strength','breakout']},
+ {name:'Volumen',ids:['volume']},
+ {name:'Struktur',ids:['higher-lows','pullback','risk-reward']},
+ {name:'Sentiment',ids:[]},
+ {name:'Volatilität',ids:[]}
+];
+function renderFilterSummary(analysis){
+ const list=document.querySelector('.filter-list');
+ const ring=document.querySelector('.score-ring strong');
+ const tiles=[...document.querySelectorAll('.filter-status-grid .status-tile')];
+ if(!analysis||!Array.isArray(analysis.criteria)||!analysis.criteria.length){
+  if(ring)ring.textContent='–/6';
+  if(list)list.querySelectorAll('li').forEach(li=>{li.classList.remove('active','failed');li.classList.add('pending')});
+  tiles.forEach(tile=>{tile.classList.add('inactive');const b=tile.querySelector('b');if(b)b.textContent='OFFEN'});
+  return;
+ }
+ const byId=Object.fromEntries(analysis.criteria.map(item=>[item.id,item]));
+ const states=filterGroups.map(group=>{
+  if(!group.ids.length)return {state:'unavailable'};
+  const checks=group.ids.map(id=>byId[id]);
+  if(checks.some(item=>!item||item.passed===null))return {state:'pending'};
+  return {state:checks.every(item=>item.passed===true)?'pass':'fail'};
+ });
+ const passed=states.filter(x=>x.state==='pass').length;
+ if(ring)ring.textContent=passed+'/6';
+ if(list){
+  const items=[...list.querySelectorAll('li')];
+  items.forEach((li,index)=>{
+   const state=states[index]?.state||'pending';
+   li.classList.remove('active','failed','pending','unavailable');
+   li.classList.add(state==='pass'?'active':state==='fail'?'failed':state);
+   li.title=state==='unavailable'?'Für diesen Filter gibt es noch kein eigenes Kriterium':state==='pending'?'Noch keine vollständige Berechnung':state==='pass'?'Alle zugeordneten Prüfungen bestanden':'Mindestens eine zugeordnete Prüfung nicht bestanden';
+  });
+ }
+ tiles.forEach((tile,index)=>{
+  const state=states[index]?.state||'pending';
+  tile.classList.toggle('inactive',state!=='pass');
+  tile.classList.toggle('failed',state==='fail');
+  const b=tile.querySelector('b');
+  if(b)b.textContent=state==='pass'?'ERFÜLLT':state==='fail'?'NICHT ERFÜLLT':state==='unavailable'?'NICHT GEPRÜFT':'OFFEN';
+  tile.setAttribute('aria-label',filterGroups[index].name+': '+(b?.textContent||state));
+ });
+}
+window.addEventListener('leo-analysis-updated',event=>renderFilterSummary(event.detail));
 
 function selectAsset(symbol){
  if(!assetInfo[symbol])return;
@@ -244,4 +295,4 @@ refreshChart();
 refreshAnalysis();
 setInterval(refreshMarket,30000);
 setInterval(refreshAnalysis,300000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=30').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=31').catch(()=>{}));
