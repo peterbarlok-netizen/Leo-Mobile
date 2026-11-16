@@ -59,7 +59,7 @@ const assetInfo={
  LINKUSDT:{name:'Chainlink',ticker:'LINK / USDT'},
  SUIUSDT:{name:'Sui',ticker:'SUI / USDT'}
 };
-let selectedSymbol='SOLUSDT';
+let selectedSymbol='BTCUSDT';
 let chartRequest=0;
 let selectedInterval='4h';
 const intervalLabels={'5m':'5-Minuten','30m':'30-Minuten','1h':'Stunden','4h':'4-Stunden','1d':'Tage','1w':'Wochen','1M':'Monate'};
@@ -149,4 +149,4 @@ setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=22').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=23').catch(()=>{}));
