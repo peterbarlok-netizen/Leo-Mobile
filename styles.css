@@ -400,3 +400,48 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 #focus-asset-badge.focus-btcusdt{color:#f5c65f!important;-webkit-text-fill-color:#f5c65f!important;text-shadow:0 0 12px #f5b94299!important}
 #focus-asset-badge.focus-linkusdt{color:#65b7ff!important;-webkit-text-fill-color:#65b7ff!important;text-shadow:0 0 12px #4ca6ff99!important}
 #focus-asset-badge.focus-suiusdt{color:#75e5d3!important;-webkit-text-fill-color:#75e5d3!important;text-shadow:0 0 12px #35d9d099!important}
+
+
+/* v0.25 — custom Solana-inspired neon identities for BTC, LINK and SUI */
+#focus-asset-badge.focus-btcusdt:before,
+#focus-asset-badge.focus-linkusdt:before,
+#focus-asset-badge.focus-suiusdt:before{
+ display:grid!important;place-items:center;left:50%;top:50%;width:auto;height:auto;
+ transform:translate(-50%,-50%);background:none;box-shadow:none;
+ font-family:Arial,sans-serif;font-weight:800;line-height:1;
+}
+#focus-asset-badge.focus-btcusdt:before{content:"₿"!important;font-size:43px;background:linear-gradient(145deg,#fff0a5 5%,#f4b942 48%,#ff8a28 95%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 7px #f5b942aa)}
+#focus-asset-badge.focus-linkusdt:before{content:"⬡"!important;font-size:47px;background:linear-gradient(145deg,#d4f0ff 0%,#56b8ff 45%,#4368ff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 7px #4ca6ffaa)}
+#focus-asset-badge.focus-suiusdt:before{content:"S"!important;font-size:46px;font-style:italic;background:linear-gradient(145deg,#e0fffb 0%,#66eee0 48%,#238dff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 7px #35d9d0aa)}
+#focus-asset-badge.focus-btcusdt:after,
+#focus-asset-badge.focus-linkusdt:after,
+#focus-asset-badge.focus-suiusdt:after{
+ display:block!important;content:""!important;position:absolute;left:50%;top:auto;bottom:12px;
+ width:29px;height:3px;border-radius:5px;transform:translateX(-50%) skewX(-28deg);
+}
+#focus-asset-badge.focus-btcusdt:after{background:linear-gradient(90deg,transparent,#ffe18a,#ff9b32,transparent);box-shadow:0 0 8px #f5b942}
+#focus-asset-badge.focus-linkusdt:after{background:linear-gradient(90deg,transparent,#9be0ff,#4c7dff,transparent);box-shadow:0 0 8px #4ca6ff}
+#focus-asset-badge.focus-suiusdt:after{background:linear-gradient(90deg,transparent,#b4fff5,#39cfc9,transparent);box-shadow:0 0 8px #35d9d0}
+#focus-asset-badge.focus-btcusdt{border-color:#eab64f!important;box-shadow:0 0 16px #eab64f66,inset 0 0 15px #eab64f22!important}
+#focus-asset-badge.focus-linkusdt{border-color:#4ca6ff!important;box-shadow:0 0 16px #4ca6ff66,inset 0 0 15px #4ca6ff22!important}
+#focus-asset-badge.focus-suiusdt{border-color:#35d9d0!important;box-shadow:0 0 16px #35d9d066,inset 0 0 15px #35d9d022!important}
+
+/* Matching mini-emblems in the watchlist */
+.coin-symbol{position:relative;overflow:hidden;border:1px solid currentColor;box-shadow:inset 0 0 10px currentColor,0 0 9px currentColor;background:#07131d!important}
+.coin-symbol.btc,.coin-symbol.link,.coin-symbol.sui{font-size:0!important;color:transparent!important}
+.coin-symbol.btc:before,.coin-symbol.link:before,.coin-symbol.sui:before{
+ content:"";position:absolute;inset:0;display:grid;place-items:center;font-family:Arial,sans-serif;font-weight:800;line-height:1;
+}
+.coin-symbol.btc{color:#f5bd50;border-color:#f5bd50;background:#21190c!important;box-shadow:inset 0 0 10px #f5bd5044,0 0 10px #f5bd5055}
+.coin-symbol.btc:before{content:"₿";font-size:20px;background:linear-gradient(145deg,#fff0a5,#f4b942 55%,#ff8a28);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 4px #f5b942)}
+.coin-symbol.link{color:#62b7ff;border-color:#62b7ff;background:#0b1b30!important;box-shadow:inset 0 0 10px #4ca6ff44,0 0 10px #4ca6ff55}
+.coin-symbol.link:before{content:"⬡";font-size:24px;background:linear-gradient(145deg,#d4f0ff,#56b8ff 55%,#4368ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 4px #4ca6ff)}
+.coin-symbol.sui{color:#65e5d8;border-color:#35d9d0;background:#092427!important;box-shadow:inset 0 0 10px #35d9d044,0 0 10px #35d9d055}
+.coin-symbol.sui:before{content:"S";font-size:22px;font-style:italic;background:linear-gradient(145deg,#e0fffb,#66eee0 55%,#238dff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 4px #35d9d0)}
+.coin-symbol.btc:after,.coin-symbol.link:after,.coin-symbol.sui:after{
+ content:"";position:absolute;left:5px;right:5px;bottom:4px;height:2px;border-radius:3px;transform:skewX(-28deg);opacity:.95
+}
+.coin-symbol.btc:after{background:linear-gradient(90deg,transparent,#ffe18a,#ff9b32,transparent);box-shadow:0 0 5px #f5b942}
+.coin-symbol.link:after{background:linear-gradient(90deg,transparent,#9be0ff,#4c7dff,transparent);box-shadow:0 0 5px #4ca6ff}
+.coin-symbol.sui:after{background:linear-gradient(90deg,transparent,#b4fff5,#39cfc9,transparent);box-shadow:0 0 5px #35d9d0}
+.coin-symbol.sol{border:1px solid #9c6bff;background:#15152c!important;box-shadow:inset 0 0 10px #8b55ff55,0 0 10px #00e7db55}
