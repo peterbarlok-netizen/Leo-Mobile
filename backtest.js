@@ -77,7 +77,7 @@ function simulate(symbol,c,btc,weekly,fngMap,capital){
   equity.push(mark);
  }
  if(position){
-  const last=c.at(-1),exit=+last[4],exitFill=exit*(1-.0005),gross=position.qty*(exitFill-position.entryFill),fee=position.qty*exitFill*.001,net=gross-fee;
+  const last=c.at(-1),exit=+last[4],exitFill=exit*(1-.0005),gross=position.qty*(exitFill-position.entryFill),fee=position.qty*exitFill*.001,net=gross-position.entryFee-fee;
   cash+=position.stake+net;trades.push({symbol,buyTime:position.time,sellTime:new Date(Number(last[6])).toISOString().slice(0,10),entry:position.entry,exit,net,returnPct:net/position.stake*100,reason:'DATENENDE',rr:position.rr});
  }
  const wins=trades.filter(t=>t.net>0).length,profit=cash-capital;
