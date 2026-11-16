@@ -38,9 +38,9 @@ function updateWatch(ticker){
  if(c){c.textContent=fmtPct(change);c.classList.toggle('positive',change>=0);c.classList.toggle('negative',change<0)}
 }
 let selectedInterval='4h';
-const intervalLabels={'1h':'Stunden','4h':'4-Stunden','1d':'Tage','1w':'Wochen','1M':'Monate'};
+const intervalLabels={'5m':'5-Minuten','30m':'30-Minuten','1h':'Stunden','4h':'4-Stunden','1d':'Tage','1w':'Wochen','1M':'Monate'};
 function dateLabel(value,interval){
- const d=new Date(Number(value)),opts=interval==='1h'||interval==='4h'?{day:'2-digit',hour:'2-digit'}:{day:'2-digit',month:'2-digit'};
+ const d=new Date(Number(value));\n const opts=interval==='5m'||interval==='30m'||interval==='1h'||interval==='4h'?{day:'2-digit',hour:'2-digit',minute:interval==='5m'||interval==='30m'?'2-digit':undefined}:interval==='1w'||interval==='1M'?{year:'numeric'}:{day:'2-digit',month:'2-digit'};
  return d.toLocaleDateString('de-DE',opts);
 }
 function drawChart(candles,interval){
@@ -87,4 +87,4 @@ setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=16').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=18').catch(()=>{}));
