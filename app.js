@@ -25,7 +25,7 @@ async function getJson(path){
 function updateFocusHeading(){
  const asset=assetInfo[selectedSymbol];if(!asset)return;
  const badge=document.getElementById('focus-asset-badge');
- if(badge){badge.textContent=selectedSymbol==='BTCUSDT'?'₿':selectedSymbol==='LINKUSDT'?'↗':selectedSymbol==='SUIUSDT'?'S':'S';badge.className='asset-badge focus-'+selectedSymbol.toLowerCase()}
+ if(badge){badge.textContent=selectedSymbol==='BTCUSDT'?'₿':selectedSymbol==='LINKUSDT'?'⬡':selectedSymbol==='SUIUSDT'?'S':'≋';badge.className='asset-badge focus-'+selectedSymbol.toLowerCase();badge.setAttribute('aria-label',asset.name+' Symbol')}
  const name=document.querySelector('.asset-name');
  if(name)name.innerHTML=asset.name+' <span class="ticker">'+asset.ticker+'</span>';
  const heading=document.querySelector('.market .panel-heading h2');
@@ -149,4 +149,4 @@ setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=21').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=22').catch(()=>{}));
