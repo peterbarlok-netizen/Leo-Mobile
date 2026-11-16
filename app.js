@@ -168,7 +168,7 @@ function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
   resultItem('weekly-filter','Wochenfilter',weekEma50?weeklyCloses.at(-1)>weekEma50:null,'Wochenschluss über Wochen-EMA 50'),
   resultItem('higher-lows','Höhere Tiefs',lastPivot&&previousPivot?lastPivot.value>previousPivot.value:null,'Letztes bestätigtes Pivot-Tief höher als das vorherige'),
   resultItem('rsi-range','RSI 42–65',momentum!==null?momentum>=42&&momentum<=65:null,momentum===null?'RSI nicht verfügbar':'RSI '+momentum.toFixed(1)),
-  resultItem('relative-strength','Relative Stärke vs. BTC',assetReturn!==null&&btcReturn!==null?assetReturn>btcReturn:null,assetReturn!==null&&btcReturn!==null?'20-Tage-Performance '+(assetReturn*100).toFixed(2)+'% vs. BTC '+(btcReturn*100).toFixed(2)+'%':'Vergleichsdaten fehlen'),
+  resultItem('relative-strength','Relative Stärke vs. BTC',symbol==='BTCUSDT'?null:assetReturn!==null&&btcReturn!==null?assetReturn>btcReturn:null,symbol==='BTCUSDT'?'BTC ist die Vergleichsbenchmark; kein Selbstvergleich':assetReturn!==null&&btcReturn!==null?'20-Tage-Performance '+(assetReturn*100).toFixed(2)+'% vs. BTC '+(btcReturn*100).toFixed(2)+'%':'Vergleichsdaten fehlen'),
   resultItem('volume','Volumen über Durchschnitt',avgVolume!==null?volumes.at(-1)>avgVolume:null,'Letzte Tageskerze über 20-Tage-Volumendurchschnitt'),
   resultItem('pullback','Pullback EMA 20/50',pullback,pullback===null?'EMA-Daten fehlen':'Nähe zu EMA 20/50 innerhalb 2,5%'),
   resultItem('breakout','Ausbruch bestätigt',breakout,'Schlusskurs über Hoch der vorherigen drei Tageskerzen'),
