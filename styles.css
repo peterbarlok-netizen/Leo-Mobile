@@ -475,3 +475,10 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .coin-art.btcusdt{filter:drop-shadow(0 0 7px #ffb52f)}
 .coin-art.linkusdt{filter:drop-shadow(0 0 7px #238dff)}
 .coin-art.suiusdt{filter:drop-shadow(0 0 7px #20d9dc)}
+
+/* v0.28 — match the approved four medallion artwork */
+.asset-badge{overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.asset-badge .coin-art{width:100%;height:100%;display:block}
+.coin-symbol{overflow:visible!important}
+.coin-symbol .coin-art{width:100%;height:100%;display:block}
+.coin-art{shape-rendering:geometricPrecision}
