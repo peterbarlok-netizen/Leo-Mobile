@@ -141,7 +141,10 @@ function findPivotLows(candles){
  return lows;
 }
 function resultItem(id,label,passed,detail){
- return {id,label,status:passed===null?'unavailable':passed?'pass':'fail',passed,detail};
+ return {id,label,status:passed===null?'unavailable':passed?'pass':'fail',passed,applicable:passed!==null,detail};
+}
+function notApplicableItem(id,label,detail){
+ return {id,label,status:'not-applicable',passed:null,applicable:false,detail};
 }
 function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
  const closedDaily=daily.slice(0,-1),closedWeekly=weekly.slice(0,-1),closedBtc=btcDaily.slice(0,-1);
@@ -168,7 +171,7 @@ function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
   resultItem('weekly-filter','Wochenfilter',weekEma50?weeklyCloses.at(-1)>weekEma50:null,'Wochenschluss über Wochen-EMA 50'),
   resultItem('higher-lows','Höhere Tiefs',lastPivot&&previousPivot?lastPivot.value>previousPivot.value:null,'Letztes bestätigtes Pivot-Tief höher als das vorherige'),
   resultItem('rsi-range','RSI 42–65',momentum!==null?momentum>=42&&momentum<=65:null,momentum===null?'RSI nicht verfügbar':'RSI '+momentum.toFixed(1)),
-  resultItem('relative-strength','Relative Stärke vs. BTC',symbol==='BTCUSDT'?null:assetReturn!==null&&btcReturn!==null?assetReturn>btcReturn:null,symbol==='BTCUSDT'?'BTC ist die Vergleichsbenchmark; kein Selbstvergleich':assetReturn!==null&&btcReturn!==null?'20-Tage-Performance '+(assetReturn*100).toFixed(2)+'% vs. BTC '+(btcReturn*100).toFixed(2)+'%':'Vergleichsdaten fehlen'),
+  symbol==='BTCUSDT'?notApplicableItem('relative-strength','Relative Stärke vs. BTC','Nicht anwendbar: BTC ist selbst die Vergleichsbenchmark'):resultItem('relative-strength','Relative Stärke vs. BTC',assetReturn!==null&&btcReturn!==null?assetReturn>btcReturn:null,assetReturn!==null&&btcReturn!==null?'20-Tage-Performance '+(assetReturn*100).toFixed(2)+'% vs. BTC '+(btcReturn*100).toFixed(2)+'%':'Vergleichsdaten fehlen'),
   resultItem('volume','Volumen über Durchschnitt',avgVolume!==null?volumes.at(-1)>avgVolume:null,'Letzte Tageskerze über 20-Tage-Volumendurchschnitt'),
   resultItem('pullback','Pullback EMA 20/50',pullback,pullback===null?'EMA-Daten fehlen':'Nähe zu EMA 20/50 innerhalb 2,5%'),
   resultItem('breakout','Ausbruch bestätigt',breakout,'Schlusskurs über Hoch der vorherigen drei Tageskerzen'),
@@ -223,9 +226,12 @@ function renderFilterSummary(analysis){
  const byId=Object.fromEntries(analysis.criteria.map(item=>[item.id,item]));
  const states=filterGroups.map(group=>{
   if(!group.ids.length)return {state:'unavailable'};
-  const checks=group.ids.map(id=>byId[id]);
-  if(checks.some(item=>!item||item.passed===null))return {state:'pending'};
-  return {state:checks.every(item=>item.passed===true)?'pass':'fail'};
+  const checks=group.ids.map(id=>byId[id]).filter(Boolean);
+  const applicable=checks.filter(item=>item.applicable!==false&&item.status!=='not-applicable');
+  if(!applicable.length)return {state:'unavailable'};
+  if(applicable.some(item=>item.passed===false))return {state:'fail'};
+  if(applicable.some(item=>item.passed===null||item.passed===undefined))return {state:'pending'};
+  return {state:'pass'};
  });
  const passed=states.filter(x=>x.state==='pass').length;
  if(ring)ring.textContent=passed+'/6';
@@ -235,7 +241,7 @@ function renderFilterSummary(analysis){
    const state=states[index]?.state||'pending';
    li.classList.remove('active','failed','pending','unavailable');
    li.classList.add(state==='pass'?'active':state==='fail'?'failed':state);
-   li.title=state==='unavailable'?'Für diesen Filter gibt es noch kein eigenes Kriterium':state==='pending'?'Noch keine vollständige Berechnung':state==='pass'?'Alle zugeordneten Prüfungen bestanden':'Mindestens eine zugeordnete Prüfung nicht bestanden';
+   li.title=state==='unavailable'?'Für diesen Filter gibt es noch keine aktive Prüfung':state==='pending'?'Daten oder bestätigte Kerzen fehlen noch':state==='pass'?'Alle anwendbaren Prüfungen bestanden':'Mindestens eine anwendbare Prüfung nicht bestanden';
   });
  }
  tiles.forEach((tile,index)=>{
@@ -295,4 +301,4 @@ refreshChart();
 refreshAnalysis();
 setInterval(refreshMarket,30000);
 setInterval(refreshAnalysis,300000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=31').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=32').catch(()=>{}));
