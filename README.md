@@ -1,20 +1,9 @@
-# LEO Mobile v0.1
+# LEO Mobile v0.2
 
-Erster visueller PWA-Prototyp für Android. Aktuell sind alle Kurse und Signale ausdrücklich Beispieldaten.
+Mobile-first PWA prototype with dark navy styling, cyan/neon accents, SOL market overview and a four-asset watchlist. The lion mark uses an emoji fallback in this repository build.
 
-## Lokal testen
-Die Dateien müssen über einen Webserver ausgeliefert werden (Service Worker funktionieren nicht über `file://`).
+## Deployment
+Upload contents are in the repository root. Keep GitHub Pages source set to branch `main` and folder `/(root)`.
 
-## Auf Android installieren
-1. Projekt auf einen HTTPS-Webhost hochladen.
-2. Seite in Chrome auf Android öffnen.
-3. Menü ⋮ → „App installieren“ oder „Zum Startbildschirm hinzufügen“.
-
-## Nächste Schritte
-- Echtdaten über öffentliche Börsen-API integrieren
-- Persistente lokale Datenbank und Datenvalidierung
-- Pine-Script-V6-Logik exakt nachbilden und mit Bar-by-bar-Tests vergleichen
-- Walk-forward-Backtests inklusive Gebühren, Slippage und Drawdown
-- Push-Benachrichtigungen
-
-Keine automatische Orderausführung. Keine Anlageberatung.
+## Important
+This is a visual prototype. Prices, percentages and chart are illustrative demo data. No live market feed, trading execution, push alerts, or validated signal engine is connected.
