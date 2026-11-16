@@ -490,3 +490,10 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .coin-symbol{overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
 .coin-symbol:before,.coin-symbol:after{display:none!important;content:none!important}
 .coin-symbol .coin-art{width:100%;height:100%;display:block;object-fit:contain;border-radius:50%}
+
+/* v0.31 — filter state feedback, preserving the existing dashboard design */
+.filter-list li.failed:before{content:"×";color:#ff7888;font-weight:900}
+.filter-list li.pending:before{content:"…";color:#e9bd52;font-weight:900}
+.filter-list li.unavailable:before{content:"—";color:#849ba3}
+.status-tile.failed{border-color:#a94d5b;box-shadow:inset 0 0 10px #ff647012,0 0 10px #ff647018}
+.status-tile.failed .status-icon,.status-tile.failed b{color:#ff8795}
