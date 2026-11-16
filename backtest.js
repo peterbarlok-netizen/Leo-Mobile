@@ -65,7 +65,7 @@ function simulate(symbol,c,btc,weekly,fngMap,capital){
    const sig=evaluate(c,i,btc,weekly,fngMap);
    if(sig&&sig.checks.every(Boolean)){
     const next= c[i+1],rawEntry=+next[1],entryFill=rawEntry*(1+0.0005);
-    if(rawEntry>sig.stop&&rawEntry<sig.target){
+    const entryRisk=rawEntry-sig.stop,entryReward=sig.target-rawEntry;\n    if(entryRisk>0&&entryReward>=2*entryRisk){
      const stake=cash,qty=stake/(entryFill*(1+.001));
      position={stake,qty,entry:rawEntry,entryFill,stop:sig.stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,time:new Date(Number(next[0])).toISOString().slice(0,10)};
      cash-=stake;
