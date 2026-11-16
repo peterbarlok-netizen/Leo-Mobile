@@ -267,3 +267,6 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
  .filter-list{font-size:9px!important;gap:6px!important}
  .status-tile{gap:5px!important;padding:9px 3px!important}
 }
+
+/* v0.14 live data state */
+.demo-chip.is-live{color:#58f2c0;border-color:#1caa8e;background:#062c27}
