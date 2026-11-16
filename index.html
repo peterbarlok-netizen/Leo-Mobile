@@ -3,69 +3,74 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#06111d">
-<meta name="description" content="LEO – dein persönlicher KI-Trading-Assistent">
+<meta name="theme-color" content="#050b13">
+<meta name="description" content="LEO – dein KI-Trading-Assistent">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css">
-<title>LEO – Dein KI-Trading-Assistent</title>
+<link rel="stylesheet" href="./styles.css?v=03">
+<title>LEO — KI Trading Intelligence</title>
 </head>
 <body>
-<div class="app">
-  <header class="topbar">
-    <div class="brand">
-      <div class="lion-frame" role="img" aria-label="LEO Löwen-Maskottchen">🦁</div>
-      <div><div class="brand-name">LEO<span>✦</span></div><div class="brand-sub">DEIN KI-TRADING-ASSISTENT</div></div>
+<div class="shell">
+<header class="topbar">
+  <div class="identity">
+    <div class="lion-mark" aria-label="LEO Löwenemblem">
+      <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
+        <defs><linearGradient id="mane" x2="1" y2="1"><stop stop-color="#ffe29a"/><stop offset=".48" stop-color="#d79b42"/><stop offset="1" stop-color="#6f431e"/></linearGradient><linearGradient id="face" x2=".8" y2="1"><stop stop-color="#fff0c7"/><stop offset="1" stop-color="#b96c2c"/></linearGradient></defs>
+        <path d="M50 4 62 12 77 9 82 24 95 34 88 49 94 64 79 74 74 91 57 88 50 98 39 88 22 91 18 75 4 65 11 50 5 35 20 24 23 9 39 12Z" fill="url(#mane)" stroke="#ffda83" stroke-width="2"/>
+        <path d="M50 17 67 22 77 39 73 62 61 79 50 85 39 79 27 62 23 39 33 22Z" fill="url(#face)" stroke="#ffe5ac" stroke-width="1.5"/>
+        <path d="M30 31 20 24 25 43M70 31 80 24 75 43" fill="none" stroke="#70411f" stroke-width="5" stroke-linecap="round"/>
+        <path d="M33 45 43 43M57 43 67 45" stroke="#142b37" stroke-width="4" stroke-linecap="round"/>
+        <path d="M36 52 45 54M55 54 64 52" stroke="#1ae6d0" stroke-width="3" stroke-linecap="round"/>
+        <path d="M43 63Q50 57 57 63L50 70Z" fill="#3d2017"/>
+        <path d="M50 69Q44 78 37 70M50 69Q56 78 63 70" fill="none" stroke="#63351e" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M15 50H27M73 50H85" stroke="#24ead7" stroke-width="1.5" opacity=".9"/>
+      </svg>
     </div>
-    <div class="demo-tag"><i></i> DEMO</div>
-  </header>
-  <main>
-    <section class="welcome">
-      <div><div class="eyebrow">DEIN MARKT-CHECK</div><h1>Guten Abend.</h1><p>Ich behalte den Markt für dich im Blick.</p></div>
-      <div class="status-orb">✦<small>KI</small></div>
-    </section>
-    <section class="market-card panel">
-      <div class="card-top"><span class="eyebrow">FOKUSMARKT</span><span class="mini-pill">BEISPIELDATEN</span></div>
-      <div class="asset-line"><div class="sol-logo">S</div><div class="asset-title"><b>SOL <span>/ USDT</span></b><small>Solana</small></div><div class="price"><b>$148,32</b><small class="up">+2,41 % (24h)</small></div></div>
-      <div class="chart">
-        <svg viewBox="0 0 340 100" preserveAspectRatio="none" aria-label="Illustrativer Kursverlauf">
-          <defs><linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#16e6c5" stop-opacity=".3"/><stop offset="1" stop-color="#16e6c5" stop-opacity="0"/></linearGradient></defs>
-          <path d="M0 78 L22 70 42 82 65 58 87 65 108 45 130 54 153 35 177 44 199 24 222 36 244 17 266 28 289 12 315 18 340 5 L340 100 L0 100Z" fill="url(#area)"/>
-          <polyline points="0,78 22,70 42,82 65,58 87,65 108,45 130,54 153,35 177,44 199,24 222,36 244,17 266,28 289,12 315,18 340,5" fill="none" stroke="#20e6c2" stroke-width="2.8" vector-effect="non-scaling-stroke"/>
-        </svg>
-      </div>
-      <div class="chart-labels"><span>24H</span><span>7T</span><span class="chosen">30T</span><span>90T</span><span>1J</span></div>
-    </section>
-    <section class="panel verdict">
-      <div class="section-head"><h2>LEO Markturteil</h2><span class="cyan-label">✦ KI-ANALYSE</span></div>
-      <div class="verdict-row"><div class="pulse-dot"></div><div><strong>BEOBACHTEN</strong><small>Noch kein bestätigter Einstieg.</small></div><div class="score"><b>5<span>/6</span></b><small>FILTER</small></div></div>
-      <p class="reason">SOL zeigt erste relative Stärke gegenüber BTC. LEO wartet auf eine bestätigte Pullback-Bewegung.</p>
-      <div class="filter-bars"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i></i></div>
-    </section>
-    <section class="panel recommendation">
-      <div class="section-head"><h2>LEO wartet auf Bestätigung</h2><span class="shield">◇</span></div>
-      <p>Kein voreiliger Kauf. Ein Signal wird erst interessant, wenn die festgelegten Trend-, Momentum- und Volumenbedingungen bestätigt sind.</p>
-      <div class="safe-note">Risikofokus · Keine automatischen Käufe</div>
-    </section>
-    <section class="watch-section">
-      <div class="section-head"><h2>Watchlist</h2><span class="cyan-label">4 MÄRKTE</span></div>
-      <div class="coin-list panel">
-        <div class="coin"><div class="coin-icon sol">S</div><div class="coin-name"><b>Solana</b><small>SOL / USDT</small></div><div class="coin-value"><b>$148,32</b><small class="up">+2,41 %</small></div></div>
-        <div class="coin"><div class="coin-icon btc">₿</div><div class="coin-name"><b>Bitcoin</b><small>BTC / USDT</small></div><div class="coin-value"><b>$67.420</b><small class="up">+1,08 %</small></div></div>
-        <div class="coin"><div class="coin-icon link">L</div><div class="coin-name"><b>Chainlink</b><small>LINK / USDT</small></div><div class="coin-value"><b>$14,82</b><small class="down">−0,62 %</small></div></div>
-        <div class="coin"><div class="coin-icon sui">S</div><div class="coin-name"><b>Sui</b><small>SUI / USDT</small></div><div class="coin-value"><b>$2,14</b><small class="up">+3,17 %</small></div></div>
-      </div>
-    </section>
-    <p class="disclaimer">LEO Mobile v0.2 · Konzept mit Beispieldaten · Keine Live-Kurse oder Anlageberatung.</p>
-  </main>
-  <nav class="bottom-nav" aria-label="Hauptnavigation">
-    <button class="active" data-tab="Übersicht"><span>⌂</span>Übersicht</button>
-    <button data-tab="Analyse"><span>⌁</span>Analyse</button>
-    <button data-tab="Signale"><span>ϟ</span>Signale</button>
-    <button data-tab="Backtest"><span>▤</span>Backtest</button>
-    <button data-tab="Mehr"><span>•••</span>Mehr</button>
-  </nav>
-  <div class="toast" id="toast" role="status"></div>
+    <div><div class="wordmark">LEO<span> / AI</span></div><div class="tagline">TRADING INTELLIGENCE</div></div>
+  </div>
+  <div class="top-actions"><span class="connection"><i></i> DEMO MODUS</span><button class="avatar" aria-label="Profil">P</button></div>
+</header>
+<main>
+<section class="hero">
+  <div><div class="overline">MONTAG · MARKTÜBERSICHT</div><h1>Guten Abend<span>.</span></h1><p>Geduld ist auch eine Strategie.</p></div>
+  <div class="ai-orb"><div class="orb-core">L<span>✦</span></div><small>LEO AI</small></div>
+</section>
+<section class="market panel">
+ <div class="panel-heading"><div><div class="overline">FOKUS-ASSET</div><h2>Solana <span class="ticker">SOL / USDT</span></h2></div><span class="demo-chip">BEISPIELDATEN</span></div>
+ <div class="price-row"><div><div class="big-price">$148.32</div><div class="change positive">▲ 2.41% <span>letzte 24 Stunden</span></div></div><div class="asset-badge">◎</div></div>
+ <div class="chart-wrap">
+  <div class="chart-grid"><span>$152</span><span>$149</span><span>$146</span><span>$143</span></div>
+  <svg class="price-chart" viewBox="0 0 600 180" preserveAspectRatio="none" aria-label="Illustrativer SOL Kurschart">
+   <defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16e6ce" stop-opacity=".27"/><stop offset="1" stop-color="#16e6ce" stop-opacity="0"/></linearGradient></defs>
+   <path d="M0 142 C25 136 32 120 55 127 S88 148 112 119 S145 88 168 105 S203 119 226 87 S260 62 282 79 S316 101 338 68 S371 42 394 60 S427 83 450 47 S482 29 505 44 S543 57 563 26 S586 20 600 12 V180 H0Z" fill="url(#fill)"/>
+   <path d="M0 142 C25 136 32 120 55 127 S88 148 112 119 S145 88 168 105 S203 119 226 87 S260 62 282 79 S316 101 338 68 S371 42 394 60 S427 83 450 47 S482 29 505 44 S543 57 563 26 S586 20 600 12" fill="none" stroke="#20e6cf" stroke-width="3" vector-effect="non-scaling-stroke"/>
+  </svg>
+ </div>
+ <div class="range-tabs"><button>1H</button><button>24H</button><button class="selected">7T</button><button>30T</button><button>90T</button><button>1J</button></div>
+</section>
+<section class="signal panel">
+ <div class="panel-heading"><div class="overline">LEO SIGNAL-CHECK</div><span class="signal-state"><i></i> IN BEOBACHTUNG</span></div>
+ <div class="signal-main"><div><div class="signal-word">ABWARTEN</div><p>Kein bestätigter Einstieg</p></div><div class="score-ring"><strong>5<span>/6</span></strong><small>FILTER</small></div></div>
+ <div class="signal-meter"><i class="passed"></i><i class="passed"></i><i class="passed"></i><i class="passed"></i><i class="passed"></i><i></i></div>
+ <p class="signal-note">Trend und relative Stärke wirken konstruktiv. LEO wartet auf einen sauberen Pullback mit Volumenbestätigung – kein Kauf auf Verdacht.</p>
+ <div class="signal-footer"><span>RISIKOPROFIL <b>DEFENSIV</b></span><span>KEINE AUTO-TRADES</span></div>
+</section>
+<section class="watch">
+ <div class="section-title"><div><div class="overline">IM AUGE BEHALTEN</div><h2>Deine Watchlist</h2></div><button class="text-button" data-action="watch">Alle ansehen ↗</button></div>
+ <div class="watch-grid">
+  <article class="watch-card"><div class="coin-head"><span class="coin-symbol sol">◎</span><span class="coin-trend positive">+2.41%</span></div><b>Solana</b><small>SOL / USDT</small><strong>$148.32</strong></article>
+  <article class="watch-card"><div class="coin-head"><span class="coin-symbol btc">₿</span><span class="coin-trend positive">+1.08%</span></div><b>Bitcoin</b><small>BTC / USDT</small><strong>$67,420</strong></article>
+  <article class="watch-card"><div class="coin-head"><span class="coin-symbol link">↗</span><span class="coin-trend negative">−0.62%</span></div><b>Chainlink</b><small>LINK / USDT</small><strong>$14.82</strong></article>
+  <article class="watch-card"><div class="coin-head"><span class="coin-symbol sui">S</span><span class="coin-trend positive">+3.17%</span></div><b>Sui</b><small>SUI / USDT</small><strong>$2.14</strong></article>
+ </div>
+</section>
+<section class="insight panel"><div class="insight-icon">✧</div><div><div class="overline">LEOS GEDANKE</div><p>„Der beste Einstieg ist nicht der schnellste – sondern der, den der Markt bestätigt.“</p></div></section>
+<p class="disclaimer">LEO v0.3 · Design-Vorschau mit Beispieldaten · Keine Live-Kurse oder Anlageberatung.</p>
+</main>
+<nav class="dock" aria-label="Hauptnavigation">
+ <button class="active" data-tab="Dashboard"><span>⌂</span>Dashboard</button><button data-tab="Analyse"><span>⌁</span>Analyse</button><button data-tab="Signale"><span>ϟ</span>Signale</button><button data-tab="Backtest"><span>▤</span>Backtest</button><button data-tab="Watchlist"><span>◈</span>Watchlist</button>
+</nav>
+<div class="toast" id="toast" role="status"></div>
 </div>
-<script src="./app.js"></script>
-</body>
-</html>
+<script src="./app.js?v=03"></script>
+</body></html>
