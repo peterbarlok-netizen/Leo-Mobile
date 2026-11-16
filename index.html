@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#050b13">
 <meta name="description" content="LEO – dein KI-Trading-Assistent">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css?v=13">
+<link rel="stylesheet" href="./styles.css?v=14">
 <title>LEO — KI Trading Intelligence</title>
 </head>
 <body>
 <div class="shell">
-<header class="reference-top"><button class="menu-button" aria-label="Menü">☰</button><span class="demo-chip"><i></i> DEMO</span></header>
+<header class="reference-top"><button class="menu-button" aria-label="Menü">☰</button><span class="demo-chip" id="connection-status"><i></i> VERBINDE…</span></header>
 <main>
 <section class="lion-hero" aria-label="LEO Cyber-Löwe">
  <img src="./assets/leo-cyber-hero-1.jpg" alt="Majestätischer goldener Cyber-Löwe mit leuchtenden türkisfarbenen Augen">
@@ -21,11 +21,11 @@
   <div><div class="overline">MONTAG · MARKTÜBERSICHT</div><h1>Guten Abend<span>.</span></h1><p>Geduld ist auch eine Strategie.</p></div>
 </section>
 <section class="market panel">
- <div class="panel-heading"><div><div class="overline">FOKUS-ASSET</div><h2>Solana <span class="ticker">SOL / USDT</span></h2></div><span class="demo-chip">BEISPIELDATEN</span></div>
+ <div class="panel-heading"><div><div class="overline">FOKUS-ASSET</div><h2>Solana <span class="ticker">SOL / USDT</span></h2></div><span class="demo-chip" id="market-status">VERBINDE…</span></div>
  <div class="asset-summary"><div class="asset-badge">S</div><div class="asset-copy"><div class="asset-name">Solana <span class="ticker">SOL / USDT</span></div><div class="asset-quote"><span class="big-price">148,72 <small>USDT</small></span><span class="change positive">+2,84 %</span></div></div></div>
  <div class="chart-wrap">
   <div class="chart-grid"><span>$152</span><span>$149</span><span>$146</span><span>$143</span></div>
-  <svg class="price-chart" viewBox="0 0 600 180" preserveAspectRatio="none" aria-label="Illustrativer SOL Kurschart">
+  <svg class="price-chart" viewBox="0 0 600 180" preserveAspectRatio="none" aria-label="SOL Kurschart – wird mit Marktdaten aktualisiert">
    <defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16e6ce" stop-opacity=".27"/><stop offset="1" stop-color="#16e6ce" stop-opacity="0"/></linearGradient></defs>
    <path d="M0 142 C25 136 32 120 55 127 S88 148 112 119 S145 88 168 105 S203 119 226 87 S260 62 282 79 S316 101 338 68 S371 42 394 60 S427 83 450 47 S482 29 505 44 S543 57 563 26 S586 20 600 12 V180 H0Z" fill="url(#fill)"/>
    <path d="M0 142 C25 136 32 120 55 127 S88 148 112 119 S145 88 168 105 S203 119 226 87 S260 62 282 79 S316 101 338 68 S371 42 394 60 S427 83 450 47 S482 29 505 44 S543 57 563 26 S586 20 600 12" fill="none" stroke="#20e6cf" stroke-width="3" vector-effect="non-scaling-stroke"/>
@@ -60,19 +60,19 @@
 <section class="watch">
  <div class="section-title"><div><div class="overline">IM AUGE BEHALTEN</div><h2>Deine Watchlist</h2></div><button class="text-button" data-action="watch">Alle ansehen ↗</button></div>
  <div class="watch-grid">
-  <article class="watch-card"><div class="coin-head"><span class="coin-symbol sol">◎</span><span class="coin-trend positive">+2.41%</span></div><b>Solana</b><small>SOL / USDT</small><strong>$148.32</strong></article>
-  <article class="watch-card"><div class="coin-head"><span class="coin-symbol btc">₿</span><span class="coin-trend positive">+1.08%</span></div><b>Bitcoin</b><small>BTC / USDT</small><strong>$67,420</strong></article>
-  <article class="watch-card"><div class="coin-head"><span class="coin-symbol link">↗</span><span class="coin-trend negative">−0.62%</span></div><b>Chainlink</b><small>LINK / USDT</small><strong>$14.82</strong></article>
-  <article class="watch-card"><div class="coin-head"><span class="coin-symbol sui">S</span><span class="coin-trend positive">+3.17%</span></div><b>Sui</b><small>SUI / USDT</small><strong>$2.14</strong></article>
+  <article class="watch-card" data-symbol="SOLUSDT"><div class="coin-head"><span class="coin-symbol sol">◎</span><span class="coin-trend positive" data-change>—</span></div><b>Solana</b><small>SOL / USDT</small><strong data-price>—</strong></article>
+  <article class="watch-card" data-symbol="BTCUSDT"><div class="coin-head"><span class="coin-symbol btc">₿</span><span class="coin-trend positive" data-change>—</span></div><b>Bitcoin</b><small>BTC / USDT</small><strong data-price>—</strong></article>
+  <article class="watch-card" data-symbol="LINKUSDT"><div class="coin-head"><span class="coin-symbol link">↗</span><span class="coin-trend" data-change>—</span></div><b>Chainlink</b><small>LINK / USDT</small><strong data-price>—</strong></article>
+  <article class="watch-card" data-symbol="SUIUSDT"><div class="coin-head"><span class="coin-symbol sui">S</span><span class="coin-trend" data-change>—</span></div><b>Sui</b><small>SUI / USDT</small><strong data-price>—</strong></article>
  </div>
 </section>
 <section class="insight panel"><div class="insight-icon">✧</div><div><div class="overline">LEOS GEDANKE</div><p>„Der beste Einstieg ist nicht der schnellste – sondern der, den der Markt bestätigt.“</p></div></section>
-<p class="disclaimer">LEO · Design-Vorschau mit Beispieldaten · Keine Live-Kurse oder Anlageberatung.</p>
+<p class="disclaimer" id="data-disclaimer">LEO · Marktdaten werden verbunden. Signale sind noch nicht live validiert. Keine Anlageberatung.</p>
 </main>
 <nav class="dock" aria-label="Hauptnavigation">
  <button class="active" data-tab="Übersicht"><span>⌂</span>Übersicht</button><button data-tab="Analyse"><span>⌁</span>Analyse</button><button data-tab="Signale"><span>ϟ</span>Signale</button><button data-tab="Backtest"><span>▤</span>Backtest</button><button data-tab="Mehr"><span>•••</span>Mehr</button>
 </nav>
 <div class="toast" id="toast" role="status"></div>
 </div>
-<script src="./app.js?v=13"></script>
+<script src="./app.js?v=14"></script>
 </body></html>
