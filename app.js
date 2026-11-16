@@ -22,6 +22,20 @@ async function getJson(path){
  }
  throw lastError||new Error('Keine Binance-Datenquelle erreichbar');
 }
+function updateFocusHeading(){
+ const asset=assetInfo[selectedSymbol];if(!asset)return;
+ const name=document.querySelector('.asset-name');
+ if(name)name.innerHTML=asset.name+' <span class="ticker">'+asset.ticker+'</span>';
+ const heading=document.querySelector('.market .panel-heading h2');
+ if(heading)heading.innerHTML=asset.name+' <span class="ticker">'+asset.ticker+'</span>';
+ const svg=document.querySelector('.price-chart');
+ if(svg)svg.setAttribute('aria-label',asset.ticker+' Kurschart – Live-Daten');
+ document.querySelectorAll('.watch-card').forEach(card=>{
+  const active=card.dataset.symbol===selectedSymbol;
+  card.classList.toggle('is-selected',active);
+  card.setAttribute('aria-pressed',active?'true':'false');
+ });
+}
 function updatePriceCard(ticker){
  const price=Number(ticker.lastPrice),change=Number(ticker.priceChangePercent);
  if(!Number.isFinite(price)||!Number.isFinite(change))return;
@@ -37,6 +51,14 @@ function updateWatch(ticker){
  if(p)p.textContent=fmtPrice(price)+' USDT';
  if(c){c.textContent=fmtPct(change);c.classList.toggle('positive',change>=0);c.classList.toggle('negative',change<0)}
 }
+const assetInfo={
+ SOLUSDT:{name:'Solana',ticker:'SOL / USDT'},
+ BTCUSDT:{name:'Bitcoin',ticker:'BTC / USDT'},
+ LINKUSDT:{name:'Chainlink',ticker:'LINK / USDT'},
+ SUIUSDT:{name:'Sui',ticker:'SUI / USDT'}
+};
+let selectedSymbol='SOLUSDT';
+let chartRequest=0;
 let selectedInterval='4h';
 const intervalLabels={'5m':'5-Minuten','30m':'30-Minuten','1h':'Stunden','4h':'4-Stunden','1d':'Tage','1w':'Wochen','1M':'Monate'};
 function dateLabel(value,interval){
@@ -60,9 +82,28 @@ function drawChart(candles,interval){
  svg.setAttribute('aria-label','SOL/USDT – '+candles.length+' Binance-Kerzen, Intervall '+intervalLabels[interval]);
 }
 async function refreshChart(){
- try{const candles=await getJson('/klines?symbol=SOLUSDT&interval='+selectedInterval+'&limit=48');drawChart(candles,selectedInterval)}
- catch(error){console.warn('LEO chart unavailable:',error)}
+ const request=++chartRequest,symbol=selectedSymbol;
+ try{
+  const candles=await getJson('/klines?symbol='+symbol+'&interval='+selectedInterval+'&limit=48');
+  if(request!==chartRequest||symbol!==selectedSymbol)return;
+  drawChart(candles,selectedInterval);
+  const svg=document.querySelector('.price-chart');
+  if(svg)svg.setAttribute('aria-label',assetInfo[symbol].ticker+' – '+candles.length+' Binance-Kerzen, '+intervalLabels[selectedInterval]);
+ }catch(error){if(request===chartRequest)console.warn('LEO chart unavailable:',error)}
 }
+function selectAsset(symbol){
+ if(!assetInfo[symbol]||symbol===selectedSymbol)return;
+ selectedSymbol=symbol;
+ updateFocusHeading();
+ const cachedTicker=window.leoTickers?.[symbol];
+ if(cachedTicker)updatePriceCard(cachedTicker);
+ refreshChart();
+}
+document.querySelectorAll('.watch-card[data-symbol]').forEach(card=>{
+ const choose=()=>selectAsset(card.dataset.symbol);
+ card.addEventListener('click',choose);
+ card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();choose()}});
+});
 document.querySelectorAll('[data-interval]').forEach(button=>button.addEventListener('click',()=>{
  selectedInterval=button.dataset.interval;
  document.querySelectorAll('[data-interval]').forEach(b=>b.classList.toggle('selected',b===button));
@@ -74,7 +115,10 @@ async function refreshMarket(){
  results.forEach((result,index)=>{
   if(result.status!=='fulfilled')return;
   successes++;updateWatch(result.value);
-  if(symbols[index]==='SOLUSDT'){updatePriceCard(result.value);solOk=true}
+  window.leoTickers=window.leoTickers||{};
+  window.leoTickers[result.value.symbol]=result.value;
+  if(result.value.symbol===selectedSymbol)updatePriceCard(result.value);
+  if(symbols[index]==='SOLUSDT')solOk=true
  });
  const live=solOk&&successes===symbols.length;
  setConnection(live,successes?'Einige Marktdaten fehlen':'Binance-Verbindung fehlgeschlagen');
@@ -84,8 +128,9 @@ async function refreshMarket(){
   if(disclaimer)disclaimer.textContent='LEO · Live von Binance · Aktualisiert '+stamp+' · Signale noch nicht live validiert · Keine Anlageberatung.';
  }
 }
+updateFocusHeading();
 setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=18').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=19').catch(()=>{}));
