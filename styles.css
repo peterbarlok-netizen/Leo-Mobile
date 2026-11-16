@@ -83,3 +83,52 @@ button{font:inherit}
 .watch-card{border-color:#24515d;box-shadow:inset 0 0 14px #20e6cf08}
 @media(max-width:380px){.lion-hero{height:320px}.lion-hero img{height:285px;top:14px}.lion-title{font-size:50px}.lion-subtitle{font-size:10px;letter-spacing:3px}.hero h1{font-size:28px}.signal-word{font-size:21px}.filter-chips{gap:5px}.filter-chips span{font-size:8px;padding:6px 8px}}
 @media(min-width:520px){.reference-top{position:relative}.lion-hero{margin-top:-46px}}
+
+/* LEO portrait reference design v0.8 */
+:root{--cyan:#00f4e1;--gold:#ffc85c;--green:#00e6a0}
+body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%,#02080d 100%);font-size:15px}
+.shell{max-width:500px;padding:0 13px calc(104px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 12%,#07333a 0,#041923 45%,#02090e 100%)}
+.reference-top{height:54px;padding:0 18px}
+.reference-top .menu-button{font-size:30px}
+.lion-hero{height:350px;margin:0 -13px 0;padding:0 10px 22px;background:radial-gradient(ellipse at 50% 43%,#0b4b50 0,#061c28 56%,#02080e 100%)}
+.lion-hero img{height:305px;width:100%;top:10px;object-fit:cover;object-position:center 32%;opacity:.96;filter:saturate(1.12) contrast(1.06) drop-shadow(0 0 20px #00eadd44)}
+.lion-hero:before{background:linear-gradient(180deg,rgba(2,8,14,.03) 0%,rgba(2,8,14,0) 54%,#031019 100%)}
+.lion-title{font:italic 700 58px Georgia,'Times New Roman',serif;letter-spacing:7px;color:#ffe3a0;text-shadow:0 0 5px #fff0bd,0 0 15px #ffb42f,0 4px 1px #63360c;line-height:.96}
+.lion-title span{font:700 25px Georgia,serif;color:#00ffe7;text-shadow:0 0 13px #00ffe7}
+.lion-subtitle{font-size:11px;letter-spacing:3.2px;color:#efffff;margin-top:10px;text-shadow:0 0 9px #00e6dc}
+.hero{padding:21px 12px 18px;display:block}
+.hero .overline{font-size:11px;letter-spacing:2px}
+.hero h1{font-size:34px;letter-spacing:-1px;margin:7px 0 3px}
+.hero p{font-size:14px;color:#bdd3dc}
+.market{padding:17px 16px 14px;margin:0 0 14px;border:1px solid #00a99e;border-radius:22px;background:linear-gradient(145deg,#08252c,#04131c);box-shadow:0 0 18px #00e6d522,inset 0 0 17px #00e6d514}
+.panel-heading h2{font-size:21px}
+.demo-chip{border-color:#e5a900;color:#ffd36b;background:#281d08}
+.price-row{margin:15px 0 7px}
+.big-price{font-size:34px;color:#f4ffff}.big-price small{font-size:15px;letter-spacing:0}
+.change{font-size:14px;color:#00e6a0}.change span{font-size:11px}
+.asset-badge{width:58px;height:58px;border-radius:50%;font-size:30px;border:1px solid #aa8aff;background:#101e36;color:#30f2df}
+.chart-wrap{height:150px;margin-top:8px}
+.chart-grid{font-size:9px;color:#64818d}.chart-grid span{border-bottom:1px solid #0a4750}
+.price-chart{filter:drop-shadow(0 0 5px #00f4e1)}
+.range-tabs{margin-top:12px}.range-tabs button{font-size:11px;padding:8px 10px}
+.range-tabs button.selected{border:1px solid #00f4e1;background:#073c3e;box-shadow:0 0 14px #00f4e188;color:#fff}
+.signal{padding:16px;margin-bottom:15px;border:1px solid #00b9ac;border-radius:21px;background:linear-gradient(145deg,#08272d,#04151d);box-shadow:0 0 17px #00e6d51c,inset 0 0 18px #00e6d511}
+.signal-word{font-size:25px;color:#ffd35f;text-shadow:0 0 12px #ffb82f77}
+.signal-main{margin:15px 0}
+.signal-verdict{gap:10px}
+.eye-mark{border-color:#ffc44f;color:#ffd45f;box-shadow:0 0 18px #ffbd3d88}
+.score-ring{width:78px;height:78px;border:3px solid #00e6cf;box-shadow:0 0 18px #00e6cf66,inset 0 0 16px #00e6cf22}
+.score-ring strong{font-size:26px}
+.filter-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}
+.filter-chips span{text-align:center;border-radius:22px;padding:8px 4px;font-size:10px}
+.filter-chips .ok{border:1px solid #00d9bd;color:#c8fff4;background:#032e2d;box-shadow:inset 0 0 10px #00e6cf18}
+.filter-chips .wait{border:1px solid #6e8793;color:#9ab5c1;background:#0b2029}
+.signal-note{font-size:12px;border:1px solid #1b6570;border-radius:15px;padding:12px;background:#061e28;color:#d0e7e9}
+.signal-footer{display:none}
+.watch{margin:0 0 16px}.section-title h2{font-size:20px}
+.watch-card{background:linear-gradient(145deg,#09252d,#06151d);border-color:#14515a}
+.insight{border-color:#17636a;background:#08232b}
+.dock{max-width:500px;padding:12px 6px calc(11px + env(safe-area-inset-bottom));background:rgba(2,10,16,.97);border-top:1px solid #00a89f;box-shadow:0 -7px 24px #00d8ca10}
+.dock button{font-size:11px;gap:6px}.dock button span{font-size:25px}
+@media(max-width:390px){.lion-hero{height:320px}.lion-hero img{height:275px;top:8px}.lion-title{font-size:51px}.lion-subtitle{font-size:9px;letter-spacing:2.6px}.hero h1{font-size:31px}.filter-chips span{font-size:9px;padding:7px 2px}.big-price{font-size:30px}}
+@media(min-width:520px){.shell{max-width:500px}.reference-top{position:absolute}.lion-hero{margin-top:0}}
