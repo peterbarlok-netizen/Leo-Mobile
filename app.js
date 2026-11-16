@@ -22,10 +22,24 @@ async function getJson(path){
  }
  throw lastError||new Error('Keine Binance-Datenquelle erreichbar');
 }
+
+function coinIcon(symbol){
+ const defs='<defs><linearGradient id="g-sol" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c04cff"/><stop offset=".52" stop-color="#775bff"/><stop offset="1" stop-color="#00f2df"/></linearGradient><linearGradient id="g-btc" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1a4"/><stop offset=".55" stop-color="#ffbf36"/><stop offset="1" stop-color="#ff7b24"/></linearGradient><linearGradient id="g-link" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9beaff"/><stop offset=".55" stop-color="#238dff"/><stop offset="1" stop-color="#304cff"/></linearGradient><linearGradient id="g-sui" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c6fff8"/><stop offset=".55" stop-color="#27d9df"/><stop offset="1" stop-color="#168dff"/></linearGradient></defs>';
+ const shapes={
+ SOLUSDT:'<path d="M25 34H77L65 46H13Z M25 56H77L65 68H13Z" fill="url(#g-sol)" stroke="#b4ffff" stroke-width="1.3" stroke-linejoin="round"/>',
+ BTCUSDT:'<text x="50" y="70" text-anchor="middle" font-size="67" font-family="Arial,sans-serif" font-weight="bold" fill="url(#g-btc)" stroke="#ffe58b" stroke-width=".7">₿</text>',
+ LINKUSDT:'<path d="M50 18 78 34V66L50 82 22 66V34Z" fill="none" stroke="url(#g-link)" stroke-width="12" stroke-linejoin="miter"/><path d="M50 18 78 34V66L50 82 22 66V34Z" fill="none" stroke="#9beaff" stroke-opacity=".45" stroke-width="2"/>',
+ SUIUSDT:'<path d="M50 15C42 29 25 43 25 59a25 25 0 0 0 50 0C75 43 58 29 50 15Z" fill="none" stroke="url(#g-sui)" stroke-width="10" stroke-linejoin="round"/><path d="M58 38C47 48 44 54 44 62c0 7 5 12 12 13" fill="none" stroke="#b9fff7" stroke-width="4" stroke-linecap="round"/>'
+ };
+ const color={SOLUSDT:"#9d5cff",BTCUSDT:"#ffc04b",LINKUSDT:"#369cff",SUIUSDT:"#25d9d5"}[symbol]||"#20e6cf";
+ return '<svg class="coin-art '+symbol.toLowerCase()+'" viewBox="0 0 100 100" role="img" aria-label="'+({SOLUSDT:"Solana",BTCUSDT:"Bitcoin",LINKUSDT:"Chainlink",SUIUSDT:"Sui"}[symbol]||"Crypto")+'" xmlns="http://www.w3.org/2000/svg">'+defs+'<circle cx="50" cy="50" r="44" fill="#030d18" stroke="'+color+'" stroke-width="2.5"/><circle cx="50" cy="50" r="39" fill="none" stroke="'+color+'" stroke-opacity=".22" stroke-width="1"/>'+shapes[symbol]+'</svg>';
+}
+
 function updateFocusHeading(){
  const asset=assetInfo[selectedSymbol];if(!asset)return;
  const badge=document.getElementById('focus-asset-badge');
- if(badge){badge.textContent=selectedSymbol==='BTCUSDT'?'₿':selectedSymbol==='LINKUSDT'?'⬡':selectedSymbol==='SUIUSDT'?'S':'≋';badge.className='asset-badge focus-'+selectedSymbol.toLowerCase();badge.setAttribute('aria-label',asset.name+' Symbol')}
+ if(badge){badge.innerHTML=coinIcon(selectedSymbol);badge.className='asset-badge focus-'+selectedSymbol.toLowerCase();badge.setAttribute('aria-label',asset.name+' Symbol')}
+ document.querySelectorAll('.watch-card[data-symbol]').forEach(card=>{const icon=card.querySelector('.coin-symbol');if(icon)icon.innerHTML=coinIcon(card.dataset.symbol)});
  const name=document.querySelector('.asset-name');
  if(name)name.innerHTML=asset.name+' <span class="ticker">'+asset.ticker+'</span>';
  const heading=document.querySelector('.market .panel-heading h2');
@@ -149,4 +163,4 @@ setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=25').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=26').catch(()=>{}));
