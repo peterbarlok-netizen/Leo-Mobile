@@ -37,17 +37,36 @@ function updateWatch(ticker){
  if(p)p.textContent=fmtPrice(price)+' USDT';
  if(c){c.textContent=fmtPct(change);c.classList.toggle('positive',change>=0);c.classList.toggle('negative',change<0)}
 }
-function drawChart(candles){
+let selectedInterval='4h';
+const intervalLabels={'1h':'Stunden','4h':'4-Stunden','1d':'Tage','1w':'Wochen','1M':'Monate'};
+function dateLabel(value,interval){
+ const d=new Date(Number(value)),opts=interval==='1h'||interval==='4h'?{day:'2-digit',hour:'2-digit'}:{day:'2-digit',month:'2-digit'};
+ return d.toLocaleDateString('de-DE',opts);
+}
+function drawChart(candles,interval){
  const svg=document.querySelector('.price-chart');if(!svg||!Array.isArray(candles)||!candles.length)return;
  const closes=candles.map(c=>Number(c[4])),volumes=candles.map(c=>Number(c[5]));
- const min=Math.min(...closes),max=Math.max(...closes),span=max-min||1;
- const pts=closes.map((v,i)=>[i*600/(closes.length-1||1),155-(v-min)/span*130]);
+ const min=Math.min(...closes),max=Math.max(...closes),pad=(max-min)*.12||max*.005,lo=min-pad,hi=max+pad,span=hi-lo||1;
+ const pts=closes.map((v,i)=>[i*600/(closes.length-1||1),155-(v-lo)/span*130]);
  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
  const area=line+' L600 180 L0 180 Z',maxVol=Math.max(...volumes)||1,barW=Math.max(2,600/volumes.length*.55);
- const bars=volumes.map((v,i)=>{const height=Math.max(2,v/maxVol*34),x=i*600/volumes.length;return '<rect x="'+x.toFixed(1)+'" y="'+(180-height).toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+height.toFixed(1)+'"/>'}).join('');
+ const bars=volumes.map((v,i)=>{const height=Math.max(2,v/maxVol*30),x=i*600/volumes.length;return '<rect x="'+x.toFixed(1)+'" y="'+(180-height).toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+height.toFixed(1)+'"/>'}).join('');
  svg.innerHTML='<defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16e6ce" stop-opacity=".3"/><stop offset="1" stop-color="#16e6ce" stop-opacity="0"/></linearGradient></defs><path d="'+area+'" fill="url(#fill)"/><path d="'+line+'" fill="none" stroke="#20e6cf" stroke-width="3" vector-effect="non-scaling-stroke"/><g class="volume-bars" fill="#12bcb4" opacity=".48">'+bars+'</g>';
- svg.setAttribute('aria-label','SOL/USDT – letzte '+candles.length+' Vier-Stunden-Kerzen von Binance');
+ const axis=document.querySelector('.chart-axis-right');
+ if(axis)axis.innerHTML=[hi,(hi+lo)/2,lo].map(v=>'<span>'+fmtPrice(v)+'</span>').join('');
+ const xaxis=document.querySelector('.chart-x-axis');
+ if(xaxis){const indices=[0,Math.floor((candles.length-1)/2),candles.length-1];xaxis.innerHTML=indices.map(i=>'<span>'+dateLabel(candles[i][0],interval)+'</span>').join('')}
+ svg.setAttribute('aria-label','SOL/USDT – '+candles.length+' Binance-Kerzen, Intervall '+intervalLabels[interval]);
 }
+async function refreshChart(){
+ try{const candles=await getJson('/klines?symbol=SOLUSDT&interval='+selectedInterval+'&limit=48');drawChart(candles,selectedInterval)}
+ catch(error){console.warn('LEO chart unavailable:',error)}
+}
+document.querySelectorAll('[data-interval]').forEach(button=>button.addEventListener('click',()=>{
+ selectedInterval=button.dataset.interval;
+ document.querySelectorAll('[data-interval]').forEach(b=>b.classList.toggle('selected',b===button));
+ refreshChart();
+}));
 async function refreshMarket(){
  const results=await Promise.allSettled(symbols.map(symbol=>getJson('/ticker/24hr?symbol='+symbol)));
  let successes=0,solOk=false;
@@ -56,9 +75,7 @@ async function refreshMarket(){
   successes++;updateWatch(result.value);
   if(symbols[index]==='SOLUSDT'){updatePriceCard(result.value);solOk=true}
  });
- let chartOk=false;
- try{const candles=await getJson('/klines?symbol=SOLUSDT&interval=4h&limit=42');drawChart(candles);chartOk=true}catch(error){console.warn('LEO chart unavailable:',error)}
- const live=solOk&&successes===symbols.length&&chartOk;
+ const live=solOk&&successes===symbols.length;
  setConnection(live,successes?'Einige Marktdaten fehlen':'Binance-Verbindung fehlgeschlagen');
  if(live){
   const stamp=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
@@ -68,5 +85,6 @@ async function refreshMarket(){
 }
 setConnection(false,'Verbinde mit Binance');
 refreshMarket();
+refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=15').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=16').catch(()=>{}));
