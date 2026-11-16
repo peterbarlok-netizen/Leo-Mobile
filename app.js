@@ -24,6 +24,8 @@ async function getJson(path){
 }
 function updateFocusHeading(){
  const asset=assetInfo[selectedSymbol];if(!asset)return;
+ const badge=document.getElementById('focus-asset-badge');
+ if(badge){badge.textContent=selectedSymbol==='BTCUSDT'?'₿':selectedSymbol==='LINKUSDT'?'↗':selectedSymbol==='SUIUSDT'?'S':'S';badge.className='asset-badge focus-'+selectedSymbol.toLowerCase()}
  const name=document.querySelector('.asset-name');
  if(name)name.innerHTML=asset.name+' <span class="ticker">'+asset.ticker+'</span>';
  const heading=document.querySelector('.market .panel-heading h2');
@@ -85,6 +87,10 @@ async function refreshChart(){
  const request=++chartRequest,symbol=selectedSymbol,interval=selectedInterval;
  const label=document.getElementById('chart-current-label');
  if(label)label.textContent=assetInfo[symbol].ticker+' · '+interval.toUpperCase()+' · lädt…';
+ const svg=document.querySelector('.price-chart');
+ if(svg)svg.innerHTML='<text x="300" y="92" text-anchor="middle" fill="#8caeb7" font-size="18">Lade '+assetInfo[symbol].ticker+'…</text>';
+ const axis=document.querySelector('.chart-axis-right');if(axis)axis.innerHTML='';
+ const xaxis=document.querySelector('.chart-x-axis');if(xaxis)xaxis.innerHTML='';
  try{
   const candles=await getJson('/klines?symbol='+encodeURIComponent(symbol)+'&interval='+encodeURIComponent(interval)+'&limit=48');
   if(request!==chartRequest||symbol!==selectedSymbol||interval!==selectedInterval)return;
@@ -101,24 +107,19 @@ async function refreshChart(){
  }
 }
 function selectAsset(symbol){
- if(!assetInfo[symbol]||symbol===selectedSymbol)return;
+ if(!assetInfo[symbol])return;
  selectedSymbol=symbol;
  updateFocusHeading();
  const cachedTicker=window.leoTickers?.[symbol];
  if(cachedTicker)updatePriceCard(cachedTicker);
  refreshChart();
 }
-const watchGrid=document.querySelector('.watch-grid');
-if(watchGrid){
- watchGrid.addEventListener('click',event=>{
-  const card=event.target.closest('.watch-card[data-symbol]');
-  if(card&&watchGrid.contains(card))selectAsset(card.dataset.symbol);
+document.querySelectorAll('.watch-card[data-symbol]').forEach(card=>{
+ card.addEventListener('click',()=>selectAsset(card.dataset.symbol));
+ card.addEventListener('keydown',event=>{
+  if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAsset(card.dataset.symbol)}
  });
- watchGrid.addEventListener('keydown',event=>{
-  const card=event.target.closest('.watch-card[data-symbol]');
-  if(card&&(event.key==='Enter'||event.key===' ')){event.preventDefault();selectAsset(card.dataset.symbol)}
- });
-}
+});
 document.querySelectorAll('[data-interval]').forEach(button=>button.addEventListener('click',()=>{
  selectedInterval=button.dataset.interval;
  document.querySelectorAll('[data-interval]').forEach(b=>b.classList.toggle('selected',b===button));
@@ -148,4 +149,4 @@ setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=21').catch(()=>{}));
