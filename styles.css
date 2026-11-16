@@ -140,3 +140,41 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .lion-hero:before,.lion-hero:after{display:none}
 .lion-title,.lion-subtitle{display:none}
 @media(max-width:390px){.lion-hero{height:auto;aspect-ratio:852/590}.lion-hero img{height:100%}}
+
+/* v0.11 — compact portrait dashboard: reduce hero so market overview is visible */
+.shell{padding-top:0}
+.lion-hero{
+ height:clamp(300px, 43vh, 360px);
+ aspect-ratio:auto;
+ margin:0 -13px 0;
+ overflow:hidden;
+}
+.lion-hero img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ object-position:center 52%;
+}
+.hero{padding:16px 12px 13px}
+.hero h1{font-size:31px;margin:5px 0 2px}
+.hero p{font-size:13px;margin:3px 0 0}
+.market{padding:14px 14px 12px;margin-bottom:11px}
+.price-row{margin:10px 0 5px}
+.big-price{font-size:30px}
+.chart-wrap{height:118px;margin-top:6px}
+.range-tabs{margin-top:8px}
+.range-tabs button{padding:6px 8px}
+.signal{padding:14px;margin-bottom:12px}
+.signal-main{margin:10px 0}
+.filter-chips{margin:9px 0 10px;gap:6px}
+.filter-chips span{padding:6px 3px}
+.signal-note{padding:9px 10px;font-size:11px}
+.watch{margin-bottom:12px}
+.section-title h2{font-size:18px}
+.dock{padding-top:9px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+@media(max-height:780px){
+ .lion-hero{height:clamp(260px,39vh,320px)}
+ .hero{padding-top:12px;padding-bottom:10px}
+ .market{padding:12px}
+ .chart-wrap{height:100px}
+}
