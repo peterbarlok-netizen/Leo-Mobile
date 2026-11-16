@@ -118,18 +118,31 @@ async function refreshChart(){
 }
 
 /* LEO 11-point analysis engine. Results are stored as data; dashboard layout remains unchanged. */
+function emaSeries(values,period){
+ if(values.length<period)return [];
+ const output=Array(values.length).fill(null),k=2/(period+1);
+ let value=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
+ output[period-1]=value;
+ for(let i=period;i<values.length;i++){value=values[i]*k+value*(1-k);output[i]=value}
+ return output;
+}
 function ema(values,period){
- if(values.length<period)return null;
- const k=2/(period+1);let value=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
- for(let i=period;i<values.length;i++)value=values[i]*k+value*(1-k);
- return value;
+ const series=emaSeries(values,period);
+ return series.length?series.at(-1):null;
 }
 function rsi(values,period=14){
  if(values.length<=period)return null;
  let gains=0,losses=0;
- for(let i=values.length-period;i<values.length;i++){const d=values[i]-values[i-1];if(d>0)gains+=d;else losses-=d}
- if(losses===0)return 100;
- const rs=(gains/period)/(losses/period);
+ for(let i=1;i<=period;i++){const change=values[i]-values[i-1];if(change>0)gains+=change;else losses-=change}
+ let averageGain=gains/period,averageLoss=losses/period;
+ for(let i=period+1;i<values.length;i++){
+  const change=values[i]-values[i-1],gain=Math.max(change,0),loss=Math.max(-change,0);
+  averageGain=((averageGain*(period-1))+gain)/period;
+  averageLoss=((averageLoss*(period-1))+loss)/period;
+ }
+ if(averageGain===0&&averageLoss===0)return 50;
+ if(averageLoss===0)return 100;
+ const rs=averageGain/averageLoss;
  return 100-(100/(1+rs));
 }
 function findPivotLows(candles){
@@ -150,8 +163,9 @@ function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
  const closedDaily=daily.slice(0,-1),closedWeekly=weekly.slice(0,-1),closedBtc=btcDaily.slice(0,-1);
  const closes=closedDaily.map(c=>Number(c[4])),volumes=closedDaily.map(c=>Number(c[5]));
  const weeklyCloses=closedWeekly.map(c=>Number(c[4]));
- const price=closes.at(-1),e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200);
- const old200=ema(closes.slice(0,-20),200);
+ const price=closes.at(-1),e20=ema(closes,20),e50=ema(closes,50);
+ const ema200Series=emaSeries(closes,200),e200=ema200Series.at(-1)??null;
+ const old200=ema200Series.length>=21?ema200Series.at(-21):null;
  const weekEma50=ema(weeklyCloses,50);
  const momentum=rsi(closes,14);
  const pivots=findPivotLows(closedDaily),lastPivot=pivots.at(-1),previousPivot=pivots.at(-2);
@@ -177,9 +191,12 @@ function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
   resultItem('breakout','Ausbruch bestätigt',breakout,'Schlusskurs über Hoch der vorherigen drei Tageskerzen'),
   resultItem('risk-reward','Chance-Risiko mindestens 2:1',Number.isFinite(risk)&&Number.isFinite(reward)&&risk>0&&reward>0?reward/risk>=2:null,risk>0&&reward>0?'Berechnetes CRV '+(reward/risk).toFixed(2)+':1':'Kein belastbares Ziel-/Stop-Niveau')
  ];
- const ready=criteria.every(x=>x.passed!==null);
+ const applicableCriteria=criteria.filter(x=>x.applicable!==false&&x.status!=='not-applicable');
+ const ready=applicableCriteria.every(x=>x.passed!==null&&x.passed!==undefined);
  const passed=criteria.filter(x=>x.passed===true).length;
- return {symbol,interval:'1d + 1w',criteria,passed,total:11,ready,evaluatedAt:new Date().toISOString(),signalEligible:ready&&criteria.every(x=>x.passed===true)};
+ const allCriteriaPassed=ready&&applicableCriteria.length>0&&applicableCriteria.every(x=>x.passed===true);
+ const signalBlockers=['Sentiment-Filter noch nicht implementiert','Volatilitäts-Filter noch nicht implementiert'];
+ return {symbol,interval:'1d + 1w',criteria,passed,total:11,ready,evaluatedAt:new Date().toISOString(),signalEligible:false,allCriteriaPassed,signalBlockers};
 }
 let analysisRequest=0;
 async function refreshAnalysis(){
