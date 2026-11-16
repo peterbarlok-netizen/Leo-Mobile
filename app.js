@@ -79,17 +79,26 @@ function drawChart(candles,interval){
  if(axis)axis.innerHTML=[hi,(hi+lo)/2,lo].map(v=>'<span>'+fmtPrice(v)+'</span>').join('');
  const xaxis=document.querySelector('.chart-x-axis');
  if(xaxis){const indices=[0,Math.floor((candles.length-1)/2),candles.length-1];xaxis.innerHTML=indices.map(i=>'<span>'+dateLabel(candles[i][0],interval)+'</span>').join('')}
- svg.setAttribute('aria-label','SOL/USDT – '+candles.length+' Binance-Kerzen, Intervall '+intervalLabels[interval]);
+ svg.setAttribute('aria-label',assetInfo[selectedSymbol].ticker+' – '+candles.length+' Binance-Kerzen, Intervall '+intervalLabels[interval]);
 }
 async function refreshChart(){
- const request=++chartRequest,symbol=selectedSymbol;
+ const request=++chartRequest,symbol=selectedSymbol,interval=selectedInterval;
+ const label=document.getElementById('chart-current-label');
+ if(label)label.textContent=assetInfo[symbol].ticker+' · '+interval.toUpperCase()+' · lädt…';
  try{
-  const candles=await getJson('/klines?symbol='+symbol+'&interval='+selectedInterval+'&limit=48');
-  if(request!==chartRequest||symbol!==selectedSymbol)return;
-  drawChart(candles,selectedInterval);
+  const candles=await getJson('/klines?symbol='+encodeURIComponent(symbol)+'&interval='+encodeURIComponent(interval)+'&limit=48');
+  if(request!==chartRequest||symbol!==selectedSymbol||interval!==selectedInterval)return;
+  if(!Array.isArray(candles)||!candles.length)throw new Error('Keine Kerzendaten erhalten');
+  drawChart(candles,interval);
   const svg=document.querySelector('.price-chart');
-  if(svg)svg.setAttribute('aria-label',assetInfo[symbol].ticker+' – '+candles.length+' Binance-Kerzen, '+intervalLabels[selectedInterval]);
- }catch(error){if(request===chartRequest)console.warn('LEO chart unavailable:',error)}
+  if(svg)svg.setAttribute('aria-label',assetInfo[symbol].ticker+' – '+candles.length+' Binance-Kerzen, '+intervalLabels[interval]);
+  if(label)label.textContent=assetInfo[symbol].ticker+' · '+interval.toUpperCase();
+ }catch(error){
+  if(request===chartRequest){
+   if(label)label.textContent=assetInfo[symbol].ticker+' · Chartdaten nicht verfügbar';
+   console.warn('LEO chart unavailable:',symbol,interval,error);
+  }
+ }
 }
 function selectAsset(symbol){
  if(!assetInfo[symbol]||symbol===selectedSymbol)return;
@@ -99,11 +108,17 @@ function selectAsset(symbol){
  if(cachedTicker)updatePriceCard(cachedTicker);
  refreshChart();
 }
-document.querySelectorAll('.watch-card[data-symbol]').forEach(card=>{
- const choose=()=>selectAsset(card.dataset.symbol);
- card.addEventListener('click',choose);
- card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();choose()}});
-});
+const watchGrid=document.querySelector('.watch-grid');
+if(watchGrid){
+ watchGrid.addEventListener('click',event=>{
+  const card=event.target.closest('.watch-card[data-symbol]');
+  if(card&&watchGrid.contains(card))selectAsset(card.dataset.symbol);
+ });
+ watchGrid.addEventListener('keydown',event=>{
+  const card=event.target.closest('.watch-card[data-symbol]');
+  if(card&&(event.key==='Enter'||event.key===' ')){event.preventDefault();selectAsset(card.dataset.symbol)}
+ });
+}
 document.querySelectorAll('[data-interval]').forEach(button=>button.addEventListener('click',()=>{
  selectedInterval=button.dataset.interval;
  document.querySelectorAll('[data-interval]').forEach(b=>b.classList.toggle('selected',b===button));
@@ -133,4 +148,4 @@ setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=19').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=20').catch(()=>{}));
