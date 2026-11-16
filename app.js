@@ -1,4 +1,4 @@
 const toast=document.getElementById('toast');
 function notify(message){toast.textContent=message;toast.classList.add('show');clearTimeout(window.leoToastTimer);window.leoToastTimer=setTimeout(()=>toast.classList.remove('show'),2300)}
 document.querySelectorAll('.dock button').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.dock button').forEach(item=>item.classList.remove('active'));button.classList.add('active');const tab=button.dataset.tab;notify(tab==='Dashboard'?'LEO Dashboard':tab+' – Bereich wird im nächsten Ausbau aktiviert.')}));document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>notify('Watchlist: SOL · BTC · LINK · SUI')));
-if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=03').catch(()=>{}));
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=08').catch(()=>{}));
