@@ -15,7 +15,7 @@ function atrPct(c,i,p=14){if(i<p)return null;let tr=[];for(let j=i-p+1;j<=i;j++)
 function pivots(c,end){let a=[];for(let i=2;i<end-1;i++){let v=+c[i][3];if(v<+c[i-1][3]&&v<+c[i-2][3]&&v<+c[i+1][3]&&v<+c[i+2][3])a.push({i,v})}return a}
 function fngAt(map,ts){let day=Math.floor(ts/86400000);return map.get(day)??null}
 function buildFng(rows){let m=new Map();for(const x of rows||[]){let day=Math.floor(Number(x.timestamp)/86400);m.set(day,Number(x.value))}return m}
-function evaluate(c,i,btc,weekly,fngMap){
+function evaluate(symbol,c,i,btc,weekly,fngMap){
  const closes=c.slice(0,i+1).map(x=>+x[4]),vol=c.slice(0,i+1).map(x=>+x[5]),price=closes.at(-1);
  if(i<220)return null;
  const e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200),old200=emaAt(closes,200,closes.length-21);
@@ -37,7 +37,7 @@ function evaluate(c,i,btc,weekly,fngMap){
  const checks=[
   price>e200,e20>e50,e200>old200,weekClose>we50,
   !!pivotFresh,(rsi(closes)>=42&&rsi(closes)<=65),
-  assetRet!==null&&btcRet!==null&&assetRet>btcRet,
+  symbol==='BTCUSDT'||(assetRet!==null&&btcRet!==null&&assetRet>btcRet),
   +c[i][5]>avgVol,!!near,breakout,rr!==null&&rr>=2,
   fng!==null&&fng>=25&&fng<=75,
   atr!==null&&atr>=1.5&&atr<=8
@@ -56,24 +56,24 @@ function simulate(symbol,c,btc,weekly,fngMap,capital){
    else if(close<position.ema20){exit=close;reason='EMA20-Ausstieg'}
    if(exit!==null){
     const exitFill=exit*(1-0.0005),gross=position.qty*(exitFill-position.entryFill),fee=position.qty*exitFill*.001;
-    const net=gross-fee;cash+=position.stake+net;
+    const net=gross-position.entryFee-fee;cash+=position.stake+net;
     trades.push({symbol,buyTime:position.time,sellTime:new Date(Number(bar[6])).toISOString().slice(0,10),entry:position.entry,exit,net,returnPct:net/position.stake*100,reason,rr:position.rr});
     position=null;
    }
   }
   if(!position){
-   const sig=evaluate(c,i,btc,weekly,fngMap);
+   const sig=evaluate(symbol,c,i,btc,weekly,fngMap);
    if(sig&&sig.checks.every(Boolean)){
     const next= c[i+1],rawEntry=+next[1],entryFill=rawEntry*(1+0.0005);
     const entryRisk=rawEntry-sig.stop,entryReward=sig.target-rawEntry;
     if(entryRisk>0&&entryReward>=2*entryRisk){
      const stake=cash,qty=stake/(entryFill*(1+.001));
-     position={stake,qty,entry:rawEntry,entryFill,stop:sig.stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,time:new Date(Number(next[0])).toISOString().slice(0,10)};
+     position={stake,qty,entry:rawEntry,entryFill,entryFee:stake-qty*entryFill,stop:sig.stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,time:new Date(Number(next[0])).toISOString().slice(0,10)};
      cash-=stake;
     }
    }
   }
-  const mark=position?cash+position.qty*(close*(1-.0005)):cash;
+  const mark=position?cash+position.qty*(close*(1-.0015)):cash;
   equity.push(mark);
  }
  if(position){
