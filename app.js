@@ -24,25 +24,11 @@ async function getJson(path){
 }
 
 function coinIcon(symbol){
+ const files={SOLUSDT:'LEO_SOL_Solana.png',BTCUSDT:'LEO_BTC_Bitcoin.png',LINKUSDT:'LEO_LINK_Chainlink.png',SUIUSDT:'LEO_SUI_Sui.png'};
  const names={SOLUSDT:'Solana',BTCUSDT:'Bitcoin',LINKUSDT:'Chainlink',SUIUSDT:'Sui'};
- const colors={SOLUSDT:'#b54cff',BTCUSDT:'#ffc247',LINKUSDT:'#268dff',SUIUSDT:'#27ded8'};
- const defs='<defs>'+
- '<radialGradient id="coin-bg"><stop stop-color="#102536"/><stop offset=".78" stop-color="#030b15"/><stop offset="1" stop-color="#01060c"/></radialGradient>'+
- '<linearGradient id="sol-grad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ec55ff"/><stop offset=".48" stop-color="#8d45ff"/><stop offset="1" stop-color="#00e9e2"/></linearGradient>'+
- '<linearGradient id="btc-grad" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff2a8"/><stop offset=".48" stop-color="#ffc94d"/><stop offset="1" stop-color="#e98a19"/></linearGradient>'+
- '<linearGradient id="link-grad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a9f5ff"/><stop offset=".45" stop-color="#25baff"/><stop offset="1" stop-color="#275dff"/></linearGradient>'+
- '<linearGradient id="sui-grad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c6fff9"/><stop offset=".48" stop-color="#28e5dc"/><stop offset="1" stop-color="#1688ff"/></linearGradient>'+
- '<filter id="coin-glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
- const shapes={
- SOLUSDT:'<g filter="url(#coin-glow)" fill="url(#sol-grad)" stroke="#b8ffff" stroke-width=".7" stroke-linejoin="round"><path d="M29 29H77L66 40H18Z"/><path d="M29 45H77L66 56H18Z"/><path d="M29 61H77L66 72H18Z"/></g>',
- BTCUSDT:'<g filter="url(#coin-glow)"><path d="M43 21V79M56 21V79" stroke="#ffe18a" stroke-width="5" stroke-linecap="square"/><path d="M34 29H56C73 29 76 49 57 50H34M34 50H59C78 50 76 72 56 72H34" fill="none" stroke="url(#btc-grad)" stroke-width="10" stroke-linecap="square" stroke-linejoin="round"/><path d="M43 18V25M56 18V25M43 75V82M56 75V82" stroke="#fff0a5" stroke-width="3"/></g>',
- LINKUSDT:'<g filter="url(#coin-glow)"><path d="M50 18 78 34V66L50 82 22 66V34Z" fill="none" stroke="url(#link-grad)" stroke-width="9" stroke-linejoin="miter"/><path d="M50 18 78 34V66L50 82 22 66V34Z" fill="none" stroke="#d1f8ff" stroke-width="1.5"/><path d="M50 29 68 39V61L50 71 32 61V39Z" fill="none" stroke="#43aaff" stroke-opacity=".75" stroke-width="1.4"/></g>',
- SUIUSDT:'<g filter="url(#coin-glow)"><path d="M50 15C42 29 24 46 24 62A26 26 0 0 0 76 62C76 46 58 29 50 15Z" fill="none" stroke="url(#sui-grad)" stroke-width="8"/><path d="M32 59C40 49 60 49 68 59C60 69 40 69 32 59Z" fill="none" stroke="#c7fffb" stroke-width="3.3" stroke-linecap="round"/><path d="M38 59Q50 52 62 59" fill="none" stroke="#e2fffd" stroke-width="2.2" stroke-linecap="round"/></g>'
- };
- const color=colors[symbol]||'#20e6cf';
- const outer='<circle cx="50" cy="50" r="47" fill="none" stroke="'+color+'" stroke-opacity=".18" stroke-width="1.5"/><circle cx="50" cy="50" r="44" fill="url(#coin-bg)" stroke="'+color+'" stroke-width="2.1"/><circle cx="50" cy="50" r="39.5" fill="none" stroke="'+color+'" stroke-opacity=".65" stroke-width=".8"/><circle cx="50" cy="50" r="35" fill="none" stroke="'+color+'" stroke-opacity=".22" stroke-width=".8" stroke-dasharray="1.4 3.2"/>';
- const tech=symbol==='BTCUSDT'?'<g fill="none" stroke="'+color+'" stroke-opacity=".42" stroke-width=".9"><path d="M15 31H29L34 26H39M85 31H71L66 26H61M15 69H29L34 74H39M85 69H71L66 74H61M15 50H24M76 50H85"/><circle cx="15" cy="31" r="1.5" fill="'+color+'"/><circle cx="85" cy="31" r="1.5" fill="'+color+'"/></g>':'';
- return '<svg class="coin-art '+symbol.toLowerCase()+'" viewBox="0 0 100 100" role="img" aria-label="'+(names[symbol]||'Crypto')+'" xmlns="http://www.w3.org/2000/svg">'+defs+outer+tech+(shapes[symbol]||'')+'</svg>';
+ const file=files[symbol];
+ if(!file)return '';
+ return '<img class="coin-art '+symbol.toLowerCase()+'" src="./assets/'+file+'" alt="'+names[symbol]+'" loading="eager" decoding="async">';
 }
 
 function updateFocusHeading(){
@@ -173,4 +159,4 @@ setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=28').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=29').catch(()=>{}));
