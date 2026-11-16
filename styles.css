@@ -395,3 +395,8 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 #focus-asset-badge.focus-btcusdt{color:#f5c65f!important}
 #focus-asset-badge.focus-linkusdt{color:#65b7ff!important}
 #focus-asset-badge.focus-suiusdt{color:#75e5d3!important}
+
+/* v0.24 — ensure native asset glyphs remain visible inside the shared neon badge */
+#focus-asset-badge.focus-btcusdt{color:#f5c65f!important;-webkit-text-fill-color:#f5c65f!important;text-shadow:0 0 12px #f5b94299!important}
+#focus-asset-badge.focus-linkusdt{color:#65b7ff!important;-webkit-text-fill-color:#65b7ff!important;text-shadow:0 0 12px #4ca6ff99!important}
+#focus-asset-badge.focus-suiusdt{color:#75e5d3!important;-webkit-text-fill-color:#75e5d3!important;text-shadow:0 0 12px #35d9d099!important}
