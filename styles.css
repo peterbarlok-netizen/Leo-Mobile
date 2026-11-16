@@ -25,3 +25,11 @@ button{font:inherit}
 @media(min-width:520px){body{padding:16px 0}.shell{border:1px solid #1a3745;border-radius:25px;min-height:calc(100vh - 32px)}.dock{bottom:16px;border-radius:0 0 25px 25px}}
 @media(max-width:360px){.shell{padding-left:13px;padding-right:13px}.wordmark{font-size:21px}.connection{font-size:7px}.big-price{font-size:25px}.signal-word{font-size:20px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+/* LEO signature lion hero */
+.lion-hero{height:214px;position:relative;margin:0 -18px 4px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 12px 17px;background:radial-gradient(ellipse at 50% 35%,#164b55 0,#071a27 55%,#050b13 100%);border-bottom:1px solid #1a5660}
+.lion-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,#050b13 100%);z-index:1;pointer-events:none}
+.lion-hero img{position:absolute;width:min(100%,430px);height:230px;top:-22px;left:50%;transform:translateX(-50%);object-fit:contain;filter:drop-shadow(0 0 16px #20e6cf55)}
+.lion-title{z-index:2;font:700 34px 'Space Grotesk';letter-spacing:7px;color:#f1c879;text-shadow:0 0 18px #e6a84c66;line-height:1}
+.lion-title span{font-size:16px;color:var(--cyan);vertical-align:top;letter-spacing:0}
+.lion-subtitle{z-index:2;font-size:9px;letter-spacing:3px;color:#d6e8e8;margin-top:7px}
+@media(max-width:360px){.lion-hero{height:190px}.lion-hero img{height:205px;top:-20px}.lion-title{font-size:30px}}
