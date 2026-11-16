@@ -116,10 +116,92 @@ async function refreshChart(){
   }
  }
 }
+
+/* LEO 11-point analysis engine. Results are stored as data; dashboard layout remains unchanged. */
+function ema(values,period){
+ if(values.length<period)return null;
+ const k=2/(period+1);let value=values.slice(0,period).reduce((a,b)=>a+b,0)/period;
+ for(let i=period;i<values.length;i++)value=values[i]*k+value*(1-k);
+ return value;
+}
+function rsi(values,period=14){
+ if(values.length<=period)return null;
+ let gains=0,losses=0;
+ for(let i=values.length-period;i<values.length;i++){const d=values[i]-values[i-1];if(d>0)gains+=d;else losses-=d}
+ if(losses===0)return 100;
+ const rs=(gains/period)/(losses/period);
+ return 100-(100/(1+rs));
+}
+function findPivotLows(candles){
+ const lows=[];
+ for(let i=2;i<candles.length-2;i++){
+  const v=Number(candles[i][3]);
+  if(v<Number(candles[i-1][3])&&v<Number(candles[i-2][3])&&v<Number(candles[i+1][3])&&v<Number(candles[i+2][3]))lows.push({index:i,value:v});
+ }
+ return lows;
+}
+function resultItem(id,label,passed,detail){
+ return {id,label,status:passed===null?'unavailable':passed?'pass':'fail',passed,detail};
+}
+function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
+ const closes=daily.map(c=>Number(c[4])),volumes=daily.map(c=>Number(c[5]));
+ const weeklyCloses=weekly.map(c=>Number(c[4]));
+ const price=closes.at(-1),e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200);
+ const old200=ema(closes.slice(0,-20),200);
+ const weekEma50=ema(weeklyCloses,50);
+ const momentum=rsi(closes,14);
+ const pivots=findPivotLows(daily),lastPivot=pivots.at(-1),previousPivot=pivots.at(-2);
+ const btcCloses=btcDaily.map(c=>Number(c[4]));
+ const assetReturn=closes.length>=21?price/closes.at(-21)-1:null;
+ const btcReturn=btcCloses.length>=21?btcCloses.at(-1)/btcCloses.at(-21)-1:null;
+ const avgVolume=volumes.length>=21?volumes.slice(-21,-1).reduce((a,b)=>a+b,0)/20:null;
+ const resistance=daily.slice(-21,-1).reduce((m,c)=>Math.max(m,Number(c[2])),0);
+ const stop=lastPivot?.value??Math.min(...daily.slice(-20).map(c=>Number(c[3])));
+ const risk=price-stop,reward=resistance-price;
+ const pullback=e20&&e50?Math.min(Math.abs(price-e20)/e20,Math.abs(price-e50)/e50)<=.025&&price>=e50:null;
+ const breakout=daily.length>=4?closes.at(-1)>Math.max(...daily.slice(-4,-1).map(c=>Number(c[2]))):null;
+ const criteria=[
+  resultItem('daily-trend','Tagestrend',e200?price>e200:null,'Schlusskurs '+(e200?'':'/ EMA 200 nicht verfügbar')),
+  resultItem('ema-alignment','EMA-Ausrichtung',e20&&e50?e20>e50:null,'EMA 20 über EMA 50'),
+  resultItem('ema200-rising','Steigende EMA 200',e200&&old200?e200>old200:null,'EMA 200 steigt gegenüber vor 20 Handelstagen'),
+  resultItem('weekly-filter','Wochenfilter',weekEma50?weeklyCloses.at(-1)>weekEma50:null,'Wochenschluss über Wochen-EMA 50'),
+  resultItem('higher-lows','Höhere Tiefs',lastPivot&&previousPivot?lastPivot.value>previousPivot.value:null,'Letztes bestätigtes Pivot-Tief höher als das vorherige'),
+  resultItem('rsi-range','RSI 42–65',momentum!==null?momentum>=42&&momentum<=65:null,momentum===null?'RSI nicht verfügbar':'RSI '+momentum.toFixed(1)),
+  resultItem('relative-strength','Relative Stärke vs. BTC',assetReturn!==null&&btcReturn!==null?assetReturn>btcReturn:null,assetReturn!==null&&btcReturn!==null?'20-Tage-Performance '+(assetReturn*100).toFixed(2)+'% vs. BTC '+(btcReturn*100).toFixed(2)+'%':'Vergleichsdaten fehlen'),
+  resultItem('volume','Volumen über Durchschnitt',avgVolume!==null?volumes.at(-1)>avgVolume:null,'Letzte Tageskerze über 20-Tage-Volumendurchschnitt'),
+  resultItem('pullback','Pullback EMA 20/50',pullback,pullback===null?'EMA-Daten fehlen':'Nähe zu EMA 20/50 innerhalb 2,5%'),
+  resultItem('breakout','Ausbruch bestätigt',breakout,'Schlusskurs über Hoch der vorherigen drei Tageskerzen'),
+  resultItem('risk-reward','Chance-Risiko mindestens 2:1',risk>0&&reward>0?reward/risk>=2:null,risk>0&&reward>0?'Berechnetes CRV '+(reward/risk).toFixed(2)+':1':'Kein belastbares Ziel-/Stop-Niveau')
+ ];
+ const ready=criteria.every(x=>x.passed!==null);
+ const passed=criteria.filter(x=>x.passed===true).length;
+ return {symbol,interval:'1d + 1w',criteria,passed,total:11,ready,evaluatedAt:new Date().toISOString(),signalEligible:ready&&criteria.every(x=>x.passed===true)};
+}
+let analysisRequest=0;
+async function refreshAnalysis(){
+ const request=++analysisRequest,symbol=selectedSymbol;
+ try{
+  const [daily,weekly,btcDaily]=await Promise.all([
+   getJson('/klines?symbol='+encodeURIComponent(symbol)+'&interval=1d&limit=240'),
+   getJson('/klines?symbol='+encodeURIComponent(symbol)+'&interval=1w&limit=80'),
+   symbol==='BTCUSDT'?getJson('/klines?symbol=BTCUSDT&interval=1d&limit=30'):getJson('/klines?symbol=BTCUSDT&interval=1d&limit=30')
+  ]);
+  if(request!==analysisRequest||symbol!==selectedSymbol)return;
+  window.leoAnalysis=evaluateLeoCriteria(symbol,daily,weekly,btcDaily);
+  window.dispatchEvent(new CustomEvent('leo-analysis-updated',{detail:window.leoAnalysis}));
+ }catch(error){
+  if(request===analysisRequest){
+   window.leoAnalysis={symbol,total:11,ready:false,signalEligible:false,criteria:[],error:String(error),evaluatedAt:new Date().toISOString()};
+   console.warn('LEO 11-point analysis unavailable:',error);
+  }
+ }
+}
+
 function selectAsset(symbol){
  if(!assetInfo[symbol])return;
  selectedSymbol=symbol;
  updateFocusHeading();
+ refreshAnalysis();
  const cachedTicker=window.leoTickers?.[symbol];
  if(cachedTicker)updatePriceCard(cachedTicker);
  refreshChart();
@@ -158,5 +240,7 @@ updateFocusHeading();
 setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
+refreshAnalysis();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=29').catch(()=>{}));
+setInterval(refreshAnalysis,300000);
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=30').catch(()=>{}));
