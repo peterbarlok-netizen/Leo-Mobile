@@ -144,22 +144,23 @@ function resultItem(id,label,passed,detail){
  return {id,label,status:passed===null?'unavailable':passed?'pass':'fail',passed,detail};
 }
 function evaluateLeoCriteria(symbol,daily,weekly,btcDaily){
- const closes=daily.map(c=>Number(c[4])),volumes=daily.map(c=>Number(c[5]));
- const weeklyCloses=weekly.map(c=>Number(c[4]));
+ const closedDaily=daily.slice(0,-1),closedWeekly=weekly.slice(0,-1),closedBtc=btcDaily.slice(0,-1);
+ const closes=closedDaily.map(c=>Number(c[4])),volumes=closedDaily.map(c=>Number(c[5]));
+ const weeklyCloses=closedWeekly.map(c=>Number(c[4]));
  const price=closes.at(-1),e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200);
  const old200=ema(closes.slice(0,-20),200);
  const weekEma50=ema(weeklyCloses,50);
  const momentum=rsi(closes,14);
  const pivots=findPivotLows(daily),lastPivot=pivots.at(-1),previousPivot=pivots.at(-2);
- const btcCloses=btcDaily.map(c=>Number(c[4]));
+ const btcCloses=closedBtc.map(c=>Number(c[4]));
  const assetReturn=closes.length>=21?price/closes.at(-21)-1:null;
  const btcReturn=btcCloses.length>=21?btcCloses.at(-1)/btcCloses.at(-21)-1:null;
  const avgVolume=volumes.length>=21?volumes.slice(-21,-1).reduce((a,b)=>a+b,0)/20:null;
- const resistance=daily.slice(-21,-1).reduce((m,c)=>Math.max(m,Number(c[2])),0);
- const stop=lastPivot?.value??Math.min(...daily.slice(-20).map(c=>Number(c[3])));
+ const resistance=closedDaily.slice(-21).reduce((m,c)=>Math.max(m,Number(c[2])),0);
+ const stop=lastPivot?.value??Math.min(...closedDaily.slice(-20).map(c=>Number(c[3])));
  const risk=price-stop,reward=resistance-price;
  const pullback=e20&&e50?Math.min(Math.abs(price-e20)/e20,Math.abs(price-e50)/e50)<=.025&&price>=e50:null;
- const breakout=daily.length>=4?closes.at(-1)>Math.max(...daily.slice(-4,-1).map(c=>Number(c[2]))):null;
+ const breakout=closedDaily.length>=4?closes.at(-1)>Math.max(...closedDaily.slice(-4).map(c=>Number(c[2]))):null;
  const criteria=[
   resultItem('daily-trend','Tagestrend',e200?price>e200:null,'Schlusskurs '+(e200?'':'/ EMA 200 nicht verfügbar')),
   resultItem('ema-alignment','EMA-Ausrichtung',e20&&e50?e20>e50:null,'EMA 20 über EMA 50'),
