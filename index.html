@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#050b13">
 <meta name="description" content="LEO – dein KI-Trading-Assistent">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css?v=11">
+<link rel="stylesheet" href="./styles.css?v=12">
 <title>LEO — KI Trading Intelligence</title>
 </head>
 <body>
@@ -34,13 +34,31 @@
  </div>
  <div class="range-tabs"><button>1H</button><button>24H</button><button class="selected">7T</button><button>30T</button><button>90T</button><button>1J</button></div>
 </section>
-<section class="signal panel">
- <div class="panel-heading"><div class="overline">LEO SIGNAL-CHECK</div><span class="signal-state"><i></i> KI-ANALYSE</span></div>
- <div class="signal-main"><div class="signal-verdict"><span class="eye-mark">◉</span><div><div class="signal-word">BEOBACHTEN</div><p>Leichte Stärke · keine klare Trendphase.</p></div></div><div class="score-ring"><strong>5<span>/6</span></strong><small>FILTER</small></div></div>
- <div class="filter-chips"><span class="ok">Trend ✓</span><span class="ok">Momentum ✓</span><span class="ok">Volumen ✓</span><span class="ok">Struktur ✓</span><span class="ok">Sentiment ✓</span><span class="wait">Volatilität ○</span></div>
- <p class="signal-note">SOL zeigt erste relative Stärke gegenüber BTC. LEO wartet auf eine bestätigte Bullish-Confirmation.</p>
- <div class="signal-footer"><span>RISIKOPROFIL <b>DEFENSIV</b></span><span>KEINE AUTO-TRADES</span></div>
+<section class="signal-overview" aria-label="LEO Markturteil und Filter">
+ <article class="verdict-card panel">
+  <div class="overline">LEO-MARKTURTEIL</div>
+  <div class="verdict-pill"><span>✧</span> BEOBACHTEN</div>
+  <p>Leichte Stärke · keine klare Trendphase.</p>
+ </article>
+ <article class="filter-card panel">
+  <div class="overline">LEO-FILTER</div>
+  <div class="filter-layout">
+   <div class="score-ring"><strong>5/6</strong></div>
+   <ul class="filter-list">
+    <li class="active">Trend</li><li class="active">Momentum</li><li class="active">Volumen</li><li class="active">Struktur</li><li class="active">Sentiment</li><li>Volatilität</li>
+   </ul>
+  </div>
+ </article>
 </section>
+<section class="filter-status-grid" aria-label="Filterstatus">
+ <div class="status-tile"><span class="status-icon">↗</span><span>Trend<b>AKTIV</b></span></div>
+ <div class="status-tile"><span class="status-icon">ϟ</span><span>Momentum<b>AKTIV</b></span></div>
+ <div class="status-tile"><span class="status-icon">▥</span><span>Volumen<b>AKTIV</b></span></div>
+ <div class="status-tile"><span class="status-icon">◈</span><span>Struktur<b>AKTIV</b></span></div>
+ <div class="status-tile"><span class="status-icon">✺</span><span>Sentiment<b>AKTIV</b></span></div>
+ <div class="status-tile inactive"><span class="status-icon">∿</span><span>Volatilität<b>INAKTIV</b></span></div>
+</section>
+<p class="signal-note">SOL zeigt erste relative Stärke gegenüber BTC. LEO wartet auf eine bestätigte Bullish-Confirmation.</p>
 <section class="watch">
  <div class="section-title"><div><div class="overline">IM AUGE BEHALTEN</div><h2>Deine Watchlist</h2></div><button class="text-button" data-action="watch">Alle ansehen ↗</button></div>
  <div class="watch-grid">
@@ -58,5 +76,5 @@
 </nav>
 <div class="toast" id="toast" role="status"></div>
 </div>
-<script src="./app.js?v=11"></script>
+<script src="./app.js?v=12"></script>
 </body></html>
