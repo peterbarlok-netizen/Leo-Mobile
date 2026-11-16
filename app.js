@@ -26,10 +26,10 @@ async function getJson(path){
 function coinIcon(symbol){
  const defs='<defs><linearGradient id="g-sol" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c04cff"/><stop offset=".52" stop-color="#775bff"/><stop offset="1" stop-color="#00f2df"/></linearGradient><linearGradient id="g-btc" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1a4"/><stop offset=".55" stop-color="#ffbf36"/><stop offset="1" stop-color="#ff7b24"/></linearGradient><linearGradient id="g-link" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9beaff"/><stop offset=".55" stop-color="#238dff"/><stop offset="1" stop-color="#304cff"/></linearGradient><linearGradient id="g-sui" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c6fff8"/><stop offset=".55" stop-color="#27d9df"/><stop offset="1" stop-color="#168dff"/></linearGradient></defs>';
  const shapes={
- SOLUSDT:'<path d="M25 34H77L65 46H13Z M25 56H77L65 68H13Z" fill="url(#g-sol)" stroke="#b4ffff" stroke-width="1.3" stroke-linejoin="round"/>',
- BTCUSDT:'<text x="50" y="70" text-anchor="middle" font-size="67" font-family="Arial,sans-serif" font-weight="bold" fill="url(#g-btc)" stroke="#ffe58b" stroke-width=".7">₿</text>',
- LINKUSDT:'<path d="M50 18 78 34V66L50 82 22 66V34Z" fill="none" stroke="url(#g-link)" stroke-width="12" stroke-linejoin="miter"/><path d="M50 18 78 34V66L50 82 22 66V34Z" fill="none" stroke="#9beaff" stroke-opacity=".45" stroke-width="2"/>',
- SUIUSDT:'<path d="M50 15C42 29 25 43 25 59a25 25 0 0 0 50 0C75 43 58 29 50 15Z" fill="none" stroke="url(#g-sui)" stroke-width="10" stroke-linejoin="round"/><path d="M58 38C47 48 44 54 44 62c0 7 5 12 12 13" fill="none" stroke="#b9fff7" stroke-width="4" stroke-linecap="round"/>'
+ SOLUSDT:'<path d="M25 27H77L65 39H13Z M25 44H77L65 56H13Z M25 61H77L65 73H13Z" fill="url(#g-sol)" stroke="#b4ffff" stroke-width="1.3" stroke-linejoin="round"/>',
+ BTCUSDT:'<g fill="none" stroke="#ffcf63" stroke-opacity=".48" stroke-width="1.5"><path d="M17 28H31L37 22H44 M83 28H69L63 22H56 M17 72H31L37 78H44 M83 72H69L63 78H56"/><path d="M20 50H29 M71 50H80 M50 13V22 M50 78V87"/></g><circle cx="50" cy="50" r="34" fill="none" stroke="#ffcf63" stroke-opacity=".25" stroke-width="1.5" stroke-dasharray="2 4"/><text x="50" y="70" text-anchor="middle" font-size="67" font-family="Arial,sans-serif" font-weight="bold" fill="url(#g-btc)" stroke="#ffe58b" stroke-width=".7">₿</text>',
+ LINKUSDT:'<path d="M50 17 79 34V66L50 83 21 66V34Z" fill="none" stroke="url(#g-link)" stroke-width="12" stroke-linejoin="miter"/><path d="M50 17 79 34V66L50 83 21 66V34Z" fill="none" stroke="#b5eaff" stroke-opacity=".75" stroke-width="2.2"/><path d="M50 27 70 39V61L50 73 30 61V39Z" fill="none" stroke="#56baff" stroke-opacity=".55" stroke-width="1.5"/>',
+ SUIUSDT:'<path d="M50 13C41 29 22 45 22 62a28 28 0 0 0 56 0C78 45 59 29 50 13Z" fill="none" stroke="url(#g-sui)" stroke-width="9" stroke-linejoin="round"/><path d="M31 59C40 48 60 48 69 59C60 70 40 70 31 59Z" fill="none" stroke="#aafff5" stroke-width="3.5" stroke-linecap="round"/><path d="M38 59Q50 52 62 59" fill="none" stroke="#d1fffb" stroke-width="2.5" stroke-linecap="round"/>'
  };
  const color={SOLUSDT:"#9d5cff",BTCUSDT:"#ffc04b",LINKUSDT:"#369cff",SUIUSDT:"#25d9d5"}[symbol]||"#20e6cf";
  return '<svg class="coin-art '+symbol.toLowerCase()+'" viewBox="0 0 100 100" role="img" aria-label="'+({SOLUSDT:"Solana",BTCUSDT:"Bitcoin",LINKUSDT:"Chainlink",SUIUSDT:"Sui"}[symbol]||"Crypto")+'" xmlns="http://www.w3.org/2000/svg">'+defs+'<circle cx="50" cy="50" r="44" fill="#030d18" stroke="'+color+'" stroke-width="2.5"/><circle cx="50" cy="50" r="39" fill="none" stroke="'+color+'" stroke-opacity=".22" stroke-width="1"/>'+shapes[symbol]+'</svg>';
@@ -163,4 +163,4 @@ setConnection(false,'Verbinde mit Binance');
 refreshMarket();
 refreshChart();
 setInterval(refreshMarket,30000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=26').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=27').catch(()=>{}));
