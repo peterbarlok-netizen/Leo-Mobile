@@ -154,7 +154,7 @@ function findPivotLows(candles){
  return lows;
 }
 function resultItem(id,label,passed,detail){
- return {id,label,status:passed===null?'unavailable':passed?'pass':'fail',passed,applicable:passed!==null,detail};
+ return {id,label,status:passed===null?'unavailable':passed?'pass':'fail',passed,applicable:true,detail};
 }
 function notApplicableItem(id,label,detail){
  return {id,label,status:'not-applicable',passed:null,applicable:false,detail};
