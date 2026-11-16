@@ -4,9 +4,10 @@ document.querySelectorAll('.bottom-nav button').forEach(button=>{
     document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
     button.classList.add('active');
     const tab=button.dataset.tab;
-    toast.textContent=tab==='Übersicht'?'Du bist auf der LEO-Übersicht.':`${tab} wird im nächsten Entwicklungsschritt freigeschaltet.`;
+    toast.textContent=tab==='Übersicht'?'Du bist auf der LEO-Übersicht.':`${tab}: Dieser Bereich folgt in einem späteren Update.`;
     toast.classList.add('show');
-    setTimeout(()=>toast.classList.remove('show'),2100);
+    clearTimeout(window.leoToastTimer);
+    window.leoToastTimer=setTimeout(()=>toast.classList.remove('show'),2200);
   });
 });
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
