@@ -467,3 +467,11 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 #focus-asset-badge.focus-linkusdt .coin-art{filter:drop-shadow(0 0 8px #238dff)}
 #focus-asset-badge.focus-suiusdt .coin-art{filter:drop-shadow(0 0 8px #20d9dc)}
 @media(max-width:390px){#focus-asset-badge{width:58px!important;height:58px!important;flex-basis:58px!important}.coin-symbol{width:36px!important;height:36px!important;flex-basis:36px!important}}
+
+/* v0.27 — approved LEO coin emblem family */
+#focus-asset-badge .coin-art{width:100%;height:100%;display:block}
+.coin-symbol .coin-art{width:100%;height:100%;display:block}
+.coin-art.solusdt{filter:drop-shadow(0 0 7px #a64dff)}
+.coin-art.btcusdt{filter:drop-shadow(0 0 7px #ffb52f)}
+.coin-art.linkusdt{filter:drop-shadow(0 0 7px #238dff)}
+.coin-art.suiusdt{filter:drop-shadow(0 0 7px #20d9dc)}
