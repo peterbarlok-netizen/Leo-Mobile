@@ -1,9 +1,9 @@
-# LEO Mobile v0.2
+# LEO Mobile v0.3
 
-Mobile-first PWA prototype with dark navy styling, cyan/neon accents, SOL market overview and a four-asset watchlist. The lion mark uses an emoji fallback in this repository build.
+A mobile-first visual redesign of the LEO trading assistant: compact neon-cyan / dark-glass dashboard, custom inline lion emblem, SOL focus card, illustrative chart, cautious signal panel and four-asset watchlist.
 
-## Deployment
-Upload contents are in the repository root. Keep GitHub Pages source set to branch `main` and folder `/(root)`.
+## Publish
+GitHub Pages: branch `main`, folder `/(root)`.
 
-## Important
-This is a visual prototype. Prices, percentages and chart are illustrative demo data. No live market feed, trading execution, push alerts, or validated signal engine is connected.
+## Data status
+All displayed prices, percentage changes, chart points and filter counts are illustrative demo values. No live exchange API, validated signal engine, push alerts, or trading execution is connected. LEO is analysis-only; no automated trades.
