@@ -308,3 +308,8 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .filter-list{min-width:0;width:100%;font-size:clamp(9px,2.8vw,13px)!important;white-space:normal!important;gap:7px!important}
 .filter-list li{min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.2}
 @media(max-width:390px){.chart-axis-right{width:43px;flex-basis:43px;font-size:9px}.chart-x-axis{padding-right:48px;font-size:9px}.filter-layout{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;gap:4px!important}.filter-card .score-ring{width:62px!important;height:62px!important}.filter-list{font-size:9px!important;gap:6px!important}}
+
+/* v0.18 — seven compact live chart intervals */
+.chart-timeframes{gap:3px!important}
+.chart-timeframes button{min-width:0;padding:7px 1px!important;font-size:clamp(9px,2.7vw,12px)!important;letter-spacing:-.2px}
+@media(max-width:360px){.chart-timeframes{gap:2px!important}.chart-timeframes button{font-size:9px!important;padding:7px 0!important}}
