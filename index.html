@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07131f">
+  <meta name="description" content="LEO – dein persönlicher Trading-Assistent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <title>LEO Mobile</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand"><div class="lion">♌</div><div><strong>LEO</strong><small>YOUR TRADING ASSISTANT</small></div></div>
+      <div class="live"><i></i> DEMO</div>
+    </header>
+
+    <main>
+      <section class="greeting">
+        <div><p class="eyebrow">DEIN MARKT-CHECK</p><h1>Guten Abend.</h1>
+        <p class="muted">Ich behalte den Markt für dich im Blick.</p></div>
+        <div class="avatar">♌</div>
+      </section>
+
+      <section class="hero-card">
+        <div class="card-head"><span>SOL / USD</span><span class="pill neutral">DEMODATEN</span></div>
+        <div class="price-row"><strong id="sol-price">$148.32</strong><span class="positive">+2.41%</span></div>
+        <div class="chart-wrap">
+          <svg viewBox="0 0 340 100" preserveAspectRatio="none" aria-label="Beispielkursverlauf">
+            <defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#21e6c1" stop-opacity=".28"/><stop offset="1" stop-color="#21e6c1" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0 78 L22 70 42 82 65 58 87 65 108 45 130 54 153 35 177 44 199 24 222 36 244 17 266 28 289 12 315 18 340 5 L340 100 L0 100Z" fill="url(#fill)"/>
+            <polyline points="0,78 22,70 42,82 65,58 87,65 108,45 130,54 153,35 177,44 199,24 222,36 244,17 266,28 289,12 315,18 340,5" fill="none" stroke="#21e6c1" stroke-width="2.6" vector-effect="non-scaling-stroke"/>
+          </svg>
+        </div>
+        <div class="chart-foot"><span>24H</span><span>7T</span><span class="selected">30T</span><span>90T</span><span>1J</span></div>
+      </section>
+
+      <section class="status-card">
+        <div class="section-title"><h2>LEO Markturteil</h2><span class="spark">✦ KI-ANALYSE</span></div>
+        <div class="status-line"><div class="status-dot"></div><div><strong>BEOBACHTEN</strong><p>Noch kein bestätigter Einstieg.</p></div><div class="score"><b>5/6</b><small>FILTER</small></div></div>
+        <p class="explain">SOL zeigt erste relative Stärke gegenüber BTC. LEO wartet auf eine bestätigte Pullback-Bewegung.</p>
+      </section>
+
+      <section class="section-block">
+        <div class="section-title"><h2>Watchlist</h2><span class="muted tiny">4 Märkte</span></div>
+        <div class="coin-list">
+          <div class="coin"><div class="coin-icon sol">S</div><div class="coin-name"><b>Solana</b><small>SOL / USD</small></div><div class="coin-price"><b>$148.32</b><small class="positive">+2.41%</small></div></div>
+          <div class="coin"><div class="coin-icon btc">₿</div><div class="coin-name"><b>Bitcoin</b><small>BTC / USD</small></div><div class="coin-price"><b>$67,420</b><small class="positive">+1.08%</small></div></div>
+          <div class="coin"><div class="coin-icon link">L</div><div class="coin-name"><b>Chainlink</b><small>LINK / USD</small></div><div class="coin-price"><b>$14.82</b><small class="negative">−0.62%</small></div></div>
+          <div class="coin"><div class="coin-icon sui">S</div><div class="coin-name"><b>Sui</b><small>SUI / USD</small></div><div class="coin-price"><b>$2.14</b><small class="positive">+3.17%</small></div></div>
+        </div>
+      </section>
+      <p class="disclaimer">Konzeptversion mit Beispieldaten · Keine Live-Kurse und keine Anlageberatung.</p>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="active" data-tab="Übersicht"><span>⌂</span>Übersicht</button>
+      <button data-tab="Analyse"><span>⌁</span>Analyse</button>
+      <button data-tab="Signale"><span>◈</span>Signale</button>
+      <button data-tab="Backtest"><span>▤</span>Backtest</button>
+    </nav>
+    <div class="toast" id="toast" role="status"></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
