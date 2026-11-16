@@ -501,3 +501,29 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 
 /* v0.33 — make the fixed analysis timeframe explicit without changing the dashboard layout */
 .assessment-basis{margin-top:5px;color:#8caeb7;font-size:8px;font-weight:700;letter-spacing:.75px;line-height:1.35}
+
+
+/* v0.36 — compact mobile backtest panel */
+.backtest-panel{margin:18px 0 110px;padding:18px;border:1px solid rgba(32,230,207,.28);scroll-margin-top:18px}
+.backtest-panel[hidden]{display:none!important}
+.backtest-panel h2{margin:7px 0;font-size:22px}
+.bt-intro,.bt-status,.bt-rules p{color:#9bb3bc;font-size:12px;line-height:1.5}
+.bt-run{width:100%;margin:12px 0;padding:14px;border:1px solid #20e6cf;border-radius:12px;background:linear-gradient(100deg,#0c817c,#154a57);color:#efffff;font-weight:800;letter-spacing:1px}
+.bt-run:disabled{opacity:.6}
+.bt-summary{display:grid;grid-template-columns:1fr;gap:8px;margin:14px 0}
+.bt-metric,.bt-row,.bt-trade{padding:12px;border:1px solid rgba(123,188,194,.16);border-radius:10px;background:rgba(8,24,35,.72)}
+.bt-metric small,.bt-row small,.bt-trade small{display:block;color:#8caeb7;font-size:10px;letter-spacing:.5px}
+.bt-metric b{display:block;margin-top:4px;font-size:19px}
+.bt-assets,.bt-trades{display:grid;gap:8px;margin:10px 0}
+.bt-row{display:grid;grid-template-columns:1fr auto;gap:5px 10px;align-items:center}
+.bt-row small{grid-column:1/-1}
+.bt-trade{display:grid;grid-template-columns:auto 1fr auto;gap:5px 8px;align-items:center}
+.bt-trade span{font-size:10px;color:#9bb3bc;text-align:center}
+.bt-trade small{grid-column:1/-1}
+.bt-row strong,.bt-trade strong{font-size:13px}
+.up{color:#38dfb7}.down{color:#ff8291}
+.backtest-panel h3{font-size:15px;margin:18px 0 8px}
+.bt-rules{margin-top:14px;color:#d7e8eb;font-size:12px}
+.bt-rules summary{cursor:pointer;color:#22ddce;font-weight:700}
+.bt-rules li{margin:7px 0;line-height:1.45;color:#a9c0c7}
+@media(min-width:520px){.bt-summary{grid-template-columns:repeat(3,1fr)}}
