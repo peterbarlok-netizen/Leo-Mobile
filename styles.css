@@ -331,3 +331,11 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 #focus-asset-badge.focus-suiusdt{color:#75e5d3}
 #focus-asset-badge.focus-solusdt{color:#a56aff}
 .watch-card[data-symbol]{user-select:none;-webkit-tap-highlight-color:transparent}
+
+/* v0.22 — replace Solana-only decorative mark with selected coin symbol */
+#focus-asset-badge{color:#a56aff!important;font-size:34px!important;font-weight:800!important;line-height:1}
+#focus-asset-badge:before,#focus-asset-badge:after{display:none!important;content:none!important}
+#focus-asset-badge.focus-btcusdt{color:#f5b942!important;border-color:#f5b942!important}
+#focus-asset-badge.focus-linkusdt{color:#4ca6ff!important;border-color:#4ca6ff!important}
+#focus-asset-badge.focus-suiusdt{color:#75e5d3!important;border-color:#75e5d3!important}
+#focus-asset-badge.focus-solusdt{color:#a56aff!important;border-color:#a56aff!important}
