@@ -70,6 +70,18 @@
  </div>
 </section>
 <section class="insight panel"><div class="insight-icon">✧</div><div><div class="overline">LEOS GEDANKE</div><p>„Der beste Einstieg ist nicht der schnellste – sondern der, den der Markt bestätigt.“</p></div></section>
+<section class="backtest-panel panel" id="backtest-panel" hidden>
+ <div class="overline">LEO STRATEGIE-TEST</div><h2>Historischer Backtest</h2>
+ <p class="bt-intro">Vier Märkte · Tagesbasis · Startkapital 1.500 € gleichmäßig verteilt</p>
+ <button class="bt-run" id="bt-run" type="button">BACKTEST STARTEN</button>
+ <p class="bt-status" id="bt-status" aria-live="polite">Noch nicht ausgeführt. Der Test lädt öffentliche historische Binance-Daten und den historischen Fear-&amp;-Greed-Index.</p>
+ <div class="bt-summary" id="bt-summary"></div><div class="bt-assets" id="bt-assets"></div>
+ <h3>Letzte abgeschlossene Trades</h3><div id="bt-trades" class="bt-trades"></div>
+ <details class="bt-rules"><summary>Getestete Regeln &amp; Annahmen</summary>
+ <ul><li>Kauf nach Tagesabschluss, Ausführung zum Open der Folgetageskerze.</li><li>Trend: Kurs über EMA 200, EMA 20 über EMA 50 und steigende EMA 200.</li><li>Wochenfilter: letzter abgeschlossener Wochenschluss über Wochen-EMA 50.</li><li>Struktur: zwei höhere Pivot-Tiefs; jüngstes höchstens 20, vorheriges höchstens 45 Tageskerzen alt.</li><li>RSI 42–65; relative Stärke über BTC; Volumen über 20-Tage-Mittel; Pullback maximal 2,5 % zur EMA 20/50; Ausbruch über die letzten drei Tageshochs.</li><li>CRV mindestens 2:1 zum höchsten Hoch der vorherigen 60 Tageskerzen.</li><li>Sentiment: Fear &amp; Greed 25–75. Volatilität: ATR(14) 1,5–8 % des Kurses.</li><li>Verkauf bei Stop, Kursziel oder Tagesschluss unter EMA 20. Werden Stop und Ziel in derselben Kerze berührt, zählt konservativ der Stop.</li><li>Gebühren 0,10 % und Slippage 0,05 % je Kauf-/Verkaufsseite. Startkapital 375 € je Coin; Gewinne werden je Coin reinvestiert.</li></ul>
+ <p>Das ist ein historischer Modelltest, keine Prognose. Öffentliche API-Historie ist auf 1.000 Tageskerzen pro Markt begrenzt; Datenlücken oder abweichende Ausführung in der Realität können Ergebnisse verändern.</p>
+ </details>
+</section>
 <p class="disclaimer" id="data-disclaimer">LEO · Marktdaten werden verbunden. Signale sind noch nicht live validiert. Keine Anlageberatung.</p>
 </main>
 <nav class="dock" aria-label="Hauptnavigation">
@@ -77,5 +89,5 @@
 </nav>
 <div class="toast" id="toast" role="status"></div>
 </div>
-<script src="./app.js?v=35"></script>
+<script src="./app.js?v=36"></script>\n<script src="./backtest.js?v=36"></script>
 </body></html>
