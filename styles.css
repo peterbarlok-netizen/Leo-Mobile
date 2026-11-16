@@ -482,3 +482,11 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .coin-symbol{overflow:visible!important}
 .coin-symbol .coin-art{width:100%;height:100%;display:block}
 .coin-art{shape-rendering:geometricPrecision}
+
+/* v0.29 — use uploaded original coin image files, no SVG redraw */
+#focus-asset-badge{overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+#focus-asset-badge:before,#focus-asset-badge:after{display:none!important;content:none!important}
+#focus-asset-badge .coin-art{width:100%;height:100%;display:block;object-fit:contain;border-radius:50%}
+.coin-symbol{overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+.coin-symbol:before,.coin-symbol:after{display:none!important;content:none!important}
+.coin-symbol .coin-art{width:100%;height:100%;display:block;object-fit:contain;border-radius:50%}
