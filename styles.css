@@ -339,3 +339,59 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 #focus-asset-badge.focus-linkusdt{color:#4ca6ff!important;border-color:#4ca6ff!important}
 #focus-asset-badge.focus-suiusdt{color:#75e5d3!important;border-color:#75e5d3!important}
 #focus-asset-badge.focus-solusdt{color:#a56aff!important;border-color:#a56aff!important}
+
+
+/* v0.23 — restore the original Solana mark and unify every asset icon */
+#focus-asset-badge{
+ background:radial-gradient(circle at 50% 45%,#101b30 0,#02090f 72%)!important;
+ border:2px solid #7854e8!important;
+ box-shadow:0 0 13px #8c4dff55,inset 0 0 12px #00e7db18!important;
+ color:transparent!important;
+ font-size:0!important;
+ position:relative;
+}
+#focus-asset-badge:before,
+#focus-asset-badge:after{
+ content:""!important;
+ display:block!important;
+ position:absolute;
+ width:36px;
+ height:9px;
+ left:50%;
+ border-radius:1px;
+ transform:translateX(-50%) skewX(-28deg);
+ background:linear-gradient(100deg,#a300ff 0%,#704dff 48%,#00e7db 100%);
+ box-shadow:0 0 9px #00e7db66;
+}
+#focus-asset-badge:before{top:calc(50% - 12px)}
+#focus-asset-badge:after{top:calc(50% + 3px)}
+#focus-asset-badge.focus-btcusdt,
+#focus-asset-badge.focus-linkusdt,
+#focus-asset-badge.focus-suiusdt{
+ color:transparent!important;
+ font-size:34px!important;
+ background:radial-gradient(circle at 50% 45%,#101b30 0,#02090f 72%)!important;
+}
+#focus-asset-badge.focus-btcusdt:before,
+#focus-asset-badge.focus-btcusdt:after,
+#focus-asset-badge.focus-linkusdt:before,
+#focus-asset-badge.focus-linkusdt:after,
+#focus-asset-badge.focus-suiusdt:before,
+#focus-asset-badge.focus-suiusdt:after{display:none!important}
+#focus-asset-badge.focus-btcusdt{border-color:#eab64f!important;box-shadow:0 0 14px #eab64f55,inset 0 0 12px #eab64f18!important}
+#focus-asset-badge.focus-linkusdt{border-color:#4ca6ff!important;box-shadow:0 0 14px #4ca6ff55,inset 0 0 12px #4ca6ff18!important}
+#focus-asset-badge.focus-suiusdt{border-color:#35d9d0!important;box-shadow:0 0 14px #35d9d055,inset 0 0 12px #35d9d018!important}
+#focus-asset-badge.focus-btcusdt,
+#focus-asset-badge.focus-linkusdt,
+#focus-asset-badge.focus-suiusdt{
+ background-image:radial-gradient(circle at 50% 45%,#101b30 0,#02090f 72%)!important;
+}
+#focus-asset-badge.focus-btcusdt{color:#f5c65f!important;text-shadow:0 0 12px #f5b94299!important}
+#focus-asset-badge.focus-linkusdt{color:#65b7ff!important;text-shadow:0 0 12px #4ca6ff99!important}
+#focus-asset-badge.focus-suiusdt{color:#75e5d3!important;text-shadow:0 0 12px #35d9d099!important}
+#focus-asset-badge.focus-btcusdt,
+#focus-asset-badge.focus-linkusdt,
+#focus-asset-badge.focus-suiusdt{font-size:34px!important}
+#focus-asset-badge.focus-btcusdt{color:#f5c65f!important}
+#focus-asset-badge.focus-linkusdt{color:#65b7ff!important}
+#focus-asset-badge.focus-suiusdt{color:#75e5d3!important}
