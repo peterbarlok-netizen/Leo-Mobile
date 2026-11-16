@@ -450,3 +450,20 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 #focus-asset-badge.focus-btcusdt:before{font-size:43px!important;background-image:linear-gradient(145deg,#fff0a5 5%,#f4b942 48%,#ff8a28 95%)!important;-webkit-text-fill-color:transparent!important}
 #focus-asset-badge.focus-linkusdt:before{font-size:47px!important;background-image:linear-gradient(145deg,#d4f0ff 0%,#56b8ff 45%,#4368ff 100%)!important;-webkit-text-fill-color:transparent!important}
 #focus-asset-badge.focus-suiusdt:before{font-size:46px!important;background-image:linear-gradient(145deg,#e0fffb 0%,#66eee0 48%,#238dff 100%)!important;-webkit-text-fill-color:transparent!important}
+
+
+/* v0.26 — unified illustrated coin emblems, matching the approved concept */
+.coin-art{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 5px currentColor)}
+#focus-asset-badge{width:70px!important;height:70px!important;flex:0 0 70px!important;padding:0!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#focus-asset-badge:before,#focus-asset-badge:after{display:none!important;content:none!important}
+#focus-asset-badge .coin-art{width:100%;height:100%;filter:drop-shadow(0 0 7px currentColor)}
+.coin-symbol{width:39px!important;height:39px!important;flex:0 0 39px!important;padding:0!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;font-size:0!important}
+.coin-symbol:before,.coin-symbol:after{display:none!important;content:none!important}
+.coin-symbol .coin-art{width:100%;height:100%;filter:drop-shadow(0 0 5px currentColor)}
+.watch-card{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.watch-card:active{transform:scale(.985)}
+#focus-asset-badge.focus-solusdt .coin-art{filter:drop-shadow(0 0 8px #8d4dff)}
+#focus-asset-badge.focus-btcusdt .coin-art{filter:drop-shadow(0 0 8px #ffb52f)}
+#focus-asset-badge.focus-linkusdt .coin-art{filter:drop-shadow(0 0 8px #238dff)}
+#focus-asset-badge.focus-suiusdt .coin-art{filter:drop-shadow(0 0 8px #20d9dc)}
+@media(max-width:390px){#focus-asset-badge{width:58px!important;height:58px!important;flex-basis:58px!important}.coin-symbol{width:36px!important;height:36px!important;flex-basis:36px!important}}
