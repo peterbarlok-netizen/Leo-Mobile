@@ -332,4 +332,4 @@ refreshChart();
 refreshAnalysis();
 setInterval(refreshMarket,30000);
 setInterval(refreshAnalysis,300000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=46').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=47').catch(()=>{}));
