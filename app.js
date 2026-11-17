@@ -1,10 +1,24 @@
+
+function updateGreetingAndDate(){
+ const now=new Date();
+ const hour=now.getHours();
+ const greeting=hour<11?'Guten Morgen':hour<18?'Guten Tag':'Guten Abend';
+ const title=document.getElementById('greeting-title');
+ if(title)title.innerHTML=greeting+'<span>.</span>';
+ const label=document.getElementById('market-date-label');
+ if(label){
+  const day=new Intl.DateTimeFormat('de-DE',{weekday:'long'}).format(now);
+  label.textContent=day.toLocaleUpperCase('de-DE')+' · MARKTÜBERSICHT';
+ }
+}
+updateGreetingAndDate();
 const symbols=['SOLUSDT','BTCUSDT','LINKUSDT','SUIUSDT'];
 const API_HOSTS=['https://data-api.binance.vision/api/v3','https://api.binance.com/api/v3','https://api1.binance.com/api/v3'];
 const fmtPrice=value=>new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:value<1?6:2}).format(value);
 const fmtPct=value=>(value>=0?'+':'')+new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value)+' %';
 function setConnection(live,message){
  const head=document.getElementById('connection-status'),market=document.getElementById('market-status');
- if(head){head.innerHTML='<i></i> '+(live?'LIVE':'OFFLINE')+' <span class="version-tag">v0.42</span>';head.classList.toggle('is-live',live)}
+ if(head){head.innerHTML='<i></i> '+(live?'LIVE':'OFFLINE');head.classList.toggle('is-live',live)}
  if(market){market.textContent=live?'LIVE-DATEN':'KEINE LIVE-DATEN';market.classList.toggle('is-live',live)}
  const disclaimer=document.getElementById('data-disclaimer');
  if(disclaimer)disclaimer.textContent=live?'LEO · Öffentliche Binance-Marktdaten · Signale noch nicht live validiert · Keine Anlageberatung.':('LEO · '+(message||'Live-Daten nicht erreichbar')+' · Angezeigte Kurse sind keine aktuellen Marktdaten.');
@@ -318,4 +332,4 @@ refreshChart();
 refreshAnalysis();
 setInterval(refreshMarket,30000);
 setInterval(refreshAnalysis,300000);
-if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=44').catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=45').catch(()=>{}));
