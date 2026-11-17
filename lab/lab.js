@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const API='https://data-api.binance.vision/api/v3',ASSETS=['BTCUSDT','SOLUSDT','LINKUSDT','SUIUSDT'],NAMES={A:'A · Precision',B:'B · Coin First',C:'C · Hybrid'};
+const API='https://data-api.binance.vision/api/v3',ASSETS=['BTCUSDT','ETHUSDT','SOLUSDT','LINKUSDT'],NAMES={A:'A · Precision',B:'B · Coin First',C:'C · Hybrid'};
 const $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n),pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %',mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
 async function get(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Datenquelle antwortet mit HTTP '+r.status);return r.json()}
 function ema(a,p){if(a.length<p)return null;let v=mean(a.slice(0,p)),k=2/(p+1);for(let i=p;i<a.length;i++)v=a[i]*k+v*(1-k);return v}
@@ -25,7 +25,7 @@ function evaluate(symbol,c,i,btc,weekly,fng){
  const btcEma=ema(bc,200),btcRegime=btcEma!==null&&bc.at(-1)>btcEma;
  return {checks,stop,target:res,rr,ema20:e20,atr:ap,btcRegime};
 }
-function signal(id,s){const x=s.checks;if(id==='A')return x.every(Boolean);if(id==='B')return !!(x[0]&&x[1]&&x[4]&&x[5]&&x[7]&&(x[8]||x[9])&&s.rr>=1.5);return !!(x[0]&&x[1]&&x[2]&&x[3]&&x[4]&&x[5]&&x[7]&&(s.btcRegime)&&s.rr>=1.8)}
+function signal(id,s){const x=s.checks;if(id==='A')return !!(x.slice(0,8).every(Boolean)&&(x[8]||x[9])&&x[10]&&x[11]&&x[12]);if(id==='B')return !!(x[0]&&x[1]&&x[4]&&x[5]&&x[7]&&(x[8]||x[9])&&s.rr>=1.5);return !!(x[0]&&x[1]&&x[2]&&x[3]&&x[4]&&x[5]&&x[7]&&(s.btcRegime)&&s.rr>=1.8)}
 function simulate(id,symbol,c,btc,weekly,fng,capital){
  let cash=capital,pos=null,trades=[],equity=[capital],peak=capital,maxDD=0,signals=0;
  for(let i=220;i<c.length-1;i++){
@@ -62,7 +62,7 @@ function render(results,period){
  $('period').textContent=period+' · Tageskerzen';
 }
 async function run(){const b=$('run'),s=$('status');b.disabled=true;b.textContent='DATEN WERDEN GELADEN …';s.textContent='Lade identische Tages-/Wochenkerzen und Fear & Greed. Das kann kurz dauern.';
- try{const [fngData,...market]=await Promise.all([get('https://api.alternative.me/fng/?limit=0&format=json'),...ASSETS.map(x=>Promise.all([get(API+'/klines?symbol='+x+'&interval=1d&limit=1000'),get(API+'/klines?symbol='+x+'&interval=1w&limit=500')]))]);const fng=fngMap(fngData.data);if(!fng.size)throw Error('Fear-&-Greed-Historie nicht verfügbar.');const btc=market[0][0].slice(0,-1),results=[];for(const id of ['A','B','C'])for(let j=0;j<ASSETS.length;j++)results.push(simulate(id,ASSETS[j],market[j][0].slice(0,-1),btc,market[j][1].slice(0,-1),fng,1500/ASSETS.length));const dates=market.flatMap(p=>p[0].slice(0,-1).map(x=>+x[0]));render(results,new Date(Math.min(...dates)).toLocaleDateString('de-DE')+' – '+new Date(Math.max(...dates)).toLocaleDateString('de-DE'));s.textContent='Fertig: 3 Strategien × 4 Märkte. Simulation auf gemeinsamen historischen Daten; kein Ergebnis ist eine Renditeprognose.'}
+ try{const [fngData,...market]=await Promise.all([get('https://api.alternative.me/fng/?limit=0&format=json'),...ASSETS.map(x=>Promise.all([get(API+'/klines?symbol='+x+'&interval=1d&limit=1000'),get(API+'/klines?symbol='+x+'&interval=1w&limit=500')]))]);const fng=fngMap(fngData.data);if(!fng.size)throw Error('Fear-&-Greed-Historie nicht verfügbar.');const btc=market[0][0].slice(0,-1),results=[];for(const id of ['A','B','C'])for(let j=0;j<ASSETS.length;j++)results.push(simulate(id,ASSETS[j],market[j][0].slice(0,-1),btc,market[j][1].slice(0,-1),fng,1500/ASSETS.length));const dates=market.flatMap(p=>p[0].slice(0,-1).map(x=>+x[0]));render(results,new Date(Math.min(...dates)).toLocaleDateString('de-DE')+' – '+new Date(Math.max(...dates)).toLocaleDateString('de-DE'));s.textContent='Fertig: 3 Strategien × BTC, ETH, SOL und LINK. Gemeinsame historische Tagesdaten; kein Ergebnis ist eine Renditeprognose.'}
  catch(e){s.textContent='Test fehlgeschlagen: '+e.message}
  finally{b.disabled=false;b.textContent='ERNEUT VERGLEICHEN'}}
 $('run').addEventListener('click',run);
