@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const API='https://data-api.binance.vision/api/v3',ASSETS=['BTCUSDT','ETHUSDT','SOLUSDT','LINKUSDT'],NAMES={A:'A · Precision',B:'B · Coin First',C:'C · Hybrid'};
-const $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n),pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %',mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
+let latestResults=[];const CHECKS=['Kurs über EMA200','EMA20 über EMA50','EMA200 steigt','Wochenkurs über Wochen-EMA50','Höhere Tiefs','RSI 42–65','Relative Stärke vs. BTC','Volumen über Durchschnitt','Pullback-Nähe','Ausbruch','CRV mindestens 2','Fear & Greed 25–75','ATR 1,5–8 %'];\nconst $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n),pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %',mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
 async function get(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Datenquelle antwortet mit HTTP '+r.status);return r.json()}
 function ema(a,p){if(a.length<p)return null;let v=mean(a.slice(0,p)),k=2/(p+1);for(let i=p;i<a.length;i++)v=a[i]*k+v*(1-k);return v}
 function emaAt(a,p,end){return ema(a.slice(0,end+1),p)}
@@ -21,9 +21,9 @@ function evaluate(symbol,c,i,btc,weekly,fng){
  const near=!!(e20&&e50&&Math.min(Math.abs(price-e20)/e20,Math.abs(price-e50)/e50)<=.025&&price>=e50);
  const breakout=price>Math.max(...c.slice(i-3,i).map(x=>+x[2]));
  const fg=fng.get(Math.floor(Number(c[i][0])/86400000)),ap=atr(c,i),apct=ap/price*100;
- const checks=[price>e200,e20>e50,e200>old200,wc.length>=50&&wc.at(-1)>we50,higher,(rsi(closes)>=42&&rsi(closes)<=65),symbol==='BTCUSDT'||(ar!==null&&br!==null&&ar>br),+c[i][5]>avgVol,near,breakout,rr!==null&&rr>=2,fg!==undefined&&fg>=25&&fg<=75,apct>=1.5&&apct<=8];
+ const rsiValue=rsi(closes),volRatio=avgVol>0?+c[i][5]/avgVol:null;const checks=[price>e200,e20>e50,e200>old200,wc.length>=50&&wc.at(-1)>we50,higher,(rsiValue>=42&&rsiValue<=65),symbol==='BTCUSDT'||(ar!==null&&br!==null&&ar>br),+c[i][5]>avgVol,near,breakout,rr!==null&&rr>=2,fg!==undefined&&fg>=25&&fg<=75,apct>=1.5&&apct<=8];
  const btcEma=ema(bc,200),btcRegime=btcEma!==null&&bc.at(-1)>btcEma;
- return {checks,stop,target:res,rr,ema20:e20,atr:ap,btcRegime};
+ return {checks,stop,target:res,rr,ema20:e20,ema50:e50,ema200:e200,atr:ap,atrPct:apct,rsi:rsiValue,volumeRatio:volRatio,fearGreed:fg,relativeStrength:ar!==null&&br!==null?ar-br:null,btcRegime,signalPrice:price};
 }
 function signal(id,s){const x=s.checks;if(id==='A')return !!(x.slice(0,8).every(Boolean)&&(x[8]||x[9])&&x[10]&&x[11]&&x[12]);if(id==='B')return !!(x[0]&&x[1]&&x[4]&&x[5]&&x[7]&&(x[8]||x[9])&&s.rr>=1.5);return !!(x[0]&&x[1]&&x[2]&&x[3]&&x[4]&&x[5]&&x[7]&&(s.btcRegime)&&s.rr>=1.8)}
 function simulate(id,symbol,c,btc,weekly,fng,capital){
@@ -36,19 +36,19 @@ function simulate(id,symbol,c,btc,weekly,fng,capital){
    if(l<=pos.stop){exit=Math.min(o,pos.stop);reason=pos.trailing?'TRAILING-STOP':'INITIAL-STOP'}
    else if(h>=pos.target){exit=Math.max(o,pos.target);reason='KURSZIEL'}
    else if(id!=='A'&&cl<pos.ema20&&cl<pos.entry){exit=cl;reason='MOMENTUM-VERLUST'}
-   if(exit!==null){const fill=exit*.9995,fee=pos.qty*fill*.001,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-fee;cash+=pos.stake+net;trades.push({symbol,buy:pos.date,sell:new Date(+bar[6]).toISOString().slice(0,10),net,ret:net/pos.stake*100,reason});pos=null}
+   if(exit!==null){const fill=exit*.9995,fee=pos.qty*fill*.001,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-fee;cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+bar[6]).toISOString().slice(0,10),exitPrice:exit,exitFill:fill,exitFee:fee,net,ret:net/pos.stake*100,reason});pos=null}
    else{const av=atr(c,i);if(av){pos.highWater=Math.max(pos.highWater,h);if(pos.highWater>=pos.entry+pos.initialRisk){pos.trailing=true;pos.stop=Math.max(pos.stop,pos.highWater-2*av)}}}
   }
   if(!pos&&sig&&signal(id,sig)){
    const next=c[i+1],raw=+next[1],fill=raw*1.0005,risk=raw-sig.stop,reward=sig.target-raw;
    if(risk>0&&reward>=(id==='B'?1.5:1.8)*risk){
     const riskBudget=cash*.01,qty=Math.min(riskBudget/risk,(cash*.25)/(fill*1.001)),stake=qty*fill*1.001;
-    if(qty>0&&stake<=cash){pos={qty,stake,entry:raw,entryFill:fill,entryFee:qty*fill*.001,stop:sig.stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,date:new Date(+next[0]).toISOString().slice(0,10),initialRisk:risk,highWater:raw,trailing:false};cash-=stake}
+    if(qty>0&&stake<=cash){pos={qty,stake,entry:raw,entryFill:fill,entryFee:qty*fill*.001,stop:sig.stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,date:new Date(+next[0]).toISOString().slice(0,10),signalDate:new Date(+bar[0]).toISOString().slice(0,10),initialRisk:risk,highWater:raw,trailing:false,signalChecks:sig.checks.map((v,i)=>(v?'+ ':'- ')+CHECKS[i]).join(' | '),signalPrice:sig.signalPrice,ema50:sig.ema50,ema200:sig.ema200,atr:sig.atr,atrPct:sig.atrPct,rsi:sig.rsi,volumeRatio:sig.volumeRatio,fearGreed:sig.fearGreed,relativeStrength:sig.relativeStrength,signalRR:sig.rr};cash-=stake}
    }
   }
   const mark=pos?cash+pos.qty*cl*.9985:cash;equity.push({t:+bar[0],v:mark});peak=Math.max(peak,mark);maxDD=Math.max(maxDD,(peak-mark)/peak*100);
  }
- if(pos){const last=c.at(-1),exit=+last[4],fill=exit*.9995,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-pos.qty*fill*.001;cash+=pos.stake+net;trades.push({symbol,buy:pos.date,sell:new Date(+last[0]).toISOString().slice(0,10),net,ret:net/pos.stake*100,reason:'DATENENDE'})}equity.push({t:+c.at(-1)[0],v:cash});
+ if(pos){const last=c.at(-1),exit=+last[4],fill=exit*.9995,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-pos.qty*fill*.001;cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+last[0]).toISOString().slice(0,10),exitPrice:exit,exitFill:fill,exitFee:pos.qty*fill*.001,net,ret:net/pos.stake*100,reason:'DATENENDE'})}equity.push({t:+c.at(-1)[0],v:cash});
  const wins=trades.filter(t=>t.net>0),loss=trades.filter(t=>t.net<0),gw=wins.reduce((s,t)=>s+t.net,0),gl=Math.abs(loss.reduce((s,t)=>s+t.net,0));
  return {id,symbol,capital,end:cash,profit:cash-capital,ret:(cash/capital-1)*100,trades,wins:wins.length,winRate:trades.length?wins.length/trades.length*100:0,pf:gl?gw/gl:gw?Infinity:0,maxDD,signals,equity};
 }
@@ -65,5 +65,5 @@ async function run(){const b=$('run'),s=$('status');b.disabled=true;b.textConten
  try{const [fngData,...market]=await Promise.all([get('https://api.alternative.me/fng/?limit=0&format=json'),...ASSETS.map(x=>Promise.all([get(API+'/klines?symbol='+x+'&interval=1d&limit=1000'),get(API+'/klines?symbol='+x+'&interval=1w&limit=500')]))]);const fng=fngMap(fngData.data);if(!fng.size)throw Error('Fear-&-Greed-Historie nicht verfügbar.');const daily=market.map(p=>p[0].slice(0,-1)),start=Math.max(...daily.map(a=>+a[0][0])),end=Math.min(...daily.map(a=>+a.at(-1)[0])),aligned=daily.map(a=>a.filter(x=>+x[0]>=start&&+x[0]<=end)),weekly=market.map(p=>p[1].slice(0,-1)),btc=aligned[0],results=[];if(aligned.some(a=>a.length<300))throw Error('Zu wenig gemeinsamer Datenzeitraum für einen fairen Vergleich.');for(const id of ['A','B','C'])for(let j=0;j<ASSETS.length;j++)results.push(simulate(id,ASSETS[j],aligned[j],btc,weekly[j].filter(x=>+x[0]<=end),fng,1500/ASSETS.length));render(results,new Date(start).toLocaleDateString('de-DE')+' – '+new Date(end).toLocaleDateString('de-DE'));s.textContent='Fertig: 3 Strategien × BTC, ETH, SOL und LINK. Gemeinsame historische Tagesdaten; kein Ergebnis ist eine Renditeprognose.'}
  catch(e){s.textContent='Test fehlgeschlagen: '+e.message}
  finally{b.disabled=false;b.textContent='ERNEUT VERGLEICHEN'}}
-$('run').addEventListener('click',run);
+$('run').addEventListener('click',run);$('export').addEventListener('click',exportLog);
 })();
