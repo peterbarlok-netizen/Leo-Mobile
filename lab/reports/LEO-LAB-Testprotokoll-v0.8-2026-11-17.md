@@ -115,3 +115,26 @@ Konsequenz für die Auswertung:
 - Trade-Log 4 ist wegen des falschen A–C-Kapitalbudgets nicht mit Log 3 vergleichbar und darf nicht als neue Renditebasis verwendet werden.
 - Die bisherige Auswertung aus Log 3 bleibt bis zum erneuten Lauf mit korrigierter Version die Referenz; die D-Ergebnisse sind weiterhin wegen nur sechs Trades nicht statistisch belastbar.
 - Nächster sauberer Prüfpunkt ist ein erneuter identischer Lauf mit v12. Erst wenn Trades, Fills, Gebühren und Kapitalzuordnung reproduzierbar sind, werden Filter-/Coin-/Stop-Varianten bewertet.
+
+
+## 8. Nachprüfung: LEO-LAB-Trade-Log-5.csv (nach Kapitalfix)
+Eingelesen: 79 Trades, 33 Spalten, keine fehlenden Zellen.
+
+| Strategie | Trades | Netto | Trefferquote |
+|---|---:|---:|---:|
+| A · Precision | 15 | +7,13 € | 26,67 % |
+| B · Coin First | 28 | +31,17 € | 32,14 % |
+| C · Hybrid | 30 | +8,28 € | 23,33 % |
+| D · Selective | 6 | +76,98 € | 83,33 % |
+
+Validierung:
+- Alle 79 Nettowerte stimmen mit Menge × (Ausstiegsfill − Einstiegsfill) minus Ein- und Ausstiegsgebühr überein; maximale Abweichung < 0,000000001 €.
+- Keine fehlenden Zellen; kein ungültiger Stop beim Einstieg; ursprünglicher Stop = Stop beim Einstieg.
+- Gegenüber Log 4 sind alle sechs D-Trades mit Fills, Mengen und Nettowerten identisch. Bei 73 A–C-Trades beträgt die Positionsgröße und Netto-P&L exakt das 2,25-Fache; dies entspricht der Korrektur von 166,67 € auf 375 € Kapital je A–C-Markt. Die übrigen sechs A–C-Zeilen haben abweichende Größen bzw. P&L, vermutlich wegen aktualisierter Kontostände/Positionsgrößen innerhalb der Strategie; deshalb nicht jeden einzelnen Trade als reine Skalierung behandeln.
+- Gegenüber Log 3 sind die Resultate nahe, aber nicht vollständig identisch: 48 von 78 zuordenbaren Trades haben exakt gleiche Positionswerte und Nettowerte. Die übrigen Differenzen betreffen Größen und einzelne Ausstiegsfills. Die Logs sind daher nicht vollkommen reproduzierbar; D gegenüber Log 4 hingegen vollständig.
+- CRV-Ausreißer bleiben: 12 Trades >10 und 8 Trades >20; Maximum 141,32:1 durch 0,02 USDT Stopabstand bei LINK in B/C. In D liegt der Median des Einstiegs-CRV bei 2,97 und das Maximum bei 23,18.
+
+Interpretation:
+- Der Kapitalzuordnungsfehler in Log 4 ist im Log 5 für die A–C-Basiszuweisung behoben. A–C sind wieder auf dem 1.500-€-Budget vergleichbar.
+- D liegt mit +76,98 € vorn, aber nur sechs Trades. ETH: +39,53 € (2 Trades), SOL: +37,45 € (4 Trades). Kein belastbarer Beweis für optimale Einstellungen.
+- Log 5 ist die aktuelle Referenz für die korrigierte Kapitalzuordnung. Vor einer endgültigen Optimierung bleiben die kleineren Abweichungen zu Log 3 und die Stop-/CRV-Ausreißer zu untersuchen.
