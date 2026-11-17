@@ -90,7 +90,7 @@ function render(results,period){
  $('bt-summary').innerHTML='<div class="bt-metric"><small>ENDKAPITAL</small><b>'+money(totalEnd)+'</b></div><div class="bt-metric"><small>NETTO-ERGEBNIS</small><b class="'+(totalEnd>=totalStart?'up':'down')+'">'+money(totalEnd-totalStart)+' ('+pct((totalEnd/totalStart-1)*100)+')</b></div><div class="bt-metric"><small>TRADES / TREFFERQUOTE</small><b>'+trades.length+' / '+(trades.length?Math.round(wins/trades.length*100):0)+' %</b></div>';
  $('bt-assets').innerHTML=results.map(r=>'<div class="bt-row"><b>'+r.symbol.replace('USDT','')+'</b><span>'+r.trades.length+' Trades</span><strong class="'+(r.profit>=0?'up':'down')+'">'+money(r.profit)+'</strong><small>Treffer '+pct(r.winRate)+' · Max. DD '+pct(-r.maxDD)+'</small></div>').join('');
  $('bt-trades').innerHTML=trades.slice(-30).reverse().map(t=>'<div class="bt-trade"><b>'+t.symbol.replace('USDT','')+'</b><span>'+t.buyTime+' → '+t.sellTime+'</span><strong class="'+(t.net>=0?'up':'down')+'">'+money(t.net)+'</strong><small>'+t.reason+' · '+pct(t.returnPct)+' · CRV '+t.rr.toFixed(2)+':1</small></div>').join('')||'<p>Noch keine Trades nach diesen Regeln.</p>';
- $('bt-period').textContent=period+' · Tageskerzen · 0,10 % Gebühren + 0,05 % Slippage je Seite';
+ const periodNode=$('bt-period');if(periodNode)periodNode.textContent=period+' · Tageskerzen · 0,10 % Gebühren + 0,05 % Slippage je Seite';
 }
 async function run(){
  const button=$('bt-run'),status=$('bt-status');button.disabled=true;button.textContent='LÄDT…';status.textContent='Historische Daten werden geladen und chronologisch geprüft.';
