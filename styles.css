@@ -527,3 +527,8 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .bt-rules summary{cursor:pointer;color:#22ddce;font-weight:700}
 .bt-rules li{margin:7px 0;line-height:1.45;color:#a9c0c7}
 @media(min-width:520px){.bt-summary{grid-template-columns:repeat(3,1fr)}}
+
+.bt-diagnostics{display:grid;gap:6px;margin:10px 0}
+.bt-diag{display:grid;grid-template-columns:1fr auto;gap:3px 8px;padding:9px 10px;border:1px solid rgba(123,188,194,.13);border-radius:9px;background:rgba(8,24,35,.55);font-size:11px}
+.bt-diag b{color:#21ddca;font-variant-numeric:tabular-nums}
+.bt-diag small{grid-column:1/-1;color:#8caeb7;font-size:10px}
