@@ -549,3 +549,8 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 /* v0.43 — persistent version rendered by CSS, independent of status-script updates */
 #connection-status{display:inline-flex;align-items:center;gap:5px}
 #connection-status::after{content:"v0.43";display:inline-block;margin-left:4px;padding:2px 5px;border:1px solid rgba(32,230,207,.5);border-radius:5px;background:rgba(5,36,42,.95);color:#7ce8dc;font-size:9px;font-weight:900;letter-spacing:.4px;line-height:1.2}
+
+/* v0.44 — fixed sibling badge, not affected by connection-status innerHTML */
+.reference-top{display:flex;align-items:center;justify-content:flex-start;gap:8px}
+.reference-top .version-fixed{display:inline-flex;align-items:center;margin-left:0;padding:4px 6px;border:1px solid rgba(32,230,207,.5);border-radius:6px;background:rgba(5,36,42,.95);color:#7ce8dc;font-size:9px;font-weight:900;letter-spacing:.4px;line-height:1.2;white-space:nowrap}
+#connection-status::after{content:none!important}
