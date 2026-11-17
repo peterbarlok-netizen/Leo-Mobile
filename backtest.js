@@ -45,9 +45,11 @@ function evaluate(symbol,c,i,btc,weekly,fngMap){
  return {checks,stop,target:resistance,rr,fng,atr,ema20:e20};
 }
 function simulate(symbol,c,btc,weekly,fngMap,capital){
- const trades=[];let cash=capital,position=null,equity=[capital];
+ const trades=[];let cash=capital,position=null,equity=[capital],diagnostics=Array(13).fill(0),samples=0;
  for(let i=220;i<c.length-1;i++){
   const bar=c[i],open=+bar[1],high=+bar[2],low=+bar[3],close=+bar[4];
+  const sig=evaluate(symbol,c,i,btc,weekly,fngMap);
+  if(sig){samples++;sig.checks.forEach((v,j)=>{if(v)diagnostics[j]++})}
   if(position){
    let exit=null,reason='';
    // Conservative same-candle rule: if both touched, assume stop first.
@@ -62,7 +64,6 @@ function simulate(symbol,c,btc,weekly,fngMap,capital){
    }
   }
   if(!position){
-   const sig=evaluate(symbol,c,i,btc,weekly,fngMap);
    if(sig&&sig.checks.every(Boolean)){
     const next= c[i+1],rawEntry=+next[1],entryFill=rawEntry*(1+0.0005);
     const entryRisk=rawEntry-sig.stop,entryReward=sig.target-rawEntry;
@@ -82,13 +83,16 @@ function simulate(symbol,c,btc,weekly,fngMap,capital){
  }
  const wins=trades.filter(t=>t.net>0).length,profit=cash-capital;
  let peak=capital,maxDD=0;for(const e of equity){peak=Math.max(peak,e);maxDD=Math.max(maxDD,(peak-e)/peak*100)}
- return {symbol,capital,end:cash,profit,returnPct:profit/capital*100,trades,wins,winRate:trades.length?wins/trades.length*100:0,maxDD};
+ return {symbol,capital,end:cash,profit,returnPct:profit/capital*100,trades,wins,winRate:trades.length?wins/trades.length*100:0,maxDD,diagnostics,samples};
 }
 function render(results,period){
  const totalStart=results.reduce((s,r)=>s+r.capital,0),totalEnd=results.reduce((s,r)=>s+r.end,0),trades=results.flatMap(r=>r.trades).sort((a,b)=>a.buyTime.localeCompare(b.buyTime));
  const wins=trades.filter(t=>t.net>0).length;
  $('bt-summary').innerHTML='<div class="bt-metric"><small>ENDKAPITAL</small><b>'+money(totalEnd)+'</b></div><div class="bt-metric"><small>NETTO-ERGEBNIS</small><b class="'+(totalEnd>=totalStart?'up':'down')+'">'+money(totalEnd-totalStart)+' ('+pct((totalEnd/totalStart-1)*100)+')</b></div><div class="bt-metric"><small>TRADES / TREFFERQUOTE</small><b>'+trades.length+' / '+(trades.length?Math.round(wins/trades.length*100):0)+' %</b></div>';
  $('bt-assets').innerHTML=results.map(r=>'<div class="bt-row"><b>'+r.symbol.replace('USDT','')+'</b><span>'+r.trades.length+' Trades</span><strong class="'+(r.profit>=0?'up':'down')+'">'+money(r.profit)+'</strong><small>Treffer '+pct(r.winRate)+' · Max. DD '+pct(-r.maxDD)+'</small></div>').join('');
+
+ const diag=results.reduce((acc,r)=>{r.diagnostics.forEach((n,i)=>acc[i]=(acc[i]||0)+n);return acc},[]),sampleCount=results.reduce((n,r)=>n+r.samples,0);
+ $('bt-diagnostics').innerHTML=["Kurs über EMA 200","EMA 20 über EMA 50","EMA 200 steigend","Wochenfilter","Höhere Pivot-Tiefs","RSI 42–65","Relative Stärke vs. BTC","Volumen über Schnitt","Pullback zur EMA","3-Tage-Ausbruch","CRV mindestens 2:1","Fear & Greed 25–75","ATR 1,5–8 %"].map((label,i)=>'<div class="bt-diag"><span>'+label+'</span><b>'+diag[i]+' / '+sampleCount+'</b><small>'+(sampleCount?(diag[i]/sampleCount*100).toFixed(1).replace('.',','):'0')+' % der Prüftage</small></div>').join('');
  $('bt-trades').innerHTML=trades.slice(-30).reverse().map(t=>'<div class="bt-trade"><b>'+t.symbol.replace('USDT','')+'</b><span>'+t.buyTime+' → '+t.sellTime+'</span><strong class="'+(t.net>=0?'up':'down')+'">'+money(t.net)+'</strong><small>'+t.reason+' · '+pct(t.returnPct)+' · CRV '+t.rr.toFixed(2)+':1</small></div>').join('')||'<p>Noch keine Trades nach diesen Regeln.</p>';
  const periodNode=$('bt-period');if(periodNode)periodNode.textContent=period+' · Tageskerzen · 0,10 % Gebühren + 0,05 % Slippage je Seite';
 }
@@ -102,7 +106,7 @@ async function run(){
   const fngMap=buildFng(fngData.data);
   if(!fngMap.size)throw Error('Historische Fear-&-Greed-Daten fehlen; Sentimentfilter nicht testbar.');
   const btc=market[0][0],results=market.map((pair,i)=>simulate(ASSETS[i],pair[0].slice(0,-1),btc, pair[1].slice(0,-1),fngMap,1500/ASSETS.length));
-  const dates=market.flatMap(p=>p[0].slice(0,-1).map(x=>Number(x[0]))),period=new Date(Math.max(...dates)).toLocaleDateString('de-DE')+' · ab '+new Date(Math.min(...dates)).toLocaleDateString('de-DE');
+  const dates=market.flatMap(p=>p[0].slice(0,-1).map(x=>Number(x[0]))),period=new Date(Math.min(...dates)).toLocaleDateString('de-DE')+' – '+new Date(Math.max(...dates)).toLocaleDateString('de-DE');
   render(results,period);status.textContent='Backtest abgeschlossen. Nur abgeschlossene Tageskerzen; Einstieg am Folgetag zum Open.';
  }catch(e){status.textContent='Backtest nicht möglich: '+e.message;console.error('LEO backtest',e)}
  finally{button.disabled=false;button.textContent='BACKTEST STARTEN'}
