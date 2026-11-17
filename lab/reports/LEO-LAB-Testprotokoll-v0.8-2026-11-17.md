@@ -138,3 +138,36 @@ Interpretation:
 - Der Kapitalzuordnungsfehler in Log 4 ist im Log 5 für die A–C-Basiszuweisung behoben. A–C sind wieder auf dem 1.500-€-Budget vergleichbar.
 - D liegt mit +76,98 € vorn, aber nur sechs Trades. ETH: +39,53 € (2 Trades), SOL: +37,45 € (4 Trades). Kein belastbarer Beweis für optimale Einstellungen.
 - Log 5 ist die aktuelle Referenz für die korrigierte Kapitalzuordnung. Vor einer endgültigen Optimierung bleiben die kleineren Abweichungen zu Log 3 und die Stop-/CRV-Ausreißer zu untersuchen.
+
+
+## 9. Nachprüfung: LEO-LAB-Trade-Log-6.csv (v0.9, Nullkosten)
+Eingelesen mit Semikolon-Trennzeichen: 79 Trades, 33 Spalten, Zeitraum 26.10.2024 bis 23.10.2026.
+
+| Strategie | Trades | Netto | Trefferquote | Profit Factor |
+|---|---:|---:|---:|---:|
+| A · Precision | 15 | +11,34 € | 26,67 % | 1,56 |
+| B · Coin First | 28 | +38,90 € | 32,14 % | 2,40 |
+| C · Hybrid | 30 | +16,35 € | 23,33 % | 1,42 |
+| D · Selective | 6 | +80,55 € | 83,33 % | 11,74 |
+| Gesamt | 79 | +147,14 € | 30,38 % | — |
+
+Datenintegrität:
+- Summe Ein- und Ausstiegsgebühren jeweils 0 €; alle 79 Zeilen enthalten Nullgebühren.
+- Rekonstruktion Netto = Menge × (Ausstiegsfill − Einstiegsfill) − Ein-/Ausstiegsgebühren stimmt bis auf Gleitkomma-Rundung (maximale Abweichung < 0,000000000001 €).
+- Kein Slippage-Abzug ist in den Fills erkennbar; Einstiegs- und Ausstiegsfills entsprechen den angegebenen Kursen.
+- Die Datei enthält ausschließlich abgeschlossene Trades der Strategien A–D. Sie enthält keine Zeitintervall-Kennung und keine Train/OOS-Kennzeichnung. Daher können 1h-/4h-Resultate und OOS-Renditen nicht aus diesem Export rekonstruiert werden.
+
+Einordnung:
+- B ist mit 28 Trades, +38,90 € und PF 2,40 der breiteste positive Kandidat dieses Exports. Die Trefferquote liegt dennoch nur bei 32,14 %.
+- D hat das höchste Ergebnis, aber nur sechs Trades; PF 11,74 und 83,33 % Trefferquote sind bei dieser Stichprobe stark ausreißeranfällig und kein belastbarer Strategienachweis.
+- A und C sind positiv, aber mit PF 1,56 bzw. 1,42 und niedriger Trefferquote noch nicht überzeugend.
+- Die Log-6-Werte sind unter Nullkosten zu lesen und nicht direkt mit älteren Logs mit Gebühren/Slippage vergleichbar.
+
+## 10. LAB v0.9 – Intraday-Erweiterung und Berichtsklarheit
+- Gebühren und Slippage sind im Backtest auf 0 gesetzt.
+- Zusätzliche D-Zeitintervalltests auf 1h und 4h laufen separat für ETH/SOL; Tagesstrategien A–D bleiben als Vergleich erhalten.
+- Intraday-Datenabruf lädt bis zu 3.000 Kerzen je Coin/Intervall. Das entspricht ungefähr 125 Tagen bei 1h und 500 Tagen bei 4h; die verfügbare Historie ist damit deutlich kürzer als die tägliche Basis.
+- Die Ergebnisanzeige wurde erweitert, damit Training und OOS jeweils Netto, Rendite, Trade-Anzahl, Profit Factor und Drawdown zeigen.
+- 15m wird vorerst nicht gerankt: 3.000 Kerzen decken nur rund 31 Tage ab und wären für einen belastbaren zeitlichen Split zu kurz.
+- Wichtige Einschränkung: Die bisherigen 1h-/4h-Tests prüfen D direkt auf dem jeweiligen Intervall. Sie sind noch keine kombinierte Multi-Timeframe-Regel wie 4h-Trendfilter plus 1h-Einstieg. Dafür ist ein eigener Folgetest erforderlich.
+- Ein kompletter neuer Binance-Backtest wurde nicht serverseitig ausgeführt; die tatsächlichen Intraday-Kennzahlen entstehen beim Start im Browser und müssen anschließend separat exportiert/übermittelt werden.
