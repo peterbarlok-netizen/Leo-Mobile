@@ -42,7 +42,7 @@ function simulate(id,symbol,c,btc,weekly,fng,capital){
   }
   if(!pos&&sig&&(id!=='D'||(symbol==='ETHUSDT'||symbol==='SOLUSDT'))&&signal(id,sig)){
    const next=c[i+1],raw=+next[1],fill=raw*1.0005,risk=raw-sig.stop,reward=sig.target-raw;
-   if(risk>0&&reward>=(id==='B'?1.5:1.8)*risk){
+   if(risk>0&&reward>=(id==='B'||id==='D'?1.5:1.8)*risk){
     const riskBudget=cash*.01,qty=Math.min(riskBudget/risk,(cash*.25)/(fill*1.001)),stake=qty*fill*1.001;
     if(qty>0&&stake<=cash){pos={qty,stake,entry:raw,entryFill:fill,entryFee:qty*fill*.001,stop:sig.stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,date:new Date(+next[0]).toISOString().slice(0,10),signalDate:new Date(+bar[0]).toISOString().slice(0,10),initialRisk:risk,highWater:raw,trailing:false,signalChecks:sig.checks.map((v,i)=>(v?'+ ':'- ')+CHECKS[i]).join(' | '),signalPrice:sig.signalPrice,ema50:sig.ema50,ema200:sig.ema200,atr:sig.atr,atrPct:sig.atrPct,rsi:sig.rsi,volumeRatio:sig.volumeRatio,fearGreed:sig.fearGreed,relativeStrength:sig.relativeStrength,signalRR:sig.rr};cash-=stake}
    }
