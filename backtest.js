@@ -85,6 +85,78 @@ function simulate(symbol,c,btc,weekly,fngMap,capital){
  let peak=capital,maxDD=0;for(const e of equity){peak=Math.max(peak,e);maxDD=Math.max(maxDD,(peak-e)/peak*100)}
  return {symbol,capital,end:cash,profit,returnPct:profit/capital*100,trades,wins,winRate:trades.length?wins/trades.length*100:0,maxDD,diagnostics,samples};
 }
+
+function evaluateVariant(id,symbol,c,i,btc,weekly,fngMap){
+ const base=evaluate(symbol,c,i,btc,weekly,fngMap);
+ if(!base)return null;
+ const x=base.checks;
+ const btcIndex=btc.findIndex(v=>Number(v[0])===Number(c[i][0]));
+ const btcCloses=btcIndex>=0?btc.slice(0,btcIndex+1).map(v=>+v[4]):[];
+ const btcEma=ema(btcCloses,200);
+ const btcRegime=btcEma!==null&&btcCloses.at(-1)>btcEma;
+ let pass=false;
+ if(id==='A') pass=x.every(Boolean);
+ if(id==='B'){
+  const core=x[0]&&x[1]&&x[4]&&x[5]&&x[7];
+  const entry=x[8]||x[9];
+  pass=!!(core&&entry&&base.rr!==null&&base.rr>=1.5);
+ }
+ if(id==='C'){
+  const core=x[0]&&x[1]&&x[2]&&x[3]&&x[4]&&x[5]&&x[7];
+  pass=!!(core&&(btcRegime||symbol==='BTCUSDT')&&base.rr!==null&&base.rr>=1.8);
+ }
+ return {...base,pass,btcRegime};
+}
+function simulateVariant(id,symbol,c,btc,weekly,fngMap,capital,trailMult){
+ let cash=capital,position=null,trades=[],equity=[capital],samples=0,signals=0,peak=capital,maxDD=0;
+ for(let i=220;i<c.length-1;i++){
+  const bar=c[i],open=+bar[1],high=+bar[2],low=+bar[3],close=+bar[4];
+  const sig=evaluateVariant(id,symbol,c,i,btc,weekly,fngMap);
+  if(sig){samples++;if(sig.pass)signals++}
+  if(position){
+   const atr=atrPct(c,i,14);const atrAbs=atr?close*atr/100:null;
+   if(atrAbs&&close>position.entry){
+    const candidate=close-trailMult*atrAbs;
+    position.stop=Math.max(position.stop,candidate);
+   }
+   let exit=null,reason='';
+   if(low<=position.stop){exit=Math.min(open,position.stop);reason=position.trailing?'TRAILING-STOP':'INITIAL-STOP'}
+   else if(high>=position.target){exit=Math.max(open,position.target);reason='KURSZIEL'}
+   else if(id!=='A'&&close<position.ema20&&close<position.entry){exit=close;reason='MOMENTUM-VERLUST'}
+   if(exit!==null){
+    const fill=exit*(1-.0005),gross=position.qty*(fill-position.entryFill),fee=position.qty*fill*.001;
+    const net=gross-position.entryFee-fee;cash+=position.stake+net;
+    trades.push({symbol,buyTime:position.time,sellTime:new Date(Number(bar[6])).toISOString().slice(0,10),entry:position.entry,exit,net,returnPct:net/position.stake*100,reason,rr:position.rr});
+    position=null;
+   }
+  }
+  if(!position&&sig&&sig.pass){
+   const next=c[i+1],raw=+next[1],entryFill=raw*(1+.0005);
+   const stop=sig.stop, risk=raw-stop, reward=sig.target-raw;
+   if(risk>0&&reward>= (id==='B'?1.5:1.8)*risk){
+    const stake=cash,qty=stake/(entryFill*1.001);
+    position={stake,qty,entry:raw,entryFill,entryFee:stake-qty*entryFill,stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,time:new Date(Number(next[0])).toISOString().slice(0,10),trailing:false};
+   }
+  }
+  const mark=position?cash+position.qty*close*(1-.0015):cash;
+  equity.push(mark);peak=Math.max(peak,mark);maxDD=Math.max(maxDD,(peak-mark)/peak*100);
+ }
+ if(position){
+  const last=c.at(-1),exit=+last[4],fill=exit*(1-.0005),gross=position.qty*(fill-position.entryFill),fee=position.qty*fill*.001,net=gross-position.entryFee-fee;
+  cash+=position.stake+net;trades.push({symbol,buyTime:position.time,sellTime:new Date(Number(last[0])).toISOString().slice(0,10),entry:position.entry,exit,net,returnPct:net/position.stake*100,reason:'DATENENDE',rr:position.rr});
+ }
+ const wins=trades.filter(t=>t.net>0).length,losses=trades.filter(t=>t.net<0),grossWin=trades.filter(t=>t.net>0).reduce((s,t)=>s+t.net,0),grossLoss=Math.abs(losses.reduce((s,t)=>s+t.net,0));
+ return {id,symbol,capital,end:cash,profit:cash-capital,returnPct:(cash/capital-1)*100,trades,wins,winRate:trades.length?wins/trades.length*100:0,maxDD,signals,samples,profitFactor:grossLoss?grossWin/grossLoss:(grossWin?Infinity:0)};
+}
+function renderComparison(results,period){
+ const ids=['A','B','C'],names={A:'A · Precision bisher',B:'B · Coin First',C:'C · Hybrid'};
+ const rows=ids.map(id=>{const a=results.filter(r=>r.id===id),start=a.reduce((s,r)=>s+r.capital,0),end=a.reduce((s,r)=>s+r.end,0),tr=a.flatMap(r=>r.trades),wins=tr.filter(t=>t.net>0).length,pfGross=tr.filter(t=>t.net>0).reduce((s,t)=>s+t.net,0),pfLoss=Math.abs(tr.filter(t=>t.net<0).reduce((s,t)=>s+t.net,0)),dd=Math.max(0,...a.map(r=>r.maxDD));return {id,name:names[id],start,end,profit:end-start,pct:(end/start-1)*100,trades:tr.length,win:tr.length?wins/tr.length*100:0,pf:pfLoss?pfGross/pfLoss:(pfGross?Infinity:0),dd,signals:a.reduce((s,r)=>s+r.signals,0)}});
+ $('bt-summary').innerHTML=rows.map(r=>'<div class="bt-metric"><small>'+r.name+'</small><b class="'+(r.profit>=0?'up':'down')+'">'+money(r.profit)+' · '+pct(r.pct)+'</b><small>'+r.trades+' Trades · Treffer '+r.win.toFixed(1)+' % · PF '+(Number.isFinite(r.pf)?r.pf.toFixed(2):'∞')+' · DD '+pct(-r.dd)+'</small></div>').join('');
+ $('bt-assets').innerHTML=ids.map(id=>'<h3>'+names[id]+'</h3>'+results.filter(r=>r.id===id).map(r=>'<div class="bt-row"><b>'+r.symbol.replace('USDT','')+'</b><span>'+r.trades.length+' Trades</span><strong class="'+(r.profit>=0?'up':'down')+'">'+money(r.profit)+'</strong><small>Treffer '+pct(r.winRate)+' · PF '+(Number.isFinite(r.profitFactor)?r.profitFactor.toFixed(2):'∞')+' · Max. DD '+pct(-r.maxDD)+' · Signale '+r.signals+'</small></div>').join('')).join('');
+ const all=results.flatMap(r=>r.trades.map(t=>({...t,strategy:names[r.id]}))).sort((a,b)=>b.buyTime.localeCompare(a.buyTime));
+ $('bt-trades').innerHTML=all.slice(0,40).map(t=>'<div class="bt-trade"><b>'+t.strategy+' · '+t.symbol.replace('USDT','')+'</b><span>'+t.buyTime+' → '+t.sellTime+'</span><strong class="'+(t.net>=0?'up':'down')+'">'+money(t.net)+'</strong><small>'+t.reason+' · '+pct(t.returnPct)+'</small></div>').join('')||'<p>Keine Trades nach diesen Regeln.</p>';
+ const periodNode=$('bt-period');if(periodNode)periodNode.textContent=period+' · Tageskerzen · 0,10 % Gebühren + 0,05 % Slippage je Seite · Vergleichskonten je Variante separat';
+}
 function render(results,period){
  const totalStart=results.reduce((s,r)=>s+r.capital,0),totalEnd=results.reduce((s,r)=>s+r.end,0),trades=results.flatMap(r=>r.trades).sort((a,b)=>a.buyTime.localeCompare(b.buyTime));
  const wins=trades.filter(t=>t.net>0).length;
@@ -97,19 +169,24 @@ function render(results,period){
  const periodNode=$('bt-period');if(periodNode)periodNode.textContent=period+' · Tageskerzen · 0,10 % Gebühren + 0,05 % Slippage je Seite';
 }
 async function run(){
- const button=$('bt-run'),status=$('bt-status');button.disabled=true;button.textContent='LÄDT…';status.textContent='Historische Daten werden geladen und chronologisch geprüft.';
+ const button=$('bt-run'),status=$('bt-status');button.disabled=true;button.textContent='LÄDT…';status.textContent='Gemeinsame historische Daten werden geladen; danach laufen A, B und C parallel.';
  try{
   const [fngData,...market]=await Promise.all([
    get('https://api.alternative.me/fng/?limit=0&format=json'),
    ...ASSETS.map(async s=>Promise.all([get(API+'/klines?symbol='+s+'&interval=1d&limit=1000'),get(API+'/klines?symbol='+s+'&interval=1w&limit=500')])),
   ]);
-  const fngMap=buildFng(fngData.data);
-  if(!fngMap.size)throw Error('Historische Fear-&-Greed-Daten fehlen; Sentimentfilter nicht testbar.');
-  const btc=market[0][0],results=market.map((pair,i)=>simulate(ASSETS[i],pair[0].slice(0,-1),btc, pair[1].slice(0,-1),fngMap,1500/ASSETS.length));
+  const fngMap=buildFng(fngData.data);if(!fngMap.size)throw Error('Historische Fear-&-Greed-Daten fehlen.');
+  const btc=market[0][0].slice(0,-1),capital=1500/3;
+  const results=[];
+  for(const id of ['A','B','C']){
+   const batch=market.map((pair,i)=>simulateVariant(id,ASSETS[i],pair[0].slice(0,-1),btc,pair[1].slice(0,-1),fngMap,capital,2));
+   results.push(...batch);
+  }
   const dates=market.flatMap(p=>p[0].slice(0,-1).map(x=>Number(x[0]))),period=new Date(Math.min(...dates)).toLocaleDateString('de-DE')+' – '+new Date(Math.max(...dates)).toLocaleDateString('de-DE');
-  render(results,period);status.textContent='Backtest abgeschlossen. Nur abgeschlossene Tageskerzen; Einstieg am Folgetag zum Open.';
+  renderComparison(results,period);
+  status.textContent='Vergleich abgeschlossen: drei Varianten auf identischen Daten. A = bisherige Filter, B = Coin First, C = Hybrid. Alle Ergebnisse sind Simulationen, keine Prognosen.';
  }catch(e){status.textContent='Backtest nicht möglich: '+e.message;console.error('LEO backtest',e)}
- finally{button.disabled=false;button.textContent='BACKTEST STARTEN'}
+ finally{button.disabled=false;button.textContent='STRATEGIEN VERGLEICHEN'}
 }
 const panel=$('backtest-panel');
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{
