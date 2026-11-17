@@ -536,3 +536,7 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 /* LEO release marker — discreet version label in the top-right header corner */
 .reference-top{position:relative}
 .version-tag{margin-left:7px;flex:0 0 auto;align-self:center;padding:4px 7px;border:1px solid rgba(32,230,207,.28);border-radius:7px;color:#75bdb8;background:rgba(6,22,31,.72);font-size:9px;font-weight:800;letter-spacing:.6px;line-height:1}
+
+/* v0.40 — keep the version immediately beside the demo/connection chip */
+.reference-top{justify-content:flex-start;gap:8px}
+.reference-top .version-tag{margin-left:0}
