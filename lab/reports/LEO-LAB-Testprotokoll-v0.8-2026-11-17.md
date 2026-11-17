@@ -101,3 +101,17 @@ Datenintegrität:
 Änderung gegenüber Log-3: A −4,00 €, B −17,40 €, C −4,59 €, D +14,06 €. Die Abweichung ist erheblich, obwohl die Trade-Anzahl gleich blieb. Vor einem Strategie-Ranking muss daher geklärt sein, warum sich Ausstiegsfills/Stop- und Zielmodell zwischen den Exporten geändert haben. Die CSV selbst belegt keine Ursache; keine der beiden Dateien wird stillschweigend als „richtiger“ Backtest behandelt.
 
 Einordnung: D ist in diesem Export mit +76,98 € vorne, aber weiterhin nur sechs Trades (fünf Gewinner, ein Verlierer). Das Ergebnis ist ein interessanter Hinweis, kein belastbarer Beleg für optimale Einstellungen. Die geänderten Ergebnisse bei gleicher Trade-Anzahl machen die Reproduzierbarkeit des Backtests zum vorrangigen Prüfpunkt.
+
+
+## 7. Reproduzierbarkeitsfehler gefunden und behoben
+Vergleich der beiden vom Nutzer gelieferten Exporte zeigt die Ursache für den größten Teil der Abweichung:
+- In Trade-Log 4 sind Positionsmengen und Positionswerte bei 53 von 78 direkt zuordenbaren Trades exakt auf rund 44,44 % des Werts aus Trade-Log 3 reduziert.
+- 44,44 % entspricht dem Verhältnis 4/9. Nach Erweiterung der Datenbasis auf neun Assets teilte der Code versehentlich das A–C-Kapital von 1.500 € durch neun, obwohl A–C weiterhin nur vier Märkte handeln. Die UI zeigte weiterhin korrekt 375 € je Markt, die Berechnung verwendete jedoch nur 166,67 €.
+- Das erklärt die systematisch niedrigeren Gewinne/Verluste in Log 4; es war kein Markt- oder Strategieeffekt, sondern ein Kapitalzuordnungsfehler.
+- Behoben: A–C erhalten wieder 1.500 €/4 = 375 € je Markt. D bleibt im Basisvergleich bei 750 € ETH und 750 € SOL. Die 2/4/6/8-Coin-Experimente teilen jeweils 1.500 € durch die jeweilige Korbgröße.
+- lab.js wurde syntaktisch geprüft; der Cache-Buster wurde auf v12 erhöht. Der Haupt-LEO-Code wurde nicht verändert.
+
+Konsequenz für die Auswertung:
+- Trade-Log 4 ist wegen des falschen A–C-Kapitalbudgets nicht mit Log 3 vergleichbar und darf nicht als neue Renditebasis verwendet werden.
+- Die bisherige Auswertung aus Log 3 bleibt bis zum erneuten Lauf mit korrigierter Version die Referenz; die D-Ergebnisse sind weiterhin wegen nur sechs Trades nicht statistisch belastbar.
+- Nächster sauberer Prüfpunkt ist ein erneuter identischer Lauf mit v12. Erst wenn Trades, Fills, Gebühren und Kapitalzuordnung reproduzierbar sind, werden Filter-/Coin-/Stop-Varianten bewertet.
