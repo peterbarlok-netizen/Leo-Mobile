@@ -69,7 +69,7 @@ function simulate(symbol,c,btc,weekly,fngMap,capital){
     const entryRisk=rawEntry-sig.stop,entryReward=sig.target-rawEntry;
     if(entryRisk>0&&entryReward>=2*entryRisk){
      const stake=cash,qty=stake/(entryFill*(1+.001));
-     position={stake,qty,entry:rawEntry,entryFill,entryFee:stake-qty*entryFill,stop:sig.stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,time:new Date(Number(next[0])).toISOString().slice(0,10)};
+     position={stake,qty,entry:rawEntry,entryFill,entryFee:stake-qty*entryFill,stop:sig.stop:stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,time:new Date(Number(next[0])).toISOString().slice(0,10)};
      cash-=stake;
     }
    }
@@ -181,7 +181,7 @@ async function run(){
    ...ASSETS.map(async s=>Promise.all([get(API+'/klines?symbol='+s+'&interval=1d&limit=1000'),get(API+'/klines?symbol='+s+'&interval=1w&limit=500')])),
   ]);
   const fngMap=buildFng(fngData.data);if(!fngMap.size)throw Error('Historische Fear-&-Greed-Daten fehlen.');
-  const btc=market[0][0].slice(0,-1),capital=1500/3;
+  const btc=market[0][0].slice(0,-1),capital=1500/ASSETS.length;
   const results=[];
   for(const id of ['A','B','C']){
    const batch=market.map((pair,i)=>simulateVariant(id,ASSETS[i],pair[0].slice(0,-1),btc,pair[1].slice(0,-1),fngMap,capital,2));
