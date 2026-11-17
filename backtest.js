@@ -115,9 +115,13 @@ function simulateVariant(id,symbol,c,btc,weekly,fngMap,capital,trailMult){
   if(sig){samples++;if(sig.pass)signals++}
   if(position){
    const atr=atrPct(c,i,14);const atrAbs=atr?close*atr/100:null;
-   if(atrAbs&&close>position.entry){
-    const candidate=close-trailMult*atrAbs;
-    position.stop=Math.max(position.stop,candidate);
+   if(atrAbs){
+    position.highWater=Math.max(position.highWater,high);
+    if(position.highWater>=position.entry+position.initialRisk){
+     position.trailing=true;
+     const candidate=position.highWater-trailMult*atrAbs;
+     position.stop=Math.max(position.stop,candidate);
+    }
    }
    let exit=null,reason='';
    if(low<=position.stop){exit=Math.min(open,position.stop);reason=position.trailing?'TRAILING-STOP':'INITIAL-STOP'}
@@ -135,7 +139,8 @@ function simulateVariant(id,symbol,c,btc,weekly,fngMap,capital,trailMult){
    const stop=sig.stop, risk=raw-stop, reward=sig.target-raw;
    if(risk>0&&reward>= (id==='B'?1.5:1.8)*risk){
     const stake=cash,qty=stake/(entryFill*1.001);
-    position={stake,qty,entry:raw,entryFill,entryFee:stake-qty*entryFill,stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,time:new Date(Number(next[0])).toISOString().slice(0,10),trailing:false};
+    position={stake,qty,entry:raw,entryFill,entryFee:stake-qty*entryFill,stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,time:new Date(Number(next[0])).toISOString().slice(0,10),trailing:false,initialRisk:risk,highWater:raw};
+    cash-=stake;
    }
   }
   const mark=position?cash+position.qty*close*(1-.0015):cash;
