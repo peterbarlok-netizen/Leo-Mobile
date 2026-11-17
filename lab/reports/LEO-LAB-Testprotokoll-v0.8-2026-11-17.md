@@ -74,3 +74,30 @@ Nicht den höchsten absoluten Gewinn allein auswählen. Vorrang haben:
 - Die API liefert aktuell maximal 1.000 Tageskerzen pro Markt; der gemeinsame Testzeitraum ist dadurch begrenzt.
 - Die feste Coin-Liste ist ein Sensitivitätstest, kein survivorship-bias-freier historischer Top-Coin-Test. Delistete und frühere Marktführer werden nicht automatisch berücksichtigt.
 - Vor einer echten Auswahl müssen die besten Kandidaten auf längerer Historie, mit Walk-forward-Fenstern und idealerweise weiteren Börsen-/Kostenszenarien erneut geprüft werden.
+
+
+## 6. Nachprüfung: LEO-LAB-Trade-Log-4.csv
+Eingelesen mit Semikolon-Trennzeichen: 79 Trades, 33 Spalten, Zeitraum 25.10.2024 bis 22.10.2026. Die Datei enthält dieselbe Anzahl Trades wie Log-3, aber aktualisierte Nettoergebnisse.
+
+| Strategie | Trades | Netto | Trefferquote |
+|---|---:|---:|---:|
+| A · Precision | 15 | +3,17 € | 26,67 % |
+| B · Coin First | 28 | +13,85 € | 32,14 % |
+| C · Hybrid | 30 | +3,68 € | 23,33 % |
+| D · Selective | 6 | +76,98 € | 83,33 % |
+
+Coin-Aufteilung laut Log:
+- A: BTC 12 Trades (−2,72 €), ETH 1 (+4,13 €), SOL 2 (+1,76 €).
+- B: BTC 13 (+0,96 €), ETH 8 (+10,25 €), LINK 3 (−1,90 €), SOL 4 (+4,55 €).
+- C: BTC 14 (+0,29 €), ETH 6 (+5,64 €), LINK 4 (−2,97 €), SOL 6 (+0,71 €).
+- D: ETH 2 (+39,53 €), SOL 4 (+37,45 €).
+
+Datenintegrität:
+- 0 fehlende Zellen in den 33 Spalten.
+- Netto-P&L stimmt bei allen 79 Trades mit Menge × (Ausstiegsfill − Einstiegsfill) minus Ein- und Ausstiegsgebühr überein; maximale Abweichung < 0,000000001 €.
+- Kein Stop beim Einstieg liegt oberhalb/gleich dem Einstieg; ursprünglicher Stop und Stop beim Einstieg sind in allen Zeilen identisch.
+- 12 Trades haben CRV beim Einstieg > 10; 8 davon > 20. Maximum: 141,32:1 (LINK bei B/C) bei nur 0,02 USDT Stopabstand. Diese Kennzahl darf nicht als realistischer Erwartungswert interpretiert werden; Kosten, Tickgröße, Spread und Stop-Ausführung sind für die Robustheit entscheidend.
+
+Änderung gegenüber Log-3: A −4,00 €, B −17,40 €, C −4,59 €, D +14,06 €. Die Abweichung ist erheblich, obwohl die Trade-Anzahl gleich blieb. Vor einem Strategie-Ranking muss daher geklärt sein, warum sich Ausstiegsfills/Stop- und Zielmodell zwischen den Exporten geändert haben. Die CSV selbst belegt keine Ursache; keine der beiden Dateien wird stillschweigend als „richtiger“ Backtest behandelt.
+
+Einordnung: D ist in diesem Export mit +76,98 € vorne, aber weiterhin nur sechs Trades (fünf Gewinner, ein Verlierer). Das Ergebnis ist ein interessanter Hinweis, kein belastbarer Beleg für optimale Einstellungen. Die geänderten Ergebnisse bei gleicher Trade-Anzahl machen die Reproduzierbarkeit des Backtests zum vorrangigen Prüfpunkt.
