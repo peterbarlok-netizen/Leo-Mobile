@@ -540,3 +540,8 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 /* v0.40 — keep the version immediately beside the demo/connection chip */
 .reference-top{justify-content:flex-start;gap:8px}
 .reference-top .version-tag{margin-left:0}
+
+/* v0.42 — version is part of the status chip, so status updates cannot hide it */
+.reference-top{justify-content:space-between}
+.reference-top .demo-chip{display:inline-flex;align-items:center;gap:5px}
+.reference-top .version-tag{display:inline-block;margin:0 0 0 3px;padding:2px 4px;border-color:rgba(32,230,207,.42);color:#7ce8dc;background:rgba(5,36,42,.9);font-size:9px;line-height:1}
