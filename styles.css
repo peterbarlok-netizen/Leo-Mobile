@@ -134,7 +134,7 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 @media(min-width:520px){.shell{max-width:500px}.reference-top{position:absolute}.lion-hero{margin-top:0}}
 
 /* Use the exact uploaded portrait hero artwork, including its wordmark */
-.reference-top{display:none!important}
+/* Header sichtbar: DEMO- und Versionsanzeige bleiben eingeblendet. */
 .lion-hero{height:auto;aspect-ratio:852/590;margin:0 -13px 0;padding:0;display:block;overflow:hidden;background:#02090e}
 .lion-hero img{position:relative;display:block;inset:auto;transform:none;width:100%;height:100%;object-fit:cover;object-position:center;filter:none}
 .lion-hero:before,.lion-hero:after{display:none}
