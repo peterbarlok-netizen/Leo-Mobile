@@ -6,19 +6,19 @@
 <link rel="stylesheet" href="lab.css?v=3">
 </head>
 <body>
-<header><div class="topline"><div class="eyebrow">LEO / EXPERIMENTAL</div><span class="version">v0.3</span></div><h1>LEO <span>LAB</span></h1><p>Strategien testen. Daten vergleichen. Erst danach integrieren.</p></header>
+<header><div class="topline"><div class="eyebrow">LEO / EXPERIMENTAL</div><span class="version">v0.4</span></div><h1>LEO <span>LAB</span></h1><p>Strategien testen. Daten vergleichen. Erst danach integrieren.</p></header>
 <main>
-<section class="panel intro"><div class="eyebrow">TESTKONFIGURATION</div><div class="config"><div><small>Virtuelles Kapital je Strategie</small><strong>1.500 €</strong></div><div><small>Aufteilung</small><strong>375 € je Coin</strong></div><div><small>Märkte</small><strong>BTC · ETH · SOL · LINK</strong></div></div><p class="note">A, B und C laufen unabhängig auf denselben abgeschlossenen Tageskerzen. Kein Echtgeld, keine Orders.</p><button id="run">STRATEGIEN VERGLEICHEN</button><p id="status" role="status">Bereit. Für den ersten Lauf werden historische Marktdaten geladen.</p></section>
+<section class="panel intro"><div class="eyebrow">TESTKONFIGURATION</div><div class="config"><div><small>Virtuelles Kapital je Strategie</small><strong>1.500 €</strong></div><div><small>Aufteilung</small><strong>375 € je Coin</strong></div><div><small>Märkte</small><strong>BTC · ETH · SOL · LINK</strong></div></div><p class="note">A, B und C laufen unabhängig auf denselben abgeschlossenen Tageskerzen und einem gemeinsamen Zeitraum aller vier Coins. Kein Echtgeld, keine Orders.</p><button id="run">STRATEGIEN VERGLEICHEN</button><p id="status" role="status">Bereit. Für den ersten Lauf werden historische Marktdaten geladen.</p></section>
 <section class="panel"><div class="section-head"><div><div class="eyebrow">ERGEBNISSE</div><h2>Strategievergleich</h2></div><span id="period" class="muted">Noch kein Testlauf</span></div>
 <div id="summary" class="cards"><div class="empty">Starte den Vergleich, um Kennzahlen zu sehen.</div></div>
 <div class="table-wrap"><table><thead><tr><th>Strategie</th><th>Netto</th><th>Rendite</th><th>Treffer</th><th>PF</th><th>Trades</th><th>DD*</th></tr></thead><tbody id="totals"><tr><td colspan="7">Noch keine Daten</td></tr></tbody></table></div>
-<p class="note">* DD zeigt den höchsten maximalen Drawdown eines einzelnen Coin-Teilkontos, nicht den synchronisierten Gesamtportfolio-Drawdown.</p></section>
+<p class="note">* DD zeigt jetzt den synchronisierten maximalen Drawdown des Gesamtportfolios aus allen vier Coin-Teilkonten.</p></section>
 <section class="panel"><div class="eyebrow">DETAILS JE MARKT</div><h2>Coin-Ergebnisse</h2><div id="coins" class="coin-results"><div class="empty">Noch keine Daten</div></div></section>
 <section class="panel"><div class="eyebrow">NACHVOLLZIEHBARKEIT</div><h2>Letzte Trades</h2><div id="trades"><div class="empty">Noch keine Daten</div></div></section>
 <section class="panel"><div class="eyebrow">TESTREGELN</div><h2>Was genau wird getestet?</h2>
 <div class="rules"><article><b>A · Precision</b><p>Alle 13 bisherigen Filter müssen erfüllt sein: Trend, EMA-Ausrichtung, Wochenfilter, höhere Tiefs, RSI, relative Stärke, Volumen, Pullback oder Ausbruch, CRV, Fear &amp; Greed und ATR.</p></article><article><b>B · Coin First</b><p>Kerntrend, höhere Tiefs, RSI und Volumen; Einstieg über Pullback oder Ausbruch. BTC-Regime und Sentimentfilter werden bewusst weggelassen. Mindest-CRV 1,5.</p></article><article><b>C · Hybrid</b><p>Mehr Trend- und Wochenfilter plus BTC über EMA 200 als Marktregime. Mindest-CRV 1,8.</p></article></div>
-<p class="note">Ein Signal entsteht am Tagesabschluss; Einstieg erfolgt frühestens zum nächsten Tages-Open. Stop/Target werden innerhalb der Tageskerze konservativ geprüft. Ein am Tageshoch aktivierter Trailing-Stop gilt erst ab der nächsten Kerze. Gebühren: 0,10 % je Seite; Slippage: 0,05 % je Seite. Positionsrisiko: 1 % des Teilkonto-Eigenkapitals, maximal 25 % Kapitalbindung je Trade.</p>
+<p class="note">Ein Signal entsteht am Tagesabschluss; Einstieg erfolgt frühestens zum nächsten Tages-Open. Stop/Target werden innerhalb der Tageskerze konservativ geprüft. Ein am Tageshoch aktivierter Trailing-Stop gilt erst ab der nächsten Kerze. Gebühren: 0,10 % je Seite; Slippage: 0,05 % je Seite. Positionsrisiko: 1 % des Teilkonto-Eigenkapitals, maximal 25 % Kapitalbindung je Trade. Der Portfolio-DD wird täglich aus den vier zeitlich synchronisierten Teilkonten berechnet.</p>
 </section>
 </main><footer>LEO LAB · unabhängige Testoberfläche · keine Anlageberatung</footer>
-<script src="lab.js?v=2"></script>
+<script src="lab.js?v=4"></script>
 </body></html>
