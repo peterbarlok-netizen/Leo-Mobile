@@ -545,3 +545,7 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .reference-top{justify-content:space-between}
 .reference-top .demo-chip{display:inline-flex;align-items:center;gap:5px}
 .reference-top .version-tag{display:inline-block;margin:0 0 0 3px;padding:2px 4px;border-color:rgba(32,230,207,.42);color:#7ce8dc;background:rgba(5,36,42,.9);font-size:9px;line-height:1}
+
+/* v0.43 — persistent version rendered by CSS, independent of status-script updates */
+#connection-status{display:inline-flex;align-items:center;gap:5px}
+#connection-status::after{content:"v0.43";display:inline-block;margin-left:4px;padding:2px 5px;border:1px solid rgba(32,230,207,.5);border-radius:5px;background:rgba(5,36,42,.95);color:#7ce8dc;font-size:9px;font-weight:900;letter-spacing:.4px;line-height:1.2}
