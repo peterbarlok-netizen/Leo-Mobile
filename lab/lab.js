@@ -27,7 +27,7 @@ function evaluate(symbol,c,i,btc,weekly,fng){
 }
 function signal(id,s){const x=s.checks;if(id==='A')return !!(x.slice(0,8).every(Boolean)&&(x[8]||x[9])&&x[10]&&x[11]&&x[12]);if(id==='B')return !!(x[0]&&x[1]&&x[4]&&x[5]&&x[7]&&(x[8]||x[9])&&s.rr>=1.5);return !!(x[0]&&x[1]&&x[2]&&x[3]&&x[4]&&x[5]&&x[7]&&(s.btcRegime)&&s.rr>=1.8)}
 function simulate(id,symbol,c,btc,weekly,fng,capital){
- let cash=capital,pos=null,trades=[],equity=[capital],peak=capital,maxDD=0,signals=0;
+ let cash=capital,pos=null,trades=[],equity=[{t:+c[220][0],v:capital}],peak=capital,maxDD=0,signals=0;
  for(let i=220;i<c.length-1;i++){
   const bar=c[i],o=+bar[1],h=+bar[2],l=+bar[3],cl=+bar[4],sig=evaluate(symbol,c,i,btc,weekly,fng);
   if(sig&&signal(id,sig))signals++;
@@ -46,14 +46,14 @@ function simulate(id,symbol,c,btc,weekly,fng,capital){
     if(qty>0&&stake<=cash){pos={qty,stake,entry:raw,entryFill:fill,entryFee:qty*fill*.001,stop:sig.stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,date:new Date(+next[0]).toISOString().slice(0,10),initialRisk:risk,highWater:raw,trailing:false};cash-=stake}
    }
   }
-  const mark=pos?cash+pos.qty*cl*.9985:cash;equity.push(mark);peak=Math.max(peak,mark);maxDD=Math.max(maxDD,(peak-mark)/peak*100);
+  const mark=pos?cash+pos.qty*cl*.9985:cash;equity.push({t:+bar[0],v:mark});peak=Math.max(peak,mark);maxDD=Math.max(maxDD,(peak-mark)/peak*100);
  }
- if(pos){const last=c.at(-1),exit=+last[4],fill=exit*.9995,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-pos.qty*fill*.001;cash+=pos.stake+net;trades.push({symbol,buy:pos.date,sell:new Date(+last[0]).toISOString().slice(0,10),net,ret:net/pos.stake*100,reason:'DATENENDE'})}
+ if(pos){const last=c.at(-1),exit=+last[4],fill=exit*.9995,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-pos.qty*fill*.001;cash+=pos.stake+net;trades.push({symbol,buy:pos.date,sell:new Date(+last[0]).toISOString().slice(0,10),net,ret:net/pos.stake*100,reason:'DATENENDE'})}equity.push({t:+c.at(-1)[0],v:cash});
  const wins=trades.filter(t=>t.net>0),loss=trades.filter(t=>t.net<0),gw=wins.reduce((s,t)=>s+t.net,0),gl=Math.abs(loss.reduce((s,t)=>s+t.net,0));
- return {id,symbol,capital,end:cash,profit:cash-capital,ret:(cash/capital-1)*100,trades,wins:wins.length,winRate:trades.length?wins.length/trades.length*100:0,pf:gl?gw/gl:gw?Infinity:0,maxDD,signals};
+ return {id,symbol,capital,end:cash,profit:cash-capital,ret:(cash/capital-1)*100,trades,wins:wins.length,winRate:trades.length?wins.length/trades.length*100:0,pf:gl?gw/gl:gw?Infinity:0,maxDD,signals,equity};
 }
 function render(results,period){
- const ids=['A','B','C'],agg=ids.map(id=>{const a=results.filter(r=>r.id===id),tr=a.flatMap(r=>r.trades),start=a.reduce((s,r)=>s+r.capital,0),end=a.reduce((s,r)=>s+r.end,0),win=tr.filter(t=>t.net>0).length,gw=tr.filter(t=>t.net>0).reduce((s,t)=>s+t.net,0),gl=Math.abs(tr.filter(t=>t.net<0).reduce((s,t)=>s+t.net,0));return {id,start,end,profit:end-start,ret:(end/start-1)*100,trades:tr.length,win:tr.length?win/tr.length*100:0,pf:gl?gw/gl:gw?Infinity:0,dd:Math.max(...a.map(r=>r.maxDD))}});
+ const ids=['A','B','C'],agg=ids.map(id=>{const a=results.filter(r=>r.id===id),tr=a.flatMap(r=>r.trades),start=a.reduce((s,r)=>s+r.capital,0),end=a.reduce((s,r)=>s+r.end,0),win=tr.filter(t=>t.net>0).length,gw=tr.filter(t=>t.net>0).reduce((s,t)=>s+t.net,0),gl=Math.abs(tr.filter(t=>t.net<0).reduce((s,t)=>s+t.net,0)),daily=new Map();for(const r of a)for(const p of r.equity)daily.set(p.t,(daily.get(p.t)||0)+p.v);let peak=start,dd=0;for(const v of [...daily.entries()].sort((x,y)=>x[0]-y[0]).map(x=>x[1])){peak=Math.max(peak,v);dd=Math.max(dd,(peak-v)/peak*100)}return {id,start,end,profit:end-start,ret:(end/start-1)*100,trades:tr.length,win:tr.length?win/tr.length*100:0,pf:gl?gw/gl:gw?Infinity:0,dd}});
  $('summary').innerHTML=agg.map(a=>'<div class="metric"><small>'+NAMES[a.id]+'</small><b class="'+(a.profit>=0?'up':'down')+'">'+fmt(a.profit)+'</b><small>'+pct(a.ret)+' · '+a.trades+' Trades</small></div>').join('');
  $('totals').innerHTML=agg.map(a=>'<tr><td>'+a.id+' · '+NAMES[a.id].split('· ')[1]+'</td><td class="'+(a.profit>=0?'up':'down')+'">'+fmt(a.profit)+'</td><td>'+pct(a.ret)+'</td><td>'+pct(a.win)+'</td><td>'+(Number.isFinite(a.pf)?a.pf.toFixed(2):'∞')+'</td><td>'+a.trades+'</td><td>'+pct(-a.dd)+'</td></tr>').join('');
  $('coins').innerHTML=ids.map(id=>'<div><h3>'+NAMES[id]+'</h3>'+results.filter(r=>r.id===id).map(r=>'<div class="coin-card"><div class="coin-title"><b>'+r.symbol.replace('USDT','')+'</b><strong class="'+(r.profit>=0?'up':'down')+'">'+fmt(r.profit)+'</strong></div><div class="coin-meta">'+r.trades.length+' Trades · Treffer '+pct(r.winRate)+' · PF '+(Number.isFinite(r.pf)?r.pf.toFixed(2):'∞')+' · DD '+pct(-r.maxDD)+' · '+r.signals+' Signale</div></div>').join('')+'</div>').join('');
@@ -62,7 +62,7 @@ function render(results,period){
  $('period').textContent=period+' · Tageskerzen';
 }
 async function run(){const b=$('run'),s=$('status');b.disabled=true;b.textContent='DATEN WERDEN GELADEN …';s.textContent='Lade identische Tages-/Wochenkerzen und Fear & Greed. Das kann kurz dauern.';
- try{const [fngData,...market]=await Promise.all([get('https://api.alternative.me/fng/?limit=0&format=json'),...ASSETS.map(x=>Promise.all([get(API+'/klines?symbol='+x+'&interval=1d&limit=1000'),get(API+'/klines?symbol='+x+'&interval=1w&limit=500')]))]);const fng=fngMap(fngData.data);if(!fng.size)throw Error('Fear-&-Greed-Historie nicht verfügbar.');const btc=market[0][0].slice(0,-1),results=[];for(const id of ['A','B','C'])for(let j=0;j<ASSETS.length;j++)results.push(simulate(id,ASSETS[j],market[j][0].slice(0,-1),btc,market[j][1].slice(0,-1),fng,1500/ASSETS.length));const dates=market.flatMap(p=>p[0].slice(0,-1).map(x=>+x[0]));render(results,new Date(Math.min(...dates)).toLocaleDateString('de-DE')+' – '+new Date(Math.max(...dates)).toLocaleDateString('de-DE'));s.textContent='Fertig: 3 Strategien × BTC, ETH, SOL und LINK. Gemeinsame historische Tagesdaten; kein Ergebnis ist eine Renditeprognose.'}
+ try{const [fngData,...market]=await Promise.all([get('https://api.alternative.me/fng/?limit=0&format=json'),...ASSETS.map(x=>Promise.all([get(API+'/klines?symbol='+x+'&interval=1d&limit=1000'),get(API+'/klines?symbol='+x+'&interval=1w&limit=500')]))]);const fng=fngMap(fngData.data);if(!fng.size)throw Error('Fear-&-Greed-Historie nicht verfügbar.');const daily=market.map(p=>p[0].slice(0,-1)),start=Math.max(...daily.map(a=>+a[0][0])),end=Math.min(...daily.map(a=>+a.at(-1)[0])),aligned=daily.map(a=>a.filter(x=>+x[0]>=start&&+x[0]<=end)),weekly=market.map(p=>p[1].slice(0,-1)),btc=aligned[0],results=[];if(aligned.some(a=>a.length<300))throw Error('Zu wenig gemeinsamer Datenzeitraum für einen fairen Vergleich.');for(const id of ['A','B','C'])for(let j=0;j<ASSETS.length;j++)results.push(simulate(id,ASSETS[j],aligned[j],btc,weekly[j].filter(x=>+x[0]<=end),fng,1500/ASSETS.length));render(results,new Date(start).toLocaleDateString('de-DE')+' – '+new Date(end).toLocaleDateString('de-DE'));s.textContent='Fertig: 3 Strategien × BTC, ETH, SOL und LINK. Gemeinsame historische Tagesdaten; kein Ergebnis ist eine Renditeprognose.'}
  catch(e){s.textContent='Test fehlgeschlagen: '+e.message}
  finally{b.disabled=false;b.textContent='ERNEUT VERGLEICHEN'}}
 $('run').addEventListener('click',run);
