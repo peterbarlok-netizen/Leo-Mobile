@@ -42,7 +42,7 @@ function signal(id,s,variant={}){
  }
  return false;
 }
-function simulate(id,symbol,c,btc,weekly,fng,capital,variant={}){ // btc/weekly/fng retained only for call compatibility; never read
+function simulate(id,symbol,c,capital,variant={}){
  let cash=capital,pos=null,trades=[],equity=[{t:+c[220][0],v:capital}],peak=capital,maxDD=0,signals=0;
  const rr=variant.rr||({A:2,B:2,C:2.2,D:2}[id]||2);
  for(let i=220;i<c.length-1;i++){
@@ -115,7 +115,7 @@ async function run(){
   const [solDailyRaw,sol1hRaw,sol4hRaw]=await Promise.all([
    get(API+'/klines?symbol=SOLUSDT&interval=1d&limit=1000'),getKlines('SOLUSDT','1h',6000),getKlines('SOLUSDT','4h',1500)
   ]);
-  const closed=a=>a.slice(0,-1),sol=closed(solDailyRaw),weekly=[];
+  const closed=a=>a.slice(0,-1),sol=closed(solDailyRaw);
   if(sol.length<300)throw Error('Zu wenig SOL-Tageshistorie.');
   const split=Math.floor(sol.length*.7),splitTime=+sol[split][0];
   const summarize=r=>({profit:r.profit,ret:r.ret,trades:r.trades.length,win:r.winRate,pf:r.pf,dd:r.maxDD===undefined?r.dd:r.maxDD});
@@ -130,7 +130,7 @@ async function run(){
   ];
   const results=[],baseSummaries=[];latestReportTrades=[];
   for(const spec of specs){
-   const full=simulate(spec.id,'SOLUSDT',sol,[],weekly,null,1500,spec.variant);
+   const full=simulate(spec.id,'SOLUSDT',sol,1500,spec.variant);
    results.push(full);baseSummaries.push(summary(spec.name,full,splitTime));
    latestReportTrades.push({name:spec.name,timeframe:'1d',splitTime,result:full});
   }
@@ -145,7 +145,7 @@ async function run(){
    {name:'D · CRV 2,5',variant:{rr:2.5,stopAtr:1.5}}
   ];
   const experiments=variants.map(v=>{
-   const full=simulate('D','SOLUSDT',sol,[],weekly,null,1500,v.variant);
+   const full=simulate('D','SOLUSDT',sol,1500,v.variant);
    latestReportTrades.push({name:v.name,timeframe:'1d',splitTime,result:full});
    return summary(v.name,full,splitTime);
   });
@@ -156,13 +156,13 @@ async function run(){
    const source=tf==='1h'?tf1Sol:tf4Sol,sc=source.filter(x=>+x[0]>=commonStart&&+x[0]<=commonEnd);if(sc.length<500)continue;
    const sp=Math.floor(sc.length*.7),st=+sc[sp][0];
    const eVariants=tf==='4h'?[{name:'E · Momentum 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05}},{name:'E · Momentum + Volumen 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.3}},{name:'E · Momentum-Pullback 4h',variant:{rr:2,stopAtr:1.5,entry:'pullback',rsiMin:48,rsiMax:64,volumeMin:0.9}},{name:'E · Exit EMA20 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema20'}},{name:'E · Exit EMA50 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema50'}}]:[{name:'E · Momentum 1h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05}},{name:'E · Momentum + Volumen 1h',variant:{rr:2,stopAtr:1.5,volumeMin:1.3}}];
-   for(const ev of eVariants){const full=simulate('E','SOLUSDT',sc,[],weekly,null,1500,ev.variant);timeframeTests.push(summary(ev.name,full,st,tf));latestReportTrades.push({name:ev.name,timeframe:tf,splitTime:st,result:full});}
+   for(const ev of eVariants){const full=simulate('E','SOLUSDT',sc,1500,ev.variant);timeframeTests.push(summary(ev.name,full,st,tf));latestReportTrades.push({name:ev.name,timeframe:tf,splitTime:st,result:full});}
   }
   const bhFull=buyHold(sol,1500),bhTrain=buyHold(sol.slice(0,split),1500),bhOos=buyHold(sol.slice(split),1500);
   const benchmarks=[benchmarkSummary('BENCHMARK · SOL Buy & Hold',bhFull,bhTrain,bhOos)];
   latestExperimentSummaries=baseSummaries.concat(experiments,timeframeTests,benchmarks);latestTimeframeRuns=[];
-  render(results,new Date(+sol[0][0]).toLocaleDateString('de-DE')+' – '+new Date(+sol.at(-1)[0]).toLocaleDateString('de-DE')+' · SOL/USDT · vollständig BTC-unabhängig',experiments.concat(timeframeTests,benchmarks));
-  $('export').disabled=false;s.textContent='Fertig: SOL-only ohne BTC-Daten oder BTC-Filter. A–D als SOL-Basisstrategien; E-Momentum auf 1h/4h mit Volumen- und Exit-Varianten. Gebühren 0,10 % und Slippage 0,05 % je Seite; 70 % Training / 30 % OOS.';
+  render(results,new Date(+sol[0][0]).toLocaleDateString('de-DE')+' – '+new Date(+sol.at(-1)[0]).toLocaleDateString('de-DE')+' · SOL/USDT · nur SOL-Daten',experiments.concat(timeframeTests,benchmarks));
+  $('export').disabled=false;s.textContent='Fertig: ausschließlich SOL-Daten, ohne externe Marktfilter. A–D als SOL-Basisstrategien; E-Momentum auf 1h/4h mit Volumen- und Exit-Varianten. Gebühren 0,10 % und Slippage 0,05 % je Seite; 70 % Training / 30 % OOS.';
  }catch(e){s.textContent='Test fehlgeschlagen: '+e.message}
  finally{b.disabled=false;b.textContent='SOLANA-STRATEGIEN VERGLEICHEN'}
 }
