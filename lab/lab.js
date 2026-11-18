@@ -116,7 +116,7 @@ async function run(){
   const closed=a=>a.slice(0,-1),align=(a,b)=>{const bm=new Map(b.map(x=>[+x[0],x])),pairs=a.filter(x=>bm.has(+x[0]));return [pairs,pairs.map(x=>bm.get(+x[0]))]};
   const [sol,btc]=align(closed(solDailyRaw),closed(btcDailyRaw)),weekly=[];
   if(sol.length<300)throw Error('Zu wenig gemeinsame SOL-/BTC-Tageshistorie.');
-  const split=Math.floor(sol.length*.7),warm=Math.max(0,split-220),splitTime=+sol[split][0];
+  const split=Math.floor(sol.length*.7),splitTime=+sol[split][0];
   const summarize=r=>({profit:r.profit,ret:r.ret,trades:r.trades.length,win:r.winRate,pf:r.pf,dd:r.maxDD===undefined?r.dd:r.maxDD});
   const tradeStats=(trades,capital=1500)=>{const ordered=trades.slice().sort((a,b)=>(a.entryTime||0)-(b.entryTime||0));const profit=ordered.reduce((s,t)=>s+t.net,0),wins=ordered.filter(t=>t.net>0),losses=ordered.filter(t=>t.net<0),gw=wins.reduce((s,t)=>s+t.net,0),gl=Math.abs(losses.reduce((s,t)=>s+t.net,0));let equity=capital,peak=capital,dd=0;for(const t of ordered){equity+=t.net;peak=Math.max(peak,equity);dd=Math.max(dd,(peak-equity)/peak*100)}return {profit,ret:profit/capital*100,trades:ordered.length,win:ordered.length?wins.length/ordered.length*100:0,pf:gl?gw/gl:gw?Infinity:0,dd};};
   const summary=(name,full,splitTime,timeframe='1d')=>{const trades=full.trades;return {name,full:tradeStats(trades),train:tradeStats(trades.filter(t=>t.entryTime<splitTime)),oos:tradeStats(trades.filter(t=>t.entryTime>=splitTime)),timeframe};};
@@ -156,7 +156,7 @@ async function run(){
    const raw=tf==='1h'?[tf1Sol,tf1Btc]:[tf4Sol,tf4Btc];
    const clipped=raw.map(a=>a.filter(x=>+x[0]>=commonStart&&+x[0]<=commonEnd));
    const [sc,bc]=align(clipped[0],clipped[1]);if(sc.length<500)continue;
-   const sp=Math.floor(sc.length*.7),wm=Math.max(0,sp-220),st=+sc[sp][0],variant={rr:2,stopAtr:1.5,minRS:0};
+   const sp=Math.floor(sc.length*.7),st=+sc[sp][0],variant={rr:2,stopAtr:1.5,minRS:0};
    const full=simulate('D','SOLUSDT',sc,bc,weekly,null,1500,variant);
    timeframeTests.push(summary('D · SOL '+tf,full,st,tf));
    latestReportTrades.push({name:'D · SOL '+tf,timeframe:tf,splitTime:st,result:full});
