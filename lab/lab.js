@@ -15,7 +15,7 @@ function evaluate(symbol,c,i,btc,weekly,fng){
  const closes=c.slice(0,i+1).map(x=>+x[4]),price=closes.at(-1);if(i<220)return null;
  const e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200),old200=emaAt(closes,200,closes.length-21);
  const w=weekly.filter(x=>Number(x[6])<=Number(c[i][6])),wc=w.map(x=>+x[4]),we50=ema(wc,50);
- const bi=btc.findIndex(x=>Number(x[0])===Number(c[i][0])),bc=bi>=0?btc.slice(0,bi+1).map(x=>+x[4]):[];
+ const bi=(i<btc.length&&Number(btc[i][0])===Number(c[i][0]))?i:btc.findIndex(x=>Number(x[0])===Number(c[i][0])),bc=bi>=0?btc.slice(0,bi+1).map(x=>+x[4]):[];
  const coinRet=closes.length>=21?price/closes.at(-21)-1:null,btcRet=bc.length>=21?bc.at(-1)/bc.at(-21)-1:null;
  const relativeStrength=coinRet!==null&&btcRet!==null?coinRet-btcRet:null;
  const rsiValue=rsi(closes),ap=atr(c,i),avgVol=mean(c.slice(i-20,i).map(x=>+x[5])),volumeRatio=avgVol>0?+c[i][5]/avgVol:null;
