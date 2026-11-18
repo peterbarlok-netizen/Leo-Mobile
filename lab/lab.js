@@ -1,7 +1,6 @@
 (()=>{'use strict';
-const API='https://data-api.binance.vision/api/v3',ASSETS=['BTCUSDT','SOLUSDT'],NAMES={A:'A · Trend-Pullback',B:'B · Breakout',C:'C · BTC-Trend',D:'D · SOL-Hybrid'};
-let latestResults=[],latestExperimentSummaries=[],latestTimeframeRuns=[],latestReportTrades=[];const CHECKS=['Kurs über EMA200','EMA20 über EMA50','EMA200 steigt','Wochenkurs über Wochen-EMA50','Höhere Tiefs','RSI 42–65','Relative Stärke vs. BTC','Volumen über Durchschnitt','Pullback-Nähe','Ausbruch','CRV mindestens 2','Fear & Greed 25–75','ATR 1,5–8 %'];
-const $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n),pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %',mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
+const API='https://data-api.binance.vision/api/v3',NAMES={A:'A · Trend-Pullback',B:'B · Breakout',C:'C · BTC-Trend',D:'D · SOL-Hybrid'};
+let latestResults=[],latestExperimentSummaries=[],latestTimeframeRuns=[],latestReportTrades=[];const $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n),pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %',mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
 const FEE_RATE=0.001,SLIPPAGE_RATE=0.0005;
 async function get(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Datenquelle antwortet mit HTTP '+r.status);return r.json()}
 async function getKlines(symbol,interval,limit=3000){let out=[],endTime=Date.now();while(out.length<limit){const n=Math.min(1000,limit-out.length),q=API+'/klines?symbol='+symbol+'&interval='+interval+'&limit='+n+'&endTime='+endTime,batch=await get(q);if(!batch.length)break;out=[...batch,...out];endTime=Number(batch[0][0])-1;if(batch.length<n)break}return out.slice(-limit)}
@@ -10,7 +9,6 @@ function emaAt(a,p,end){return ema(a.slice(0,end+1),p)}
 function rsi(a,p=14){if(a.length<=p)return null;let g=0,l=0;for(let i=1;i<=p;i++){let d=a[i]-a[i-1];g+=Math.max(d,0);l+=Math.max(-d,0)}g/=p;l/=p;for(let i=p+1;i<a.length;i++){let d=a[i]-a[i-1];g=(g*(p-1)+Math.max(d,0))/p;l=(l*(p-1)+Math.max(-d,0))/p}return l===0?(g===0?50:100):100-100/(1+g/l)}
 function atr(c,i,p=14){if(i<p)return null;let a=[];for(let j=i-p+1;j<=i;j++){let h=+c[j][2],l=+c[j][3],pc=+c[j-1][4];a.push(Math.max(h-l,Math.abs(h-pc),Math.abs(l-pc)))}return mean(a)}
 function pivots(c,end){let a=[];for(let i=2;i<end-2;i++){let v=+c[i][3];if(v<+c[i-1][3]&&v<+c[i-2][3]&&v<+c[i+1][3]&&v<+c[i+2][3])a.push({i,v})}return a}
-function fngMap(rows){const m=new Map();for(const x of rows||[])m.set(Math.floor(Number(x.timestamp)/86400),Number(x.value));return m}
 function evaluate(symbol,c,i,btc,weekly,fng){
  const closes=c.slice(0,i+1).map(x=>+x[4]),price=closes.at(-1);if(i<220)return null;
  const e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200),old200=emaAt(closes,200,closes.length-21);
