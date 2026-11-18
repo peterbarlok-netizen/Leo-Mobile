@@ -14,7 +14,6 @@ function fngMap(rows){const m=new Map();for(const x of rows||[])m.set(Math.floor
 function evaluate(symbol,c,i,btc,weekly,fng){
  const closes=c.slice(0,i+1).map(x=>+x[4]),price=closes.at(-1);if(i<220)return null;
  const e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200),old200=emaAt(closes,200,closes.length-21);
- const w=weekly.filter(x=>Number(x[6])<=Number(c[i][6])),wc=w.map(x=>+x[4]),we50=ema(wc,50);
  const bi=(i<btc.length&&Number(btc[i][0])===Number(c[i][0]))?i:btc.findIndex(x=>Number(x[0])===Number(c[i][0])),bc=bi>=0?btc.slice(0,bi+1).map(x=>+x[4]):[];
  const coinRet=closes.length>=21?price/closes.at(-21)-1:null,btcRet=bc.length>=21?bc.at(-1)/bc.at(-21)-1:null;
  const relativeStrength=coinRet!==null&&btcRet!==null?coinRet-btcRet:null;
@@ -25,7 +24,7 @@ function evaluate(symbol,c,i,btc,weekly,fng){
  const btcEma=ema(bc,200),btcOldEma=bc.length>=220?ema(bc.slice(0,-20),200):null;
  const btcRegime=btcEma===null||btcOldEma===null?'unknown':(bc.at(-1)>btcEma&&btcEma>btcOldEma?'bull':(bc.at(-1)<btcEma&&btcEma<btcOldEma?'bear':'sideways'));
  const stop=Math.min(recentLow,price-(ap||price*.02)*1.2);
- return {symbol,price,ema20:e20,ema50:e50,ema200:e200,rsi:rsiValue,atr:ap,volumeRatio,relativeStrength,btcRegime,trend,pullback,breakout,stop,weeklyBull:wc.length>=50&&wc.at(-1)>we50};
+ return {symbol,price,ema20:e20,ema50:e50,ema200:e200,rsi:rsiValue,atr:ap,volumeRatio,relativeStrength,btcRegime,trend,pullback,breakout,stop};
 }
 function signal(id,s,variant={}){
  if(!s)return false;
@@ -112,13 +111,12 @@ function exportLog(){
 async function run(){
  const b=$('run'),s=$('status');b.disabled=true;b.textContent='SOLANA-DATEN WERDEN GELADEN …';s.textContent='Lade SOL/USDT und BTC/USDT. Vier vereinfachte SOL-Setups werden mit Gebühren und Slippage getestet.';
  try{
-  const [solDailyRaw,btcDailyRaw,solWeeklyRaw,sol1hRaw,btc1hRaw,sol4hRaw,btc4hRaw]=await Promise.all([
+  const [solDailyRaw,btcDailyRaw,sol1hRaw,btc1hRaw,sol4hRaw,btc4hRaw]=await Promise.all([
    get(API+'/klines?symbol=SOLUSDT&interval=1d&limit=1000'),get(API+'/klines?symbol=BTCUSDT&interval=1d&limit=1000'),
-   get(API+'/klines?symbol=SOLUSDT&interval=1w&limit=500'),
    getKlines('SOLUSDT','1h',3000),getKlines('BTCUSDT','1h',3000),getKlines('SOLUSDT','4h',3000),getKlines('BTCUSDT','4h',3000)
   ]);
   const closed=a=>a.slice(0,-1),align=(a,b)=>{const bm=new Map(b.map(x=>[+x[0],x])),pairs=a.filter(x=>bm.has(+x[0]));return [pairs,pairs.map(x=>bm.get(+x[0]))]};
-  const [sol,btc]=align(closed(solDailyRaw),closed(btcDailyRaw)),weekly=closed(solWeeklyRaw);
+  const [sol,btc]=align(closed(solDailyRaw),closed(btcDailyRaw)),weekly=[];
   if(sol.length<300)throw Error('Zu wenig gemeinsame SOL-/BTC-Tageshistorie.');
   const split=Math.floor(sol.length*.7),warm=Math.max(0,split-220),splitTime=+sol[split][0];
   const summarize=r=>({profit:r.profit,ret:r.ret,trades:r.trades.length,win:r.winRate,pf:r.pf,dd:r.maxDD});
