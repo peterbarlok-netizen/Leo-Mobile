@@ -119,7 +119,7 @@ async function run(){
   const [sol,btc]=align(closed(solDailyRaw),closed(btcDailyRaw)),weekly=[];
   if(sol.length<300)throw Error('Zu wenig gemeinsame SOL-/BTC-Tageshistorie.');
   const split=Math.floor(sol.length*.7),warm=Math.max(0,split-220),splitTime=+sol[split][0];
-  const summarize=r=>({profit:r.profit,ret:r.ret,trades:r.trades.length,win:r.winRate,pf:r.pf,dd:r.maxDD});
+  const summarize=r=>({profit:r.profit,ret:r.ret,trades:r.trades.length,win:r.winRate,pf:r.pf,dd:r.maxDD===undefined?r.dd:r.maxDD});
   const summary=(name,full,train,oos,timeframe='1d')=>({name,full:summarize(full),train:summarize(train),oos:summarize(oos),timeframe});
   const specs=[
    {id:'A',name:'A · Trend-Pullback',variant:{rr:2,stopAtr:1.5}},
