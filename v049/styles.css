@@ -27,3 +27,39 @@
 .v49 .insight{border-radius:18px;margin-top:12px}
 .v49 .signal-overview .panel{min-height:174px}
 @media(min-width:600px){.v49.overview-active .lion-hero{height:230px}.v49.overview-active .lion-hero img{height:198px}.v49 .view{max-width:760px;margin:0 auto}}
+
+
+/* v0.49.1 HOTFIX — override legacy !important portrait hero rules */
+.v49.overview-active .lion-hero{
+  height:clamp(210px,38vw,270px)!important;
+  min-height:0!important;
+  aspect-ratio:auto!important;
+  margin:0 -13px 0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  display:block!important;
+  position:relative!important;
+  background:#02090e!important;
+}
+.v49.overview-active .lion-hero img{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  transform:none!important;
+  object-fit:cover!important;
+  object-position:center 38%!important;
+}
+.v49.overview-active .lion-hero:before,
+.v49.overview-active .lion-hero:after{display:none!important}
+.v49.overview-active .lion-title,
+.v49.overview-active .lion-subtitle{display:none!important}
+.v49.overview-active .hero-status{position:absolute!important;top:8px!important;left:12px!important;right:12px!important;z-index:8!important;display:flex!important;justify-content:flex-start!important;gap:7px!important}
+.v49:not(.overview-active) .lion-hero{display:none!important;height:0!important;margin:0!important}
+.v49:not(.overview-active) main{padding-top:0!important}
+.v49 .view:not([data-view="Übersicht"]) .hero{padding:24px 12px 18px!important}
+@media(max-width:390px){
+ .v49.overview-active .lion-hero{height:clamp(190px,58vw,230px)!important}
+}
