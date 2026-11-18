@@ -1,8 +1,8 @@
 (()=>{'use strict';
-const API='https://data-api.binance.vision/api/v3',ASSETS=['BTCUSDT','SOLUSDT'],NAMES={A:'A · Precision',B:'B · Coin First',C:'C · Hybrid',D:'D · Coin Adaptive'};
-let latestResults=[],latestExperimentSummaries=[],latestTimeframeRuns=[];const CHECKS=['Kurs über EMA200','EMA20 über EMA50','EMA200 steigt','Wochenkurs über Wochen-EMA50','Höhere Tiefs','RSI 42–65','Relative Stärke vs. BTC','Volumen über Durchschnitt','Pullback-Nähe','Ausbruch','CRV mindestens 2','Fear & Greed 25–75','ATR 1,5–8 %'];
+const API='https://data-api.binance.vision/api/v3',ASSETS=['BTCUSDT','SOLUSDT'],NAMES={A:'A · Trend-Pullback',B:'B · Breakout',C:'C · BTC-Trend',D:'D · SOL-Hybrid'};
+let latestResults=[],latestExperimentSummaries=[],latestTimeframeRuns=[],latestReportTrades=[];const CHECKS=['Kurs über EMA200','EMA20 über EMA50','EMA200 steigt','Wochenkurs über Wochen-EMA50','Höhere Tiefs','RSI 42–65','Relative Stärke vs. BTC','Volumen über Durchschnitt','Pullback-Nähe','Ausbruch','CRV mindestens 2','Fear & Greed 25–75','ATR 1,5–8 %'];
 const $=id=>document.getElementById(id),fmt=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n),pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %',mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
-const FEE_RATE=0,SLIPPAGE_RATE=0;
+const FEE_RATE=0.001,SLIPPAGE_RATE=0.0005;
 async function get(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Datenquelle antwortet mit HTTP '+r.status);return r.json()}
 async function getKlines(symbol,interval,limit=3000){let out=[],endTime=Date.now();while(out.length<limit){const n=Math.min(1000,limit-out.length),q=API+'/klines?symbol='+symbol+'&interval='+interval+'&limit='+n+'&endTime='+endTime,batch=await get(q);if(!batch.length)break;out=[...batch,...out];endTime=Number(batch[0][0])-1;if(batch.length<n)break}return out.slice(-limit)}
 function ema(a,p){if(a.length<p)return null;let v=mean(a.slice(0,p)),k=2/(p+1);for(let i=p;i<a.length;i++)v=a[i]*k+v*(1-k);return v}
@@ -12,56 +12,83 @@ function atr(c,i,p=14){if(i<p)return null;let a=[];for(let j=i-p+1;j<=i;j++){let
 function pivots(c,end){let a=[];for(let i=2;i<end-2;i++){let v=+c[i][3];if(v<+c[i-1][3]&&v<+c[i-2][3]&&v<+c[i+1][3]&&v<+c[i+2][3])a.push({i,v})}return a}
 function fngMap(rows){const m=new Map();for(const x of rows||[])m.set(Math.floor(Number(x.timestamp)/86400),Number(x.value));return m}
 function evaluate(symbol,c,i,btc,weekly,fng){
- const closes=c.slice(0,i+1).map(x=>+x[4]),vol=c.slice(0,i+1).map(x=>+x[5]),price=closes.at(-1);if(i<220)return null;
+ const closes=c.slice(0,i+1).map(x=>+x[4]),price=closes.at(-1);if(i<220)return null;
  const e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200),old200=emaAt(closes,200,closes.length-21);
  const w=weekly.filter(x=>Number(x[6])<=Number(c[i][6])),wc=w.map(x=>+x[4]),we50=ema(wc,50);
- const ps=pivots(c,i+1),last=ps.at(-1),prev=ps.at(-2),bi=btc.findIndex(x=>Number(x[0])===Number(c[i][0])),bc=bi>=0?btc.slice(0,bi+1).map(x=>+x[4]):[];
- const ar=closes.length>=21?price/closes.at(-21)-1:null,br=bc.length>=21?bc.at(-1)/bc.at(-21)-1:null;
- const avgVol=mean(vol.slice(-21,-1)),res=Math.max(...c.slice(Math.max(0,i-60),i).map(x=>+x[2]));
- const higher=!!(last&&prev&&i-last.i<=20&&i-prev.i<=45&&last.v>prev.v);
- const stop=last&&i-last.i<=20?last.v:Math.min(...c.slice(i-20,i).map(x=>+x[3]));
- const risk=price-stop,reward=res-price,rr=risk>0&&reward>0?reward/risk:null;
- const near=!!(e20&&e50&&Math.min(Math.abs(price-e20)/e20,Math.abs(price-e50)/e50)<=.025&&price>=e50);
- const breakout=price>Math.max(...c.slice(i-3,i).map(x=>+x[2]));
- const fg=fng.get(Math.floor(Number(c[i][0])/86400000)),ap=atr(c,i),apct=ap/price*100;
- const rsiValue=rsi(closes),volRatio=avgVol>0?+c[i][5]/avgVol:null;const checks=[price>e200,e20>e50,e200>old200,wc.length>=50&&wc.at(-1)>we50,higher,(rsiValue>=42&&rsiValue<=65),symbol==='BTCUSDT'||(ar!==null&&br!==null&&ar>br),+c[i][5]>avgVol,near,breakout,rr!==null&&rr>=2,fg!==undefined&&fg>=25&&fg<=75,apct>=1.5&&apct<=8];
+ const bi=btc.findIndex(x=>Number(x[0])===Number(c[i][0])),bc=bi>=0?btc.slice(0,bi+1).map(x=>+x[4]):[];
+ const coinRet=closes.length>=21?price/closes.at(-21)-1:null,btcRet=bc.length>=21?bc.at(-1)/bc.at(-21)-1:null;
+ const relativeStrength=coinRet!==null&&btcRet!==null?coinRet-btcRet:null;
+ const rsiValue=rsi(closes),ap=atr(c,i),avgVol=mean(c.slice(i-20,i).map(x=>+x[5])),volumeRatio=avgVol>0?+c[i][5]/avgVol:null;
+ const priorHigh=Math.max(...c.slice(i-20,i).map(x=>+x[2])),recentLow=Math.min(...c.slice(i-10,i).map(x=>+x[3]));
+ const pullback=price>=e50&&price>=e20*.97&&price<=e20*1.025;
+ const breakout=price>priorHigh,trend=price>e200&&e20>e50&&e200>old200;
  const btcEma=ema(bc,200),btcOldEma=bc.length>=220?ema(bc.slice(0,-20),200):null;
  const btcRegime=btcEma===null||btcOldEma===null?'unknown':(bc.at(-1)>btcEma&&btcEma>btcOldEma?'bull':(bc.at(-1)<btcEma&&btcEma<btcOldEma?'bear':'sideways'));
- return {symbol,checks,stop,target:res,rr,ema20:e20,ema50:e50,ema200:e200,atr:ap,atrPct:apct,rsi:rsiValue,volumeRatio:volRatio,fearGreed:fg,relativeStrength:ar!==null&&br!==null?ar-br:null,btcRegime,signalPrice:price};
+ const stop=Math.min(recentLow,price-(ap||price*.02)*1.2);
+ return {symbol,price,ema20:e20,ema50:e50,ema200:e200,rsi:rsiValue,atr:ap,volumeRatio,relativeStrength,btcRegime,trend,pullback,breakout,stop,weeklyBull:wc.length>=50&&wc.at(-1)>we50};
 }
-function signal(id,s,variant={}){const x=s.checks;if(id==='A')return !!(x.slice(0,8).every(Boolean)&&(x[8]||x[9])&&x[10]&&x[11]&&x[12]);if(id==='B')return !!(x[0]&&x[1]&&x[4]&&x[5]&&x[7]&&(x[8]||x[9])&&s.rr>=1.5);if(id==='C')return !!(x[0]&&x[1]&&x[2]&&x[3]&&x[4]&&x[5]&&x[7]&&(s.btcRegime==='bull')&&s.rr>=1.8);const y=x.slice();for(const k of (variant.remove||[]))y[k]=true;const entry=variant.entry==='pullback'?y[8]:variant.entry==='breakout'?y[9]:(y[8]||y[9]);const profile={SOLUSDT:{rsiMin:47,rsiMax:70,rsMin:.005,rr:1.8,stopAtr:1.25}};
- const p=profile[s.symbol]||profile.SOLUSDT,rs=s.relativeStrength,coinRsi=(variant.remove||[]).includes(5)||(s.rsi>=p.rsiMin&&s.rsi<=p.rsiMax),coinStrength=(variant.remove||[]).includes(6)||(rs!==null&&rs>=p.rsMin);
- const regime=variant.regime==='bull'?s.btcRegime==='bull':variant.regime==='bear'?s.btcRegime==='bear'&&coinStrength&&y[9]:true;
- const marketOk=variant.noBtcRegime?true:(regime&&(s.btcRegime==='bull'||(s.btcRegime==='sideways'&&coinStrength)||(s.btcRegime==='bear'&&coinStrength&&y[9])));
- return !!(y[0]&&y[1]&&y[3]&&y[4]&&y[7]&&entry&&coinRsi&&coinStrength&&marketOk&&s.rr>=p.rr)}
+function signal(id,s,variant={}){
+ if(!s)return false;
+ const minRS=variant.minRS===undefined?0:variant.minRS,rsOK=s.relativeStrength!==null&&s.relativeStrength>=minRS;
+ const rsiMin=variant.rsiMin===undefined?45:variant.rsiMin,rsiMax=variant.rsiMax===undefined?66:variant.rsiMax;
+ const pull=s.trend&&s.pullback&&s.rsi>=rsiMin&&s.rsi<=rsiMax&&rsOK;
+ const volumeOK=s.volumeRatio>=(variant.volumeMin===undefined?1.15:variant.volumeMin);
+ const breakout=s.breakout&&s.price>s.ema200&&s.rsi>=50&&s.rsi<=74&&volumeOK;
+ if(id==='A')return variant.entry==='breakout'?breakout:pull;
+ if(id==='B')return variant.entry==='pullback'?pull:breakout;
+ if(id==='C')return pull&&s.btcRegime==='bull';
+ const marketOK=variant.noBtcRegime||s.btcRegime==='bull'||(s.btcRegime==='sideways'&&rsOK)||(s.btcRegime==='bear'&&rsOK&&breakout);
+ if(variant.entry==='pullback')return pull&&marketOK;
+ if(variant.entry==='breakout')return breakout&&rsOK&&marketOK;
+ return s.trend&&rsOK&&((s.pullback&&s.rsi>=rsiMin&&s.rsi<=rsiMax)||(breakout&&s.btcRegime!=='unknown'))&&marketOK;
+}
 function simulate(id,symbol,c,btc,weekly,fng,capital,variant={}){
  let cash=capital,pos=null,trades=[],equity=[{t:+c[220][0],v:capital}],peak=capital,maxDD=0,signals=0;
+ const rr=variant.rr||({A:2,B:2,C:2.2,D:2}[id]||2);
  for(let i=220;i<c.length-1;i++){
-  const bar=c[i],o=+bar[1],h=+bar[2],l=+bar[3],cl=+bar[4],sig=evaluate(symbol,c,i,btc,weekly,fng);
-  if(sig&&(id!=='D'||variant.universe||(symbol==='ETHUSDT'||symbol==='SOLUSDT'))&&signal(id,sig,variant))signals++;
+  const bar=c[i],o=+bar[1],h=+bar[2],l=+bar[3],cl=+bar[4],sig=evaluate(symbol,c,i,btc,weekly,null);
+  if(sig&&signal(id,sig,variant))signals++;
   if(pos){
    let exit=null,reason='';
    if(l<=pos.stop){exit=Math.min(o,pos.stop);reason=pos.trailing?'TRAILING-STOP':'INITIAL-STOP'}
    else if(h>=pos.target){exit=Math.max(o,pos.target);reason='KURSZIEL'}
-   else if(id!=='A'&&cl<pos.ema20&&cl<pos.entry){exit=cl;reason='MOMENTUM-VERLUST'}
-   if(exit!==null){const fill=exit*(1-SLIPPAGE_RATE),fee=pos.qty*fill*FEE_RATE,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-fee;cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+bar[6]).toISOString().slice(0,10),exitPrice:exit,exitFill:fill,exitFee:fee,net,ret:net/pos.stake*100,reason});pos=null}
-   else{const av=atr(c,i);if(av){pos.highWater=Math.max(pos.highWater,h);if(pos.highWater>=pos.entry+pos.initialRisk){pos.trailing=true;pos.stop=Math.max(pos.stop,pos.highWater-2*av);pos.currentStop=pos.stop}}}
-  }
-  if(!pos&&sig&&(id!=='D'||variant.universe||(symbol==='ETHUSDT'||symbol==='SOLUSDT'))&&signal(id,sig,variant)){
-   const next=c[i+1],raw=+next[1],fill=raw*(1+SLIPPAGE_RATE),stop=id==='D'?Math.min(sig.stop,raw-Math.max((sig.atr||0)*(variant.stopFloorAtr===undefined?({SOLUSDT:1.25}[symbol]||1.25):variant.stopFloorAtr),raw*(variant.stopFloorPct===undefined?.005:variant.stopFloorPct))):sig.stop,risk=fill-stop,reward=sig.target-fill;
-   if(risk>0&&reward>=(id==='B'||id==='D'?1.5:1.8)*risk){
-    const riskBudget=cash*.01,qty=Math.min(riskBudget/risk,(cash*.25)/(fill*(1+FEE_RATE))),stake=qty*fill*(1+FEE_RATE);
-    if(qty>0&&stake<=cash){pos={qty,stake,entry:raw,entryFill:fill,entryFee:qty*fill*FEE_RATE,stop,initialStop:stop,currentStop:stop,target:sig.target,ema20:sig.ema20,rr:sig.rr,date:new Date(+next[0]).toISOString().slice(0,10),signalDate:new Date(+bar[0]).toISOString().slice(0,10),initialRisk:risk,highWater:raw,trailing:false,signalChecks:sig.checks.map((v,i)=>(v?'+ ':'- ')+CHECKS[i]).join(' | '),signalPrice:sig.signalPrice,ema50:sig.ema50,ema200:sig.ema200,atr:sig.atr,atrPct:sig.atrPct,rsi:sig.rsi,volumeRatio:sig.volumeRatio,fearGreed:sig.fearGreed,relativeStrength:sig.relativeStrength,signalRR:sig.rr,entryRR:(sig.target-fill)/(fill-sig.stop),signalTarget:sig.target};cash-=stake}
+   else if(cl<pos.ema20&&cl<pos.entry){exit=cl;reason='MOMENTUM-VERLUST'}
+   if(exit!==null){
+    const fill=exit*(1-SLIPPAGE_RATE),fee=pos.qty*fill*FEE_RATE,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-fee;
+    cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+bar[6]).toISOString().slice(0,10),exitPrice:exit,exitFill:fill,exitFee:fee,net,ret:net/pos.stake*100,reason});pos=null;
+   }else{
+    const av=atr(c,i);if(av){pos.highWater=Math.max(pos.highWater,h);if(pos.highWater>=pos.entry+pos.initialRisk){pos.trailing=true;pos.stop=Math.max(pos.stop,pos.highWater-2.5*av);pos.currentStop=pos.stop}}
    }
   }
-  const mark=pos?cash+pos.qty*cl*(1-SLIPPAGE_RATE-FEE_RATE):cash;equity.push({t:+bar[0],v:mark});peak=Math.max(peak,mark);maxDD=Math.max(maxDD,(peak-mark)/peak*100);
+  if(!pos&&sig&&signal(id,sig,variant)){
+   const next=c[i+1],raw=+next[1],fill=raw*(1+SLIPPAGE_RATE);
+   const atrStop=raw-(sig.atr||raw*.02)*(variant.stopAtr||1.5),stop=Math.min(sig.stop,atrStop),risk=fill-stop;
+   if(risk>0){
+    const riskBudget=cash*.01,qty=Math.min(riskBudget/risk,(cash*.5)/(fill*(1+FEE_RATE))),stake=qty*fill*(1+FEE_RATE),entryFee=qty*fill*FEE_RATE;
+    if(qty>0&&stake<=cash){
+     const target=fill+risk*rr;
+     pos={qty,stake,entry:raw,entryFill:fill,entryFee,stop,initialStop:stop,currentStop:stop,target,ema20:sig.ema20,ema50:sig.ema50,ema200:sig.ema200,date:new Date(+next[0]).toISOString().slice(0,10),signalDate:new Date(+bar[0]).toISOString().slice(0,10),initialRisk:risk,highWater:raw,trailing:false,signalPrice:sig.price,atr:sig.atr,rsi:sig.rsi,volumeRatio:sig.volumeRatio,relativeStrength:sig.relativeStrength,btcRegime:sig.btcRegime,signalRR:rr,entryRR:rr};
+     cash-=stake;
+    }
+   }
+  }
+  const mark=pos?cash+pos.qty*cl*(1-SLIPPAGE_RATE-FEE_RATE):cash;
+  equity.push({t:+bar[0],v:mark});peak=Math.max(peak,mark);maxDD=Math.max(maxDD,(peak-mark)/peak*100);
  }
- if(pos){const last=c.at(-1),exit=+last[4],fill=exit*(1-SLIPPAGE_RATE),net=pos.qty*(fill-pos.entryFill)-pos.entryFee-pos.qty*fill*FEE_RATE;cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+last[0]).toISOString().slice(0,10),exitPrice:exit,exitFill:fill,exitFee:pos.qty*fill*FEE_RATE,net,ret:net/pos.stake*100,reason:'DATENENDE'})}equity.push({t:+c.at(-1)[0],v:cash});
+ if(pos){
+  const last=c.at(-1),exit=+last[4],fill=exit*(1-SLIPPAGE_RATE),exitFee=pos.qty*fill*FEE_RATE,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-exitFee;
+  cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+last[0]).toISOString().slice(0,10),exitPrice:exit,exitFill:fill,exitFee,net,ret:net/pos.stake*100,reason:'DATENENDE'});
+ }
+ equity.push({t:+c.at(-1)[0],v:cash});
  const wins=trades.filter(t=>t.net>0),loss=trades.filter(t=>t.net<0),gw=wins.reduce((s,t)=>s+t.net,0),gl=Math.abs(loss.reduce((s,t)=>s+t.net,0));
  return {id,symbol,capital,end:cash,profit:cash-capital,ret:(cash/capital-1)*100,trades,wins:wins.length,winRate:trades.length?wins.length/trades.length*100:0,pf:gl?gw/gl:gw?Infinity:0,maxDD,signals,equity};
 }
-function buyHold(c,capital){const first=+c[0][4],qty=capital/first,equity=c.map(x=>({t:+x[0],v:qty*(+x[4])}));const end=equity.at(-1).v;let peak=capital,dd=0;for(const p of equity){peak=Math.max(peak,p.v);dd=Math.max(dd,(peak-p.v)/peak*100)}return {capital,end,profit:end-capital,ret:(end/capital-1)*100,trades:[],win:0,winRate:0,pf:0,dd,equity}}
-
+function buyHold(c,capital){
+ const first=+c[0][4],entry=first*(1+SLIPPAGE_RATE+FEE_RATE),qty=capital/entry;
+ const equity=c.map(x=>({t:+x[0],v:qty*(+x[4])*(1-SLIPPAGE_RATE-FEE_RATE)})),end=equity.at(-1).v;
+ let peak=capital,dd=0;for(const p of equity){peak=Math.max(peak,p.v);dd=Math.max(dd,(peak-p.v)/peak*100)}
+ return {capital,end,profit:end-capital,ret:(end/capital-1)*100,trades:[],win:0,winRate:0,pf:0,dd,equity};
+}
 function render(results,period,experiments=[]){
  latestResults=results;const ids=['A','B','C','D'],agg=ids.map(id=>{const a=results.filter(r=>r.id===id),tr=a.flatMap(r=>r.trades),start=a.reduce((s,r)=>s+r.capital,0),end=a.reduce((s,r)=>s+r.end,0),win=tr.filter(t=>t.net>0).length,gw=tr.filter(t=>t.net>0).reduce((s,t)=>s+t.net,0),gl=Math.abs(tr.filter(t=>t.net<0).reduce((s,t)=>s+t.net,0)),daily=new Map();for(const r of a)for(const p of r.equity)daily.set(p.t,(daily.get(p.t)||0)+p.v);let peak=start,dd=0;for(const v of [...daily.entries()].sort((x,y)=>x[0]-y[0]).map(x=>x[1])){peak=Math.max(peak,v);dd=Math.max(dd,(peak-v)/peak*100)}return {id,start,end,profit:end-start,ret:(end/start-1)*100,trades:tr.length,win:tr.length?win/tr.length*100:0,pf:gl?gw/gl:gw?Infinity:0,dd}});
  $('summary').innerHTML=agg.map(a=>'<div class="metric"><small>'+NAMES[a.id]+'</small><b class="'+(a.profit>=0?'up':'down')+'">'+fmt(a.profit)+'</b><small>'+pct(a.ret)+' · '+a.trades+' Trades</small></div>').join('');
