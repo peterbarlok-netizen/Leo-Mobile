@@ -104,14 +104,14 @@ function render(results,period,experiments=[],walkForward=[]){
  const all=results.flatMap(r=>r.trades.map(t=>({...t,id:r.id}))).sort((a,b)=>b.buy.localeCompare(a.buy)).slice(0,50);
  $('trades').innerHTML='<div class="trade-list">'+(all.map(t=>'<div class="trade"><div class="trade-top"><b>'+t.id+' · '+t.symbol.replace('USDT','')+'</b><strong class="'+(t.net>=0?'up':'down')+'">'+fmt(t.net)+'</strong></div><span>'+t.buy+' → '+t.sell+' · '+t.reason+' · '+pct(t.ret)+'</span></div>').join('')||'<div class="empty">Keine Trades nach diesen Regeln.</div>')+'</div>';
  $('period').textContent=period;if($('experiments'))$('experiments').innerHTML=experiments.map(e=>'<tr><td>'+e.name+'</td><td>'+fmt(e.train.profit)+'</td><td>'+pct(e.train.ret)+'</td><td>'+e.train.trades+'</td><td>'+(Number.isFinite(e.train.pf)?e.train.pf.toFixed(2):'∞')+'</td><td>'+pct(-e.train.dd)+'</td><td class="'+(e.oos.profit>=0?'up':'down')+'">'+fmt(e.oos.profit)+'</td><td>'+pct(e.oos.ret)+'</td><td>'+e.oos.trades+'</td><td>'+(Number.isFinite(e.oos.pf)?e.oos.pf.toFixed(2):'∞')+'</td><td>'+pct(-e.oos.dd)+'</td></tr>').join('');
- if($('walkforward'))$('walkforward').innerHTML=walkForward.map(w=>'<tr><td>'+w.name+'</td><td>'+w.period+'</td><td>'+w.trades+'</td><td class="'+(w.profit>=0?'up':'down')+'">'+fmt(w.profit)+'</td><td>'+pct(w.ret)+'</td><td>'+(Number.isFinite(w.pf)?w.pf.toFixed(2):'∞')+'</td><td>'+pct(-w.dd)+'</td></tr>').join('')||'<tr><td colspan="7">Nicht genügend Historie für vollständige Walk-Forward-Fenster.</td></tr>';
+ if($('walkforward'))$('walkforward').innerHTML=walkForward.map(w=>'<tr><td>'+w.name+'</td><td>'+w.period+'</td><td class="'+(w.trainProfit>=0?'up':'down')+'">'+fmt(w.trainProfit)+'</td><td>'+w.trades+'</td><td class="'+(w.profit>=0?'up':'down')+'">'+fmt(w.profit)+'</td><td>'+pct(w.ret)+'</td><td>'+(Number.isFinite(w.pf)?w.pf.toFixed(2):'∞')+'</td><td>'+pct(-w.dd)+'</td></tr>').join('')||'<tr><td colspan="8">Nicht genügend Historie für vollständige Walk-Forward-Fenster.</td></tr>';
 }
 function exportLog(){
  const cols=['datensatzTyp','test','segment','zeitintervall','coin','strategie','startkapitalEUR','nettoEUR','renditeProzent','trades','trefferquoteProzent','profitFactor','drawdownProzent','signalDatum','einstiegDatum','ausstiegDatum','signalZeitUTC','einstiegZeitUTC','ausstiegZeitUTC','signalKurs','einstiegKurs','einstiegFill','ausstiegKurs','ausstiegFill','menge','positionswert','urspruenglicherStop','aktuellerStopBeimAusstieg','kursziel','CRVBeimSignal','CRVBeimEinstieg','EMA20','EMA50','EMA200','RSI','ATR','VolumenFaktor','Momentum3','Momentum5','entryGebuehr','exitGebuehr','ausstiegsgrund'];
  const rows=[],esc=v=>{const s=v===null||v===undefined?'':String(v);return '"'+s.replace(/"/g,'""')+'"';};
  const addTrade=(entry,t)=>{const segment=entry.summarySegment|| (entry.splitTime&&t.entryTime>=entry.splitTime?'OOS':'TRAIN');rows.push({datensatzTyp:'TRADE',test:entry.name,segment,zeitintervall:entry.timeframe,coin:'SOL',strategie:entry.name,signalDatum:t.signalDate,einstiegDatum:t.buy,ausstiegDatum:t.sell,signalZeitUTC:t.signalTime?new Date(t.signalTime).toISOString():'',einstiegZeitUTC:t.entryTime?new Date(t.entryTime).toISOString():'',ausstiegZeitUTC:t.exitTime?new Date(t.exitTime).toISOString():'',signalKurs:t.signalPrice,einstiegKurs:t.entry,einstiegFill:t.entryFill,ausstiegKurs:t.exitPrice,ausstiegFill:t.exitFill,menge:t.qty,positionswert:t.stake,urspruenglicherStop:t.initialStop,aktuellerStopBeimAusstieg:t.currentStop,kursziel:t.target,CRVBeimSignal:t.signalRR,CRVBeimEinstieg:t.entryRR,EMA20:t.ema20,EMA50:t.ema50,EMA200:t.ema200,RSI:t.rsi,ATR:t.atr,VolumenFaktor:t.volumeRatio,Momentum3:t.momentum3,Momentum5:t.momentum5,entryGebuehr:t.entryFee,exitGebuehr:t.exitFee,nettoEUR:t.net,renditeProzent:t.ret,ausstiegsgrund:t.reason});};
  latestReportTrades.forEach(entry=>entry.result.trades.forEach(t=>addTrade(entry,t)));
- const addSummary=(e,segment,m,tf)=>rows.push({datensatzTyp:'ERGEBNIS',test:e.name,segment,zeitintervall:tf,coin:'SOL',strategie:e.name,startkapitalEUR:1500,nettoEUR:m.profit,renditeProzent:m.ret,trades:m.trades,trefferquoteProzent:m.win,profitFactor:m.pf,drawdownProzent:-m.dd});
+ const addSummary=(e,segment,m,tf)=>rows.push({datensatzTyp:'ERGEBNIS',test:e.name,segment:e.summarySegment||segment,zeitintervall:tf,coin:'SOL',strategie:e.name,startkapitalEUR:1500,nettoEUR:m.profit,renditeProzent:m.ret,trades:m.trades,trefferquoteProzent:m.win,profitFactor:m.pf,drawdownProzent:-m.dd});
  latestExperimentSummaries.forEach(e=>{if(e.train)addSummary(e,'TRAIN',e.train,e.timeframe||'1d');if(e.oos)addSummary(e,'OOS',e.oos,e.timeframe||'1d');if(e.full)addSummary(e,'GESAMT',e.full,e.timeframe||'1d')});
  const csv='\uFEFF'+[cols.join(';'),...rows.map(r=>cols.map(k=>esc(r[k])).join(';'))].join('\r\n');
  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -168,19 +168,19 @@ async function run(){
    for(const ev of eVariants){const full=simulate('E','SOLUSDT',sc,1500,ev.variant);timeframeTests.push(summary(ev.name,full,st,tf));latestReportTrades.push({name:ev.name,timeframe:tf,splitTime:st,result:full});}
   }
   const wfVariants=[{name:'E Momentum Basis',variant:{rr:2,stopAtr:1.5,volumeMin:1.05}},{name:'E Momentum EMA20',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema20'}},{name:'E Momentum EMA50',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema50'}}];
-  const barsPerDay=24,trainBars=365*barsPerDay,testBars=90*barsPerDay;
-  const foldCount=Math.min(4,Math.floor((tf1Sol.length-trainBars-1)/testBars));
+  const barsPerDay=24,trainBars=365*barsPerDay,testBars=90*barsPerDay,warmupBars=220;
+  const firstTestStart=trainBars+warmupBars;
+  const foldCount=Math.min(4,Math.floor((tf1Sol.length-firstTestStart-1)/testBars));
   for(let fold=0;fold<foldCount;fold++){
-   const startIndex=trainBars+fold*testBars,endIndex=Math.min(startIndex+testBars,tf1Sol.length-1);
+   const startIndex=firstTestStart+fold*testBars,endIndex=Math.min(startIndex+testBars,tf1Sol.length-1),trainStartIndex=startIndex-trainBars;
    for(const w of wfVariants){
-    const variant={...w.variant,startIndex,endIndex};
-    const full=simulate('E','SOLUSDT',tf1Sol,1500,variant);
-    const stat=tradeStats(full.trades,1500,full.equity);
-    const name='WF '+(fold+1)+' · '+w.name;
-    const item={name,full:stat,timeframe:'1h',summarySegment:'WALK-FORWARD'};
-    walkForward.push({name,period:new Date(+tf1Sol[startIndex][0]).toLocaleDateString('de-DE')+' – '+new Date(+tf1Sol[endIndex][6]).toLocaleDateString('de-DE'),...stat});
-    latestExperimentSummaries.push(item);
-    latestReportTrades.push({name,timeframe:'1h',summarySegment:'WALK-FORWARD',result:full});
+    const trainResult=simulate('E','SOLUSDT',tf1Sol,1500,{...w.variant,startIndex:trainStartIndex,endIndex:startIndex});
+    const testResult=simulate('E','SOLUSDT',tf1Sol,1500,{...w.variant,startIndex,endIndex});
+    const trainStat=tradeStats(trainResult.trades,1500,trainResult.equity),stat=tradeStats(testResult.trades,1500,testResult.equity);
+    const name='WF '+(fold+1)+' · '+w.name,period=new Date(+tf1Sol[startIndex][0]).toLocaleDateString('de-DE')+' – '+new Date(+tf1Sol[endIndex][6]).toLocaleDateString('de-DE');
+    walkForward.push({name,period,trainProfit:trainStat.profit,...stat});
+    latestExperimentSummaries.push({name:name+' · TRAIN',full:trainStat,timeframe:'1h',summarySegment:'WF-TRAIN'},{name:name+' · OOS',full:stat,timeframe:'1h',summarySegment:'WF-OOS'});
+    latestReportTrades.push({name:name+' · TRAIN',timeframe:'1h',summarySegment:'WF-TRAIN',result:trainResult},{name:name+' · OOS',timeframe:'1h',summarySegment:'WF-OOS',result:testResult});
    }
   }
   const bhFull=buyHold(sol,1500),bhTrain=buyHold(sol.slice(0,split),1500),bhOos=buyHold(sol.slice(split),1500);
