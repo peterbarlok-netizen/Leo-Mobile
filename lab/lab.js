@@ -52,7 +52,7 @@ function simulate(id,symbol,c,btc,weekly,fng,capital,variant={}){
    else if(cl<pos.ema20&&cl<pos.entry){exit=cl;reason='MOMENTUM-VERLUST'}
    if(exit!==null){
     const fill=exit*(1-SLIPPAGE_RATE),fee=pos.qty*fill*FEE_RATE,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-fee;
-    cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+bar[6]).toISOString().slice(0,10),exitPrice:exit,exitFill:fill,exitFee:fee,net,ret:net/pos.stake*100,reason});pos=null;
+    cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+bar[6]).toISOString().slice(0,10),exitTime:+bar[0],exitPrice:exit,exitFill:fill,exitFee:fee,net,ret:net/pos.stake*100,reason});pos=null;
    }else{
     const av=atr(c,i);if(av){pos.highWater=Math.max(pos.highWater,h);if(pos.highWater>=pos.entry+pos.initialRisk){pos.trailing=true;pos.stop=Math.max(pos.stop,pos.highWater-2.5*av);pos.currentStop=pos.stop}}
    }
@@ -64,7 +64,7 @@ function simulate(id,symbol,c,btc,weekly,fng,capital,variant={}){
     const riskBudget=cash*.01,qty=Math.min(riskBudget/risk,(cash*.5)/(fill*(1+FEE_RATE))),stake=qty*fill*(1+FEE_RATE),entryFee=qty*fill*FEE_RATE;
     if(qty>0&&stake<=cash){
      const target=fill+risk*rr;
-     pos={qty,stake,entry:raw,entryFill:fill,entryFee,stop,initialStop:stop,currentStop:stop,target,ema20:sig.ema20,ema50:sig.ema50,ema200:sig.ema200,date:new Date(+next[0]).toISOString().slice(0,10),signalDate:new Date(+bar[0]).toISOString().slice(0,10),initialRisk:risk,highWater:raw,trailing:false,signalPrice:sig.price,atr:sig.atr,rsi:sig.rsi,volumeRatio:sig.volumeRatio,relativeStrength:sig.relativeStrength,btcRegime:sig.btcRegime,signalRR:rr,entryRR:rr};
+     pos={qty,stake,entry:raw,entryFill:fill,entryFee,stop,initialStop:stop,currentStop:stop,target,ema20:sig.ema20,ema50:sig.ema50,ema200:sig.ema200,date:new Date(+next[0]).toISOString().slice(0,10),signalDate:new Date(+bar[0]).toISOString().slice(0,10),entryTime:+next[0],signalTime:+bar[0],initialRisk:risk,highWater:raw,trailing:false,signalPrice:sig.price,atr:sig.atr,rsi:sig.rsi,volumeRatio:sig.volumeRatio,relativeStrength:sig.relativeStrength,btcRegime:sig.btcRegime,signalRR:rr,entryRR:rr};
      cash-=stake;
     }
    }
@@ -74,7 +74,7 @@ function simulate(id,symbol,c,btc,weekly,fng,capital,variant={}){
  }
  if(pos){
   const last=c.at(-1),exit=+last[4],fill=exit*(1-SLIPPAGE_RATE),exitFee=pos.qty*fill*FEE_RATE,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-exitFee;
-  cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+last[0]).toISOString().slice(0,10),exitPrice:exit,exitFill:fill,exitFee,net,ret:net/pos.stake*100,reason:'DATENENDE'});
+  cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+last[0]).toISOString().slice(0,10),exitTime:+last[0],exitPrice:exit,exitFill:fill,exitFee,net,ret:net/pos.stake*100,reason:'DATENENDE'});
  }
  equity.push({t:+c.at(-1)[0],v:cash});
  const wins=trades.filter(t=>t.net>0),loss=trades.filter(t=>t.net<0),gw=wins.reduce((s,t)=>s+t.net,0),gl=Math.abs(loss.reduce((s,t)=>s+t.net,0));
@@ -96,9 +96,9 @@ function render(results,period,experiments=[]){
  $('period').textContent=period;if($('experiments'))$('experiments').innerHTML=experiments.map(e=>'<tr><td>'+e.name+'</td><td>'+fmt(e.train.profit)+'</td><td>'+pct(e.train.ret)+'</td><td>'+e.train.trades+'</td><td>'+(Number.isFinite(e.train.pf)?e.train.pf.toFixed(2):'∞')+'</td><td>'+pct(-e.train.dd)+'</td><td class="'+(e.oos.profit>=0?'up':'down')+'">'+fmt(e.oos.profit)+'</td><td>'+pct(e.oos.ret)+'</td><td>'+e.oos.trades+'</td><td>'+(Number.isFinite(e.oos.pf)?e.oos.pf.toFixed(2):'∞')+'</td><td>'+pct(-e.oos.dd)+'</td></tr>').join('');
 }
 function exportLog(){
- const cols=['datensatzTyp','test','segment','zeitintervall','coin','strategie','startkapitalEUR','nettoEUR','renditeProzent','trades','trefferquoteProzent','profitFactor','drawdownProzent','signalDatum','einstiegDatum','ausstiegDatum','signalKurs','einstiegKurs','einstiegFill','ausstiegKurs','ausstiegFill','menge','positionswert','urspruenglicherStop','aktuellerStopBeimAusstieg','kursziel','CRVBeimSignal','CRVBeimEinstieg','EMA20','EMA50','EMA200','RSI','ATR','VolumenFaktor','relativeStaerkeVsBTC','BTCRegime','entryGebuehr','exitGebuehr','ausstiegsgrund'];
+ const cols=['datensatzTyp','test','segment','zeitintervall','coin','strategie','startkapitalEUR','nettoEUR','renditeProzent','trades','trefferquoteProzent','profitFactor','drawdownProzent','signalDatum','einstiegDatum','ausstiegDatum','signalZeitUTC','einstiegZeitUTC','ausstiegZeitUTC','signalKurs','einstiegKurs','einstiegFill','ausstiegKurs','ausstiegFill','menge','positionswert','urspruenglicherStop','aktuellerStopBeimAusstieg','kursziel','CRVBeimSignal','CRVBeimEinstieg','EMA20','EMA50','EMA200','RSI','ATR','VolumenFaktor','relativeStaerkeVsBTC','BTCRegime','entryGebuehr','exitGebuehr','ausstiegsgrund'];
  const rows=[],esc=v=>{const s=v===null||v===undefined?'':String(v);return '"'+s.replace(/"/g,'""')+'"';};
- const addTrade=(entry,t)=>{const segment=entry.splitTime&&Date.parse(t.buy+'T00:00:00Z')>=entry.splitTime?'OOS':'TRAIN';rows.push({datensatzTyp:'TRADE',test:entry.name,segment,zeitintervall:entry.timeframe,coin:'SOL',strategie:entry.name,signalDatum:t.signalDate,einstiegDatum:t.buy,ausstiegDatum:t.sell,signalKurs:t.signalPrice,einstiegKurs:t.entry,einstiegFill:t.entryFill,ausstiegKurs:t.exitPrice,ausstiegFill:t.exitFill,menge:t.qty,positionswert:t.stake,urspruenglicherStop:t.initialStop,aktuellerStopBeimAusstieg:t.currentStop,kursziel:t.target,CRVBeimSignal:t.signalRR,CRVBeimEinstieg:t.entryRR,EMA20:t.ema20,EMA50:t.ema50,EMA200:t.ema200,RSI:t.rsi,ATR:t.atr,VolumenFaktor:t.volumeRatio,relativeStaerkeVsBTC:t.relativeStrength,BTCRegime:t.btcRegime,entryGebuehr:t.entryFee,exitGebuehr:t.exitFee,nettoEUR:t.net,renditeProzent:t.ret,ausstiegsgrund:t.reason});};
+ const addTrade=(entry,t)=>{const segment=entry.splitTime&&t.entryTime>=entry.splitTime?'OOS':'TRAIN';rows.push({datensatzTyp:'TRADE',test:entry.name,segment,zeitintervall:entry.timeframe,coin:'SOL',strategie:entry.name,signalDatum:t.signalDate,einstiegDatum:t.buy,ausstiegDatum:t.sell,signalZeitUTC:t.signalTime?new Date(t.signalTime).toISOString():'',einstiegZeitUTC:t.entryTime?new Date(t.entryTime).toISOString():'',ausstiegZeitUTC:t.exitTime?new Date(t.exitTime).toISOString():'',signalKurs:t.signalPrice,einstiegKurs:t.entry,einstiegFill:t.entryFill,ausstiegKurs:t.exitPrice,ausstiegFill:t.exitFill,menge:t.qty,positionswert:t.stake,urspruenglicherStop:t.initialStop,aktuellerStopBeimAusstieg:t.currentStop,kursziel:t.target,CRVBeimSignal:t.signalRR,CRVBeimEinstieg:t.entryRR,EMA20:t.ema20,EMA50:t.ema50,EMA200:t.ema200,RSI:t.rsi,ATR:t.atr,VolumenFaktor:t.volumeRatio,relativeStaerkeVsBTC:t.relativeStrength,BTCRegime:t.btcRegime,entryGebuehr:t.entryFee,exitGebuehr:t.exitFee,nettoEUR:t.net,renditeProzent:t.ret,ausstiegsgrund:t.reason});};
  latestReportTrades.forEach(entry=>entry.result.trades.forEach(t=>addTrade(entry,t)));
  const addSummary=(e,segment,m,tf)=>rows.push({datensatzTyp:'ERGEBNIS',test:e.name,segment,zeitintervall:tf,coin:'SOL',strategie:e.name,startkapitalEUR:1500,nettoEUR:m.profit,renditeProzent:m.ret,trades:m.trades,trefferquoteProzent:m.win,profitFactor:m.pf,drawdownProzent:-m.dd});
  latestExperimentSummaries.forEach(e=>{if(e.train)addSummary(e,'TRAIN',e.train,e.timeframe||'1d');if(e.oos)addSummary(e,'OOS',e.oos,e.timeframe||'1d');if(e.full)addSummary(e,'GESAMT',e.full,e.timeframe||'1d')});
@@ -111,14 +111,16 @@ async function run(){
  try{
   const [solDailyRaw,btcDailyRaw,sol1hRaw,btc1hRaw,sol4hRaw,btc4hRaw]=await Promise.all([
    get(API+'/klines?symbol=SOLUSDT&interval=1d&limit=1000'),get(API+'/klines?symbol=BTCUSDT&interval=1d&limit=1000'),
-   getKlines('SOLUSDT','1h',3000),getKlines('BTCUSDT','1h',3000),getKlines('SOLUSDT','4h',3000),getKlines('BTCUSDT','4h',3000)
+   getKlines('SOLUSDT','1h',6000),getKlines('BTCUSDT','1h',6000),getKlines('SOLUSDT','4h',1500),getKlines('BTCUSDT','4h',1500)
   ]);
   const closed=a=>a.slice(0,-1),align=(a,b)=>{const bm=new Map(b.map(x=>[+x[0],x])),pairs=a.filter(x=>bm.has(+x[0]));return [pairs,pairs.map(x=>bm.get(+x[0]))]};
   const [sol,btc]=align(closed(solDailyRaw),closed(btcDailyRaw)),weekly=[];
   if(sol.length<300)throw Error('Zu wenig gemeinsame SOL-/BTC-Tageshistorie.');
   const split=Math.floor(sol.length*.7),warm=Math.max(0,split-220),splitTime=+sol[split][0];
   const summarize=r=>({profit:r.profit,ret:r.ret,trades:r.trades.length,win:r.winRate,pf:r.pf,dd:r.maxDD===undefined?r.dd:r.maxDD});
-  const summary=(name,full,train,oos,timeframe='1d')=>({name,full:summarize(full),train:summarize(train),oos:summarize(oos),timeframe});
+  const tradeStats=(trades,capital=1500)=>{const ordered=trades.slice().sort((a,b)=>(a.entryTime||0)-(b.entryTime||0));const profit=ordered.reduce((s,t)=>s+t.net,0),wins=ordered.filter(t=>t.net>0),losses=ordered.filter(t=>t.net<0),gw=wins.reduce((s,t)=>s+t.net,0),gl=Math.abs(losses.reduce((s,t)=>s+t.net,0));let equity=capital,peak=capital,dd=0;for(const t of ordered){equity+=t.net;peak=Math.max(peak,equity);dd=Math.max(dd,(peak-equity)/peak*100)}return {profit,ret:profit/capital*100,trades:ordered.length,win:ordered.length?wins.length/ordered.length*100:0,pf:gl?gw/gl:gw?Infinity:0,dd};};
+  const summary=(name,full,splitTime,timeframe='1d')=>{const trades=full.trades;return {name,full:tradeStats(trades),train:tradeStats(trades.filter(t=>t.entryTime<splitTime)),oos:tradeStats(trades.filter(t=>t.entryTime>=splitTime)),timeframe};};
+  const benchmarkSummary=(name,full,train,oos)=>({name,full:summarize(full),train:summarize(train),oos:summarize(oos),timeframe:'1d'});
   const specs=[
    {id:'A',name:'A · Trend-Pullback',variant:{rr:2,stopAtr:1.5}},
    {id:'B',name:'B · Breakout',variant:{rr:2,stopAtr:1.5,volumeMin:1.2}},
@@ -128,9 +130,7 @@ async function run(){
   const results=[],baseSummaries=[];latestReportTrades=[];
   for(const spec of specs){
    const full=simulate(spec.id,'SOLUSDT',sol,btc,weekly,null,1500,spec.variant);
-   const train=simulate(spec.id,'SOLUSDT',sol.slice(0,split),btc.slice(0,split),weekly.filter(x=>+x[6]<=+sol[split-1][6]),null,1500,spec.variant);
-   const oos=simulate(spec.id,'SOLUSDT',sol.slice(warm),btc.slice(warm),weekly,null,1500,spec.variant);
-   results.push(full);baseSummaries.push(summary(spec.name,full,train,oos));
+   results.push(full);baseSummaries.push(summary(spec.name,full,splitTime));
    latestReportTrades.push({name:spec.name,timeframe:'1d',splitTime,result:full});
   }
   const variants=[
@@ -146,24 +146,23 @@ async function run(){
   ];
   const experiments=variants.map(v=>{
    const full=simulate('D','SOLUSDT',sol,btc,weekly,null,1500,v.variant);
-   const train=simulate('D','SOLUSDT',sol.slice(0,split),btc.slice(0,split),weekly.filter(x=>+x[6]<=+sol[split-1][6]),null,1500,v.variant);
-   const oos=simulate('D','SOLUSDT',sol.slice(warm),btc.slice(warm),weekly,null,1500,v.variant);
    latestReportTrades.push({name:v.name,timeframe:'1d',splitTime,result:full});
-   return summary(v.name,full,train,oos);
+   return summary(v.name,full,splitTime);
   });
   const timeframeTests=[];
+  const tf1Sol=closed(sol1hRaw),tf1Btc=closed(btc1hRaw),tf4Sol=closed(sol4hRaw),tf4Btc=closed(btc4hRaw);
+  const commonStart=Math.max(+tf1Sol[0][0],+tf4Sol[0][0]),commonEnd=Math.min(+tf1Sol.at(-1)[0],+tf4Sol.at(-1)[0]);
   for(const tf of ['1h','4h']){
-   const raw=tf==='1h'?[closed(sol1hRaw),closed(btc1hRaw)]:[closed(sol4hRaw),closed(btc4hRaw)];
-   const [sc,bc]=align(raw[0],raw[1]);if(sc.length<500)continue;
+   const raw=tf==='1h'?[tf1Sol,tf1Btc]:[tf4Sol,tf4Btc];
+   const clipped=raw.map(a=>a.filter(x=>+x[0]>=commonStart&&+x[0]<=commonEnd));
+   const [sc,bc]=align(clipped[0],clipped[1]);if(sc.length<500)continue;
    const sp=Math.floor(sc.length*.7),wm=Math.max(0,sp-220),st=+sc[sp][0],variant={rr:2,stopAtr:1.5,minRS:0};
    const full=simulate('D','SOLUSDT',sc,bc,weekly,null,1500,variant);
-   const train=simulate('D','SOLUSDT',sc.slice(0,sp),bc.slice(0,sp),weekly.filter(x=>+x[6]<=+sc[sp-1][6]),null,1500,variant);
-   const oos=simulate('D','SOLUSDT',sc.slice(wm),bc.slice(wm),weekly,null,1500,variant);
-   timeframeTests.push(summary('D · SOL '+tf,full,train,oos,tf));
+   timeframeTests.push(summary('D · SOL '+tf,full,st,tf));
    latestReportTrades.push({name:'D · SOL '+tf,timeframe:tf,splitTime:st,result:full});
   }
   const bhFull=buyHold(sol,1500),bhTrain=buyHold(sol.slice(0,split),1500),bhOos=buyHold(sol.slice(split),1500);
-  const benchmarks=[summary('BENCHMARK · SOL Buy & Hold',bhFull,bhTrain,bhOos)];
+  const benchmarks=[benchmarkSummary('BENCHMARK · SOL Buy & Hold',bhFull,bhTrain,bhOos)];
   latestExperimentSummaries=baseSummaries.concat(experiments,timeframeTests,benchmarks);latestTimeframeRuns=[];
   render(results,new Date(+sol[0][0]).toLocaleDateString('de-DE')+' – '+new Date(+sol.at(-1)[0]).toLocaleDateString('de-DE')+' · SOL/USDT · BTC Marktkompass',experiments.concat(timeframeTests,benchmarks));
   $('export').disabled=false;s.textContent='Fertig: vier SOL-Strategien, reduzierte Regeln, BTC-Regime/relative Stärke, 1h/4h und SOL Buy & Hold. Gebühren 0,10 % und Slippage 0,05 % je Seite; 70 % Training / 30 % OOS.';
