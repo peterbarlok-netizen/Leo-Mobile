@@ -52,7 +52,7 @@ function simulate(id,symbol,c,capital,variant={}){
    let exit=null,reason='';
    if(l<=pos.stop){exit=Math.min(o,pos.stop);reason=pos.trailing?'TRAILING-STOP':'INITIAL-STOP'}
    else if(h>=pos.target){exit=Math.max(o,pos.target);reason='KURSZIEL'}
-   else if((variant.exitMode==='ema20'&&cl<pos.ema20)||(variant.exitMode==='ema50'&&cl<pos.ema50)||(variant.exitMode!=='ema20'&&variant.exitMode!=='ema50'&&cl<pos.ema20&&cl<pos.entry)){exit=cl;reason=variant.exitMode==='ema50'?'EMA50-VERLUST':'MOMENTUM-VERLUST'}
+   else if((variant.exitMode==='ema20'&&cl<sig.ema20)||(variant.exitMode==='ema50'&&cl<sig.ema50)||(variant.exitMode!=='ema20'&&variant.exitMode!=='ema50'&&cl<pos.ema20&&cl<pos.entry)){exit=cl;reason=variant.exitMode==='ema50'?'EMA50-VERLUST':variant.exitMode==='ema20'?'EMA20-VERLUST':'MOMENTUM-VERLUST'}
    if(exit!==null){
     const fill=exit*(1-SLIPPAGE_RATE),fee=pos.qty*fill*FEE_RATE,net=pos.qty*(fill-pos.entryFill)-pos.entryFee-fee;
     cash+=pos.stake+net;trades.push({...pos,symbol,buy:pos.date,sell:new Date(+bar[6]).toISOString().slice(0,10),exitTime:+bar[0],exitPrice:exit,exitFill:fill,exitFee:fee,net,ret:net/pos.stake*100,reason});pos=null;
@@ -119,8 +119,8 @@ async function run(){
   if(sol.length<300)throw Error('Zu wenig SOL-Tageshistorie.');
   const split=Math.floor(sol.length*.7),splitTime=+sol[split][0];
   const summarize=r=>({profit:r.profit,ret:r.ret,trades:r.trades.length,win:r.winRate,pf:r.pf,dd:r.maxDD===undefined?r.dd:r.maxDD});
-  const tradeStats=(trades,capital=1500)=>{const ordered=trades.slice().sort((a,b)=>(a.entryTime||0)-(b.entryTime||0));const profit=ordered.reduce((s,t)=>s+t.net,0),wins=ordered.filter(t=>t.net>0),losses=ordered.filter(t=>t.net<0),gw=wins.reduce((s,t)=>s+t.net,0),gl=Math.abs(losses.reduce((s,t)=>s+t.net,0));let equity=capital,peak=capital,dd=0;for(const t of ordered){equity+=t.net;peak=Math.max(peak,equity);dd=Math.max(dd,(peak-equity)/peak*100)}return {profit,ret:profit/capital*100,trades:ordered.length,win:ordered.length?wins.length/ordered.length*100:0,pf:gl?gw/gl:gw?Infinity:0,dd};};
-  const summary=(name,full,splitTime,timeframe='1d')=>{const trades=full.trades;return {name,full:tradeStats(trades),train:tradeStats(trades.filter(t=>t.entryTime<splitTime)),oos:tradeStats(trades.filter(t=>t.entryTime>=splitTime)),timeframe};};
+  const tradeStats=(trades,capital=1500,equityCurve=[],fromTime=null,toTime=null)=>{const ordered=trades.slice().sort((a,b)=>(a.entryTime||0)-(b.entryTime||0));const profit=ordered.reduce((s,t)=>s+t.net,0),wins=ordered.filter(t=>t.net>0),losses=ordered.filter(t=>t.net<0),gw=wins.reduce((s,t)=>s+t.net,0),gl=Math.abs(losses.reduce((s,t)=>s+t.net,0));let curve=equityCurve;if(fromTime!==null){const before=curve.filter(p=>p.t<fromTime).slice(-1);curve=curve.filter(p=>p.t>=fromTime&& (toTime===null||p.t<toTime));if(before.length)curve=[...before,...curve]}else if(toTime!==null)curve=curve.filter(p=>p.t<toTime);let peak=curve.length?curve[0].v:capital,dd=0;for(const p of curve){peak=Math.max(peak,p.v);dd=Math.max(dd,(peak-p.v)/peak*100)}return {profit,ret:profit/capital*100,trades:ordered.length,win:ordered.length?wins.length/ordered.length*100:0,pf:gl?gw/gl:gw?Infinity:0,dd};};
+  const summary=(name,full,splitTime,timeframe='1d')=>{const trades=full.trades,curve=full.equity;return {name,full:tradeStats(trades,1500,curve),train:tradeStats(trades.filter(t=>t.entryTime<splitTime),1500,curve,null,splitTime),oos:tradeStats(trades.filter(t=>t.entryTime>=splitTime),1500,curve,splitTime),timeframe};};
   const benchmarkSummary=(name,full,train,oos)=>({name,full:summarize(full),train:summarize(train),oos:summarize(oos),timeframe:'1d'});
   const specs=[
    {id:'A',name:'A · Trend-Pullback',variant:{rr:2,stopAtr:1.5}},
@@ -155,14 +155,14 @@ async function run(){
   for(const tf of ['1h','4h']){
    const source=tf==='1h'?tf1Sol:tf4Sol,sc=source.filter(x=>+x[0]>=commonStart&&+x[0]<=commonEnd);if(sc.length<500)continue;
    const sp=Math.floor(sc.length*.7),st=+sc[sp][0];
-   const eVariants=tf==='4h'?[{name:'E · Momentum 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05}},{name:'E · Momentum + Volumen 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.3}},{name:'E · Momentum-Pullback 4h',variant:{rr:2,stopAtr:1.5,entry:'pullback',rsiMin:48,rsiMax:64,volumeMin:0.9}},{name:'E · Exit EMA20 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema20'}},{name:'E · Exit EMA50 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema50'}}]:[{name:'E · Momentum 1h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05}},{name:'E · Momentum + Volumen 1h',variant:{rr:2,stopAtr:1.5,volumeMin:1.3}}];
+   const eVariants=tf==='4h'?[{name:'E · Momentum 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05}},{name:'E · Momentum + Volumen 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.3}},{name:'E · Momentum-Pullback 4h',variant:{rr:2,stopAtr:1.5,entry:'pullback',rsiMin:48,rsiMax:64,volumeMin:0.9}},{name:'E · Exit EMA20 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema20'}},{name:'E · Exit EMA50 4h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema50'}}]:[{name:'E · Momentum 1h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05}},{name:'E · Momentum + Volumen 1h',variant:{rr:2,stopAtr:1.5,volumeMin:1.3}},{name:'E · Exit EMA20 1h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema20'}},{name:'E · Exit EMA50 1h',variant:{rr:2,stopAtr:1.5,volumeMin:1.05,exitMode:'ema50'}}];
    for(const ev of eVariants){const full=simulate('E','SOLUSDT',sc,1500,ev.variant);timeframeTests.push(summary(ev.name,full,st,tf));latestReportTrades.push({name:ev.name,timeframe:tf,splitTime:st,result:full});}
   }
   const bhFull=buyHold(sol,1500),bhTrain=buyHold(sol.slice(0,split),1500),bhOos=buyHold(sol.slice(split),1500);
   const benchmarks=[benchmarkSummary('BENCHMARK · SOL Buy & Hold',bhFull,bhTrain,bhOos)];
   latestExperimentSummaries=baseSummaries.concat(experiments,timeframeTests,benchmarks);latestTimeframeRuns=[];
   render(results,new Date(+sol[0][0]).toLocaleDateString('de-DE')+' – '+new Date(+sol.at(-1)[0]).toLocaleDateString('de-DE')+' · SOL/USDT · nur SOL-Daten',experiments.concat(timeframeTests,benchmarks));
-  $('export').disabled=false;s.textContent='Fertig: ausschließlich SOL-Daten, ohne externe Marktfilter. A–D als SOL-Basisstrategien; E-Momentum auf 1h/4h mit Volumen- und Exit-Varianten. Gebühren 0,10 % und Slippage 0,05 % je Seite; 70 % Training / 30 % OOS.';
+  $('export').disabled=false;s.textContent='Fertig: ausschließlich SOL-Daten, ohne externe Marktfilter. A–D als SOL-Basisstrategien; E-Momentum auf 1h/4h mit Volumen- und Exit-Varianten; Drawdown inklusive unrealisierter Kursverluste (Mark-to-Market). Gebühren 0,10 % und Slippage 0,05 % je Seite; 70 % Training / 30 % OOS.';
  }catch(e){s.textContent='Test fehlgeschlagen: '+e.message}
  finally{b.disabled=false;b.textContent='SOLANA-STRATEGIEN VERGLEICHEN'}
 }
