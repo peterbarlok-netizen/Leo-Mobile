@@ -79,7 +79,7 @@ function simulate(id,symbol,c,capital,variant={}){
     }
    }
   }
-  const mark=pos&&pos.entryTime<=+bar[6]?cash+pos.qty*cl*(1-SLIPPAGE_RATE-FEE_RATE):cash;
+  const mark=pos?(pos.entryTime<=+bar[6]?cash+pos.qty*cl*(1-SLIPPAGE_RATE-FEE_RATE):cash+pos.stake):cash;
   equity.push({t:+bar[6],v:mark});peak=Math.max(peak,mark);maxDD=Math.max(maxDD,(peak-mark)/peak*100);
  }
  if(pos){
@@ -118,6 +118,7 @@ function exportLog(){
  a.href=url;a.download='LEO-LAB-SOL-Komplettreport.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 }
 async function run(){
+ latestExperimentSummaries=[];latestReportTrades=[];
  const b=$('run'),s=$('status');b.disabled=true;b.textContent='SOLANA-DATEN WERDEN GELADEN …';s.textContent='Lade bis zu zwei Jahre SOL/USDT. Berechne Walk-Forward-Fenster ohne BTC-Filter.';
  try{
   const [solDailyRaw,sol1hRaw,sol4hRaw]=await Promise.all([
