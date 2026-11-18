@@ -1,1 +1,29 @@
 .v49{background:radial-gradient(ellipse at 50% 12%,#07333a 0,#041923 45%,#02090e 100%);padding-bottom:100px}.v49 .lion-hero{height:260px;margin:0 -13px 0}.v49 .lion-hero img{height:225px;width:100%;object-fit:cover;object-position:center 32%;top:8px}.v49 .hero{padding:18px 10px 15px}.view[hidden]{display:none!important}.view{animation:fadein .18s ease}.asset-summary{display:flex;align-items:center;gap:12px;margin:16px 0 10px}.asset-badge{width:52px;height:52px;object-fit:contain;border-radius:14px;background:#132b39;padding:4px}.asset-quote{display:flex;align-items:baseline;gap:12px;margin-top:5px}.asset-quote .big-price{font:600 27px 'Space Grotesk'}.asset-quote .big-price small{font:10px 'DM Sans';color:var(--muted)}.chart-timeframes{display:flex;justify-content:space-between;gap:3px;margin-top:10px}.chart-timeframes button,.strategy-tabs button{border:1px solid transparent;background:transparent;color:#8097a3;border-radius:8px;font-size:10px;padding:7px 9px}.chart-timeframes button.selected,.strategy-tabs button.selected{color:var(--cyan);background:#123c3d;border-color:#167b78;box-shadow:0 0 10px #20e6cf22}.chart-axis-right{position:absolute;right:0;top:0;height:100%;display:flex;flex-direction:column;justify-content:space-between;color:#7896a2;font-size:8px}.chart-x-axis{display:flex;justify-content:space-between;color:#7896a2;font-size:8px;padding:3px 28px 0 31px}.signal-overview{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}.signal-overview .panel{padding:13px}.verdict-pill{display:inline-block;margin-top:13px;border:1px solid #c99d48;color:#ffd36b;background:#302411;border-radius:20px;padding:7px 10px;font-size:10px;letter-spacing:1px}.verdict-card p{font-size:10px;color:#a8bdc5;line-height:1.5}.filter-layout{display:flex;align-items:center;gap:10px;margin-top:12px}.filter-list{padding-left:14px;margin:0;color:#9bb0ba;font-size:10px;line-height:1.9}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}.metric{padding:14px;display:flex;flex-direction:column;gap:7px;min-width:0}.metric small{color:var(--cyan);font-size:8px;letter-spacing:1px}.metric strong{font:600 20px 'Space Grotesk';overflow-wrap:anywhere}.metric span{font-size:9px;color:#91aab5}.detail-panel{padding:16px;margin:12px 0}.criteria{padding-left:17px;color:#b4c8ce;font-size:11px;line-height:1.9}.criteria li.pass{color:var(--green)}.criteria li.fail{color:var(--gold)}.signal-card{padding:19px;margin:12px 0}.signal-word{font:700 28px 'Space Grotesk';color:var(--gold);margin:14px 0 6px}.signal-card p{font-size:11px;color:#a9bec6;line-height:1.6}.signal-meter{display:flex;gap:5px;margin-top:15px}.signal-meter i{height:5px;flex:1;border-radius:9px;background:#25404a}.strategy-tabs{display:flex;gap:5px;margin:12px 0;flex-wrap:wrap}.strategy-tabs button{border-color:#254754}.bt-run{width:100%;margin:14px 0 5px;border:1px solid #14b9ad;background:linear-gradient(90deg,#0b5554,#0b343d);color:#eaffff;border-radius:12px;padding:13px;font-weight:700;font-size:11px;letter-spacing:1px}.bt-status{font-size:10px;color:#9bb2bc;line-height:1.5}.table-scroll{overflow-x:auto}.results-table{width:100%;border-collapse:collapse;font-size:10px}.results-table th,.results-table td{text-align:left;padding:9px 5px;border-bottom:1px solid #23434d;white-space:nowrap}.results-table th{color:var(--cyan);font-weight:600}.setting-row{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #203b47;font-size:11px;color:#a9bdc5}.setting-row b{color:#e9f8f8;text-align:right}.bt-trade{display:grid;grid-template-columns:1fr auto;gap:3px;padding:9px 0;border-bottom:1px solid #203b47;font-size:10px}.bt-trade small{color:#91aab5}.positive{color:var(--green)}.negative{color:var(--red)}@keyframes fadein{from{opacity:.65;transform:translateY(3px)}to{opacity:1;transform:none}}@media(max-width:380px){.v49 .lion-hero{height:230px}.v49 .lion-hero img{height:200px}.chart-timeframes button{font-size:9px;padding:6px 6px}.signal-overview{gap:6px}.signal-overview .panel{padding:10px}}
+/* v0.49 visual pass: compact app header and focused subviews */
+.v49.overview-active .lion-hero{height:196px;overflow:hidden;margin:0 -13px 8px;position:relative}
+.v49.overview-active .lion-hero img{height:164px;top:22px;object-fit:cover;object-position:center 34%}
+.v49.overview-active .lion-hero .lion-title{font-size:30px;bottom:15px}
+.v49.overview-active .lion-hero .lion-subtitle{display:none}
+.v49:not(.overview-active) .lion-hero{display:none}
+.v49 main{padding-top:4px}
+.v49 .view:not([hidden]){min-height:calc(100dvh - 112px);padding-bottom:18px}
+.v49 .view:not([data-view="Übersicht"]) .hero{padding:22px 8px 18px;margin-bottom:6px}
+.v49 .view:not([data-view="Übersicht"]) .hero h1{font-size:clamp(30px,8vw,38px);letter-spacing:-1.2px;margin:5px 0}
+.v49 .view:not([data-view="Übersicht"]) .hero p{font-size:13px;line-height:1.45}
+.v49 .metric-grid{gap:10px;margin:14px 0}
+.v49 .metric{min-height:104px;padding:15px;border-radius:18px;background:linear-gradient(145deg,rgba(13,34,47,.96),rgba(5,20,29,.96));border:1px solid rgba(73,135,157,.22)}
+.v49 .metric strong{font-size:22px}
+.v49 .detail-panel,.v49 .signal-card{border-radius:20px}
+.v49 .signal-card{padding:22px}
+.v49 .signal-word{font-size:30px;letter-spacing:.2px}
+.v49 .criteria{font-size:12px;line-height:2.05}
+.v49 .dock{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.v49 .dock button{min-width:0;font-size:10px}
+.v49 .dock button span{font-size:21px}
+.v49 .market.panel{padding:16px;border-radius:22px}
+.v49 .asset-summary{margin:12px 0}
+.v49 .asset-badge{width:48px;height:48px}
+.v49 .chart-wrap{height:155px}
+.v49 .insight{border-radius:18px;margin-top:12px}
+.v49 .signal-overview .panel{min-height:174px}
+@media(min-width:600px){.v49.overview-active .lion-hero{height:230px}.v49.overview-active .lion-hero img{height:198px}.v49 .view{max-width:760px;margin:0 auto}}
