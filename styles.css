@@ -1578,3 +1578,9 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
  content:none!important;
  display:none!important;
 }
+
+
+/* v0.82 — Reset-Steuerung entfernt; Chart rückt in den frei gewordenen Platz */
+.leo-chart-panel .chart-current-label{
+ margin-top:0!important;
+}
