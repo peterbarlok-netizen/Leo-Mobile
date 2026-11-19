@@ -1490,3 +1490,8 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .leo-chart-panel .coin-chevron{transform:none}
 .v50 .chart-stage .price-chart{left:0!important;width:calc(100% - 43px)!important}
 @media(max-width:390px){.leo-chart-panel .coin-select{min-height:62px;padding:7px 11px}.leo-chart-panel .coin-select>img{width:40px;height:40px;flex-basis:40px}.v50 .chart-stage .price-chart{left:0!important;width:calc(100% - 43px)!important}}
+
+
+/* v0.74 — place chart reset directly below the live price */
+.leo-chart-panel .chart-tools{margin:0;padding:0 2px 7px;justify-content:flex-start}
+.leo-chart-panel .chart-tools .chart-reset{margin-left:0}
