@@ -1389,3 +1389,50 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
   display:none!important;
   content:none!important;
 }
+
+
+/* v0.67 — Hero-Badges oben rechts, nebeneinander */
+#heroPlaceholder{position:relative!important}
+#heroPlaceholder .hero-badges{
+  position:absolute;
+  z-index:5;
+  top:12px;
+  right:12px;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:8px;
+  pointer-events:none;
+}
+#heroPlaceholder .hero-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:30px;
+  box-sizing:border-box;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(2,14,20,.88);
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:1px;
+  white-space:nowrap;
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+#heroPlaceholder .hero-badge-demo{
+  color:#27f4e8;
+  border:1.5px solid #16e8dc;
+  box-shadow:0 0 10px #10e8dc66,inset 0 0 8px #10e8dc22;
+}
+#heroPlaceholder .hero-badge-version{
+  color:#ffe08a;
+  border:1.5px solid #e9b923;
+  box-shadow:0 0 10px #e9b92355,inset 0 0 8px #e9b92322;
+}
+@media(max-width:380px){
+  #heroPlaceholder .hero-badges{top:8px;right:8px;gap:5px}
+  #heroPlaceholder .hero-badge{min-height:26px;padding:5px 9px;font-size:9px;letter-spacing:.7px}
+}
