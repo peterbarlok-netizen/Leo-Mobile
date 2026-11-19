@@ -1286,3 +1286,22 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
   .v50 .hero h1{font-size:31px!important}
   .v50 .hero p{font-size:17px!important}
 }
+
+
+/* v0.59 — Begrüßungsbereich vertikal kompakter */
+.v50 .hero{
+  padding-top:7px!important;
+  padding-bottom:8px!important;
+}
+.v50 .hero h1{
+  margin-top:7px!important;
+  margin-bottom:4px!important;
+  line-height:1.05!important;
+}
+.v50 .hero p{
+  line-height:1.2!important;
+}
+@media(max-width:360px){
+  .v50 .hero{padding-top:6px!important;padding-bottom:7px!important}
+  .v50 .hero h1{margin-top:6px!important;margin-bottom:3px!important}
+}
