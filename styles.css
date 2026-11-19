@@ -1305,3 +1305,9 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
   .v50 .hero{padding-top:6px!important;padding-bottom:7px!important}
   .v50 .hero h1{margin-top:6px!important;margin-bottom:3px!important}
 }
+
+
+/* v0.60 — Abstand zwischen Marktlabel und Begrüßung reduzieren */
+.v50 .hero h1{
+  margin-top:1px!important;
+}
