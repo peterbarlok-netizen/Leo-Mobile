@@ -1625,3 +1625,7 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .leo-chart-panel .indicator-toggle[data-indicator="ema200"]{--indicator-color:#a98aff;}
 .leo-chart-panel .indicator-toggle.selected{border-bottom:2px solid var(--indicator-color,#20e6cf);}
 @media(max-width:390px){.leo-chart-panel .chart-stage{height:330px!important}.leo-chart-panel .indicator-toggle{padding:7px 8px;font-size:9px}}
+
+
+/* v0.92 — temporäre Diagnose der TradingView-Breitenaufteilung */
+.leo-chart-panel .chart-layout-debug{margin:5px 3px 0;color:#66848e;font:9px/1.4 'DM Sans',sans-serif;text-align:center;letter-spacing:.1px;overflow-wrap:anywhere;}
