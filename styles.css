@@ -1323,3 +1323,14 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .v50 .hero #greeting-title + p{
   margin-top:-4px!important;
 }
+
+
+/* v0.62 — ausgewogener Abstand zwischen Marktlabel und Begrüßung */
+.v50 .hero #greeting-title{
+  margin-top:9px!important;
+  margin-block-start:9px!important;
+  transform:none!important;
+}
+.v50 .hero #greeting-title + p{
+  margin-top:0!important;
+}
