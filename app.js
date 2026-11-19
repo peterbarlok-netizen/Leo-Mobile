@@ -42,10 +42,12 @@ updateGreeting();
 async function refresh(){
  const meta=coins[activeCoin];
  try{
-  let [ticker,raw]=await Promise.all([api('/ticker/24hr?symbol='+meta.symbol),api('/klines?symbol='+meta.symbol+'&interval='+interval+'&limit=120')]);
+  let [ticker,raw,day]=await Promise.all([api('/ticker/24hr?symbol='+meta.symbol),api('/klines?symbol='+meta.symbol+'&interval='+interval+'&limit=120'),api('/klines?symbol='+meta.symbol+'&interval=1d&limit=1')]);
   $('sol-price').textContent=fmt(+ticker.lastPrice);
-  const visibleStart=raw.length?+raw[Math.max(0,raw.length-Math.max(8,Math.round(raw.length/chartZoom)))][1]:+ticker.lastPrice;const periodChange=visibleStart?((+ticker.lastPrice-visibleStart)/visibleStart)*100:+ticker.priceChangePercent;$('sol-change').textContent=pct(periodChange);
-  $('sol-change').className='change chart-change '+(+ticker.priceChangePercent>=0?'positive':'negative');
+  const dayOpen=day.length?+day[0][1]:0;
+  const dailyChange=dayOpen?((+ticker.lastPrice-dayOpen)/dayOpen)*100:+ticker.priceChangePercent;
+  $('sol-change').textContent=pct(dailyChange);
+  $('sol-change').className='change chart-change '+(dailyChange>=0?'positive':'negative');
   $('coin-name').textContent=meta.name.toUpperCase();$('coin-pair').textContent=activeCoin+'-USDT';$('coin-logo').src=meta.logo;$('coin-logo').alt=meta.name;
   if($('connection-status'))$('connection-status').textContent='LIVE';
   $('market-status').textContent='LIVE-DATEN';
