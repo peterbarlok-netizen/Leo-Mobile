@@ -1558,3 +1558,23 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
   margin-left:-10px!important;
  }
 }
+
+
+/* v0.81 — Chartglow entfernen und TradingView-Zeichenfläche exakt auf Containerbreite halten */
+.leo-chart-panel #price-chart.price-chart{
+ filter:none!important;
+ box-shadow:none!important;
+ width:100%!important;
+ max-width:none!important;
+}
+.leo-chart-panel .chart-stage{
+ overflow:hidden!important;
+ box-shadow:none!important;
+}
+.leo-chart-panel .chart-stage::before,
+.leo-chart-panel .chart-stage::after,
+.leo-chart-panel #price-chart::before,
+.leo-chart-panel #price-chart::after{
+ content:none!important;
+ display:none!important;
+}
