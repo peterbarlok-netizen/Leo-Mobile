@@ -1626,3 +1626,13 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .leo-chart-panel .indicator-toggle.selected{border-bottom:2px solid var(--indicator-color,#20e6cf);}
 @media(max-width:390px){.leo-chart-panel .chart-stage{height:330px!important}.leo-chart-panel .indicator-toggle{padding:7px 8px;font-size:9px}}
 
+
+
+/* v0.94 — EMA- und Volumensteuerung */
+.leo-chart-panel .chart-indicators{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:9px 0 3px;}
+.leo-chart-panel .indicator-toggle{border:1px solid #286a70;border-radius:13px;background:#071c25;color:#9db8c0;padding:7px 10px;font:600 10px 'DM Sans',sans-serif;letter-spacing:.2px;}
+.leo-chart-panel .indicator-toggle.selected{background:#0c3438;border-color:#20a99f;color:#e4ffff;box-shadow:inset 0 0 8px #20e6cf12;}
+.leo-chart-panel .indicator-toggle[data-indicator="ema20"]{border-bottom:2px solid #20e6cf;}
+.leo-chart-panel .indicator-toggle[data-indicator="ema50"]{border-bottom:2px solid #f4c65e;}
+.leo-chart-panel .indicator-toggle[data-indicator="ema200"]{border-bottom:2px solid #a98aff;}
+@media(max-width:390px){.leo-chart-panel .indicator-toggle{padding:7px 8px;font-size:9px}}
