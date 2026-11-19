@@ -1,4 +1,4 @@
-const API='https://data-api.binance.vision/api/v3';const $=id=>document.getElementById(id);const fmt=n=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});const pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %';let interval='4h',daily=[],selected='defensiv',lastAnalysis=null,activeCoin='SOL',chartType='line',chartData=[],tvChart=null,tvSeries=null,chartNeedsFit=true,tvResizeObserver=null;
+const API='https://data-api.binance.vision/api/v3';const $=id=>document.getElementById(id);const fmt=n=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});const pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %';let interval='4h',daily=[],selected='defensiv',lastAnalysis=null,activeCoin='SOL',chartType='line',chartData=[],tvChart=null,tvSeries=null,emaSeries={},volumeSeries=null,indicatorState={ema20:true,ema50:true,ema200:true,volume:true},chartNeedsFit=true,tvResizeObserver=null;
 async function api(path){let r=await fetch(API+path,{cache:'no-store'});if(!r.ok)throw Error('Binance HTTP '+r.status);return r.json()}
 function ema(a,p){if(a.length<p)return null;let v=a.slice(0,p).reduce((x,y)=>x+y,0)/p,k=2/(p+1);for(let i=p;i<a.length;i++)v=a[i]*k+v*(1-k);return v}
 function atr(c,p=14){if(c.length<p+1)return null;let tr=[];for(let i=1;i<c.length;i++)tr.push(Math.max(c[i].h-c[i].l,Math.abs(c[i].h-c[i-1].c),Math.abs(c[i].l-c[i-1].c)));return tr.slice(-p).reduce((a,b)=>a+b,0)/p}
@@ -10,9 +10,9 @@ function initTradingViewChart(){
  const L=window.LightweightCharts;
  tvChart=L.createChart(host,{
   width:Math.max(1,host.clientWidth),height:Math.max(1,host.clientHeight),autoSize:false,
-  layout:{background:{type:'solid',color:'#06151d'},textColor:'#9bb5bf',fontFamily:'DM Sans, sans-serif',fontSize:10,attributionLogo:false},
+  layout:{background:{type:'solid',color:'#06151d'},textColor:'#9bb5bf',fontFamily:'DM Sans, sans-serif',fontSize:9,attributionLogo:false},
   grid:{vertLines:{color:'rgba(18,57,67,.62)',style:2},horzLines:{color:'rgba(23,67,76,.72)',style:2}},
-  rightPriceScale:{visible:true,borderColor:'#24515a',autoScale:true,entireTextOnly:false,alignLabels:false,minimumWidth:56,scaleMargins:{top:.12,bottom:.12}},
+  rightPriceScale:{visible:true,borderColor:'#24515a',autoScale:true,entireTextOnly:false,alignLabels:false,minimumWidth:48,scaleMargins:{top:.12,bottom:.12}},
   timeScale:{visible:true,borderColor:'#24515a',timeVisible:true,secondsVisible:false,rightOffset:1,barSpacing:7,minBarSpacing:2},
   crosshair:{mode:L.CrosshairMode.Normal,vertLine:{color:'#20e6cf',width:1,style:2,labelBackgroundColor:'#0c5557'},horzLine:{color:'#20e6cf',width:1,style:2,labelBackgroundColor:'#0c5557'}},
   handleScroll:{mouseWheel:true,pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:true},
@@ -41,13 +41,23 @@ function movingAverageSeries(candles,period){
  }
  return result;
 }
+function movingAverageSeries(candles,period){
+ const out=[];if(candles.length<period)return out;
+ const k=2/(period+1);let value=candles.slice(0,period).reduce((sum,c)=>sum+c.c,0)/period;
+ out.push({time:Math.floor(candles[period-1].t/1000),value});
+ for(let i=period;i<candles.length;i++){value=candles[i].c*k+value*(1-k);out.push({time:Math.floor(candles[i].t/1000),value});}
+ return out;
+}
 function draw(raw){
  if(!Array.isArray(raw)||raw.length<2)throw Error('Zu wenige Kursdaten für den Chart');
  chartData=candles(raw);
  initTradingViewChart();
  if(!tvChart)throw Error('TradingView Chartbibliothek konnte nicht geladen werden');
  const data=chartData.map(c=>({time:Math.floor(c.t/1000),open:c.o,high:c.h,low:c.l,close:c.c,value:c.c}));
- if(tvSeries)tvChart.removeSeries(tvSeries);
+ if(tvSeries){try{tvChart.removeSeries(tvSeries)}catch(e){}tvSeries=null;}
+ Object.values(emaSeries).forEach(series=>{try{tvChart.removeSeries(series)}catch(e){}});
+ emaSeries={};
+ if(volumeSeries){try{tvChart.removeSeries(volumeSeries)}catch(e){}volumeSeries=null;}
  if(chartType==='line'){
   tvSeries=tvChart.addSeries(window.LightweightCharts.AreaSeries,{
    lineColor:'#20e6cf',topColor:'rgba(32,230,207,.28)',bottomColor:'rgba(32,230,207,0)',
@@ -63,6 +73,28 @@ function draw(raw){
  }
  if(chartNeedsFit){tvChart.timeScale().fitContent();tvChart.priceScale('right').applyOptions({autoScale:true});chartNeedsFit=false;}
  $('chart-label').textContent=activeCoin+' / USDT · '+interval.toUpperCase().replace('1D','1T');
+ const emaConfig=[['ema20',20,'#20e6cf'],['ema50',50,'#f4c65e'],['ema200',200,'#a98aff']];
+ emaConfig.forEach(([key,period,color])=>{
+  try{
+   const values=movingAverageSeries(chartData,period);if(!values.length)return;
+   const series=tvChart.addSeries(window.LightweightCharts.LineSeries,{
+    color,lineWidth:2,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false,visible:indicatorState[key]
+   });
+   series.setData(values);emaSeries[key]=series;
+  }catch(error){console.warn('EMA '+period+' konnte nicht geladen werden',error);}
+ });
+ if(indicatorState.volume){
+  try{
+   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{
+    priceScaleId:'leo-volume',priceFormat:{type:'volume'},base:0,lastValueVisible:false,priceLineVisible:false
+   });
+   tvChart.priceScale('leo-volume').applyOptions({scaleMargins:{top:.82,bottom:0},visible:false});
+   volumeSeries.setData(chartData.map(c=>({
+    time:Math.floor(c.t/1000),value:c.v,
+    color:c.c>=c.o?'rgba(40,224,176,.68)':'rgba(255,113,133,.68)'
+   })));
+  }catch(error){volumeSeries=null;console.warn('Volume konnte nicht geladen werden',error);}
+ }
 }
 function renderAnalysis(){let c=daily.slice(0,-1),cl=c.map(x=>x.c),last=cl.at(-1),e20=ema(cl,20),e50=ema(cl,50),e200=ema(cl,200),old=ema(cl.slice(0,-20),200),a=atr(c),mom=rsi(cl);lastAnalysis={last,e20,e50,e200,old,a,mom,above:last>e200,rising:e200>old};[['ema20',e20],['ema50',e50],['ema200',e200],['atr',a],['rsi',mom]].forEach(([id,v])=>$(id).textContent=v==null?'—':id==='rsi'?v.toFixed(1):fmt(v));$('ema-slope').textContent=e200>old?'STEIGEND':'FALLEND';[['ema20-state',last>e20],['ema50-state',last>e50],['ema200-state',last>e200]].forEach(([id,ok])=>$(id).textContent=ok?'Kurs darüber':'Kurs darunter');let checks=[['Tagesschluss über EMA200',last>e200],['EMA200 steigt',e200>old],['EMA20 über EMA50',e20>e50],['RSI 42–65',mom>=42&&mom<=65]];$('criteria').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'• ')+s+'</li>').join('');$('trend-score').textContent=checks.filter(x=>x[1]).length+'/4';$('trend-list').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+s+'</li>').join('');$('market-verdict').textContent=last>e200&&e200>old?'AUFWÄRTSTREND':'BEOBACHTEN';$('market-verdict-note').textContent=last>e200&&e200>old?'SOL notiert über einer steigenden EMA200.':'Trendbedingungen sind noch nicht vollständig erfüllt.';$('signal-word').textContent=last>e200&&e200>old?'SETUP AKTIV':'ABWARTEN';$('signal-reason').textContent=last>e200&&e200>old?'Tagestrend positiv. Einstieg erst nach bestätigtem Tagesabschluss und Folgetages-Open.':'Kein bestätigter EMA200-Aufwärtstrend. Kein Einstieg.';$('signal-checks').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'○ ')+s+'</li>').join('')+'<li>Initialer Stop: 3,5 ATR</li>'}
 
@@ -94,10 +126,13 @@ document.querySelectorAll('[data-indicator]').forEach(b=>b.addEventListener('cli
  const key=b.dataset.indicator;indicatorState[key]=!indicatorState[key];
  b.classList.toggle('selected',indicatorState[key]);b.setAttribute('aria-pressed',String(indicatorState[key]));
  if(key==='volume'){
-  if(volumeSeries){tvChart.removeSeries(volumeSeries);volumeSeries=null;}
+  if(volumeSeries){try{tvChart.removeSeries(volumeSeries)}catch(e){}volumeSeries=null;}
   else if(chartData.length){
-   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{priceScaleId:'',priceFormat:{type:'volume'},base:0,lastValueVisible:false,priceLineVisible:false});
-   volumeSeries.setData(chartData.map(c=>({time:Math.floor(c.t/1000),value:c.v,color:c.c>=c.o?'rgba(40,224,176,.72)':'rgba(255,113,133,.72)'})));
+   try{
+    volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{priceScaleId:'leo-volume',priceFormat:{type:'volume'},base:0,lastValueVisible:false,priceLineVisible:false});
+    tvChart.priceScale('leo-volume').applyOptions({scaleMargins:{top:.82,bottom:0},visible:false});
+    volumeSeries.setData(chartData.map(c=>({time:Math.floor(c.t/1000),value:c.v,color:c.c>=c.o?'rgba(40,224,176,.68)':'rgba(255,113,133,.68)'})));
+   }catch(error){console.warn('Volume konnte nicht aktiviert werden',error);volumeSeries=null;}
   }
  }else if(emaSeries[key])emaSeries[key].applyOptions({visible:indicatorState[key]});
 }));
