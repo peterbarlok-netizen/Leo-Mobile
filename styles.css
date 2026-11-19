@@ -1510,3 +1510,9 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .leo-chart-panel .coin-menu button span{line-height:1.15;}
 .leo-chart-panel .coin-menu button small{line-height:1.15;margin-top:2px;}
 @media(max-width:390px){.leo-chart-panel .coin-select{height:54px;min-height:54px;padding:5px 9px}.leo-chart-panel .coin-select>img{width:36px;height:36px;flex-basis:36px}}
+
+
+/* v0.77 — Chart in Zeit- und Preisrichtung verschiebbar; gleichmäßige Achsenteilung */
+.leo-chart-panel .chart-stage{touch-action:none;}
+.leo-chart-panel .chart-x-axis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;padding-right:48px;text-align:center;}
+.leo-chart-panel .chart-x-axis span{white-space:nowrap;text-align:center;}
