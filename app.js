@@ -101,6 +101,14 @@ svg.addEventListener('pointermove',e=>{
 });
 function stopPointer(e){pointers.delete(e.pointerId);if(pointers.size===1){const p=[...pointers.values()][0];dragPoint={x:p.x,y:p.y}}else if(!pointers.size){dragPoint=null;pinchDistance=0;stage.classList.remove('is-panning')}}
 svg.addEventListener('pointerup',stopPointer);svg.addEventListener('pointercancel',stopPointer);
+
+document.querySelectorAll('[data-interval]').forEach(b=>b.addEventListener('click',()=>{
+ interval=b.dataset.interval;
+ chartZoom=1;chartOffset=0;chartPriceOffset=0;
+ document.querySelectorAll('[data-interval]').forEach(x=>x.classList.toggle('selected',x===b));
+ refresh();
+}));
+
 const configs={defensiv:{name:'DEFENSIV',partial:.5,target:2,atr:3.5,desc:'50 % Teilverkauf bei +2R · Rest mit ATR-Trailing-Stop.'},balance:{name:'BALANCE',partial:.75,target:2,atr:3.5,desc:'75 % Teilverkauf bei +2R · 25 % bleiben für große SOL-Bewegungen offen.'},trend:{name:'100 % TREND',partial:0,target:0,atr:4,desc:'Kein Teilverkauf · gesamte Position mit 4,0 ATR absichern.'}};
 document.querySelectorAll('[data-strategy]').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.strategy;document.querySelectorAll('[data-strategy]').forEach(x=>x.classList.toggle('selected',x===b));$('strategy-description').textContent=configs[selected].desc;if(window.btResults)showResult(window.btResults[selected])}));
 function runOne(cs,cfg){let equity=1,peak=1,maxdd=0,trades=[],cl=cs.map(x=>x.c),entries=[];let e200=cs.map((_,i)=>ema(cl.slice(0,i+1),200));for(let i=205;i<cs.length-1;i++){if(!(cs[i].c>e200[i]&&e200[i]>e200[i-20]))continue;let entry=cs[i+1].o,a=atr(cs.slice(0,i+1)),risk=a*cfg.atr;if(!a||risk<=0)continue;let stop=entry-risk,trail=stop,target=entry+2*risk,partialDone=false,remaining=1,profit=0,exit=entry,exitIndex=i+1;for(let j=i+1;j<cs.length;j++){let bar=cs[j];if(bar.l<=trail){exit=trail;exitIndex=j;profit+=remaining*(exit-entry)/entry;remaining=0;break}if(cfg.partial>0&&!partialDone&&bar.h>=target){profit+=cfg.partial*(target-entry)/entry;remaining-=cfg.partial;partialDone=true}if(bar.c>entry+risk){let next=bar.c-cfg.atr*a;trail=Math.max(trail,next)}if(bar.c<ema(cl.slice(0,j+1),50)){exit=bar.c;exitIndex=j;profit+=remaining*(exit-entry)/entry;remaining=0;break}if(j===cs.length-1){exit=bar.c;exitIndex=j;profit+=remaining*(exit-entry)/entry;remaining=0}}/* Gebühren und Slippage werden für die Strategiebewertung bewusst nicht abgezogen. */equity*=1+profit;peak=Math.max(peak,equity);maxdd=Math.max(maxdd,(peak-equity)/peak);trades.push({entryDate:new Date(cs[i+1].t).toLocaleDateString('de-DE'),exitDate:new Date(cs[exitIndex].t).toLocaleDateString('de-DE'),ret:profit*100});i=exitIndex-1}return {ret:(equity-1)*100,dd:maxdd*100,trades}}
