@@ -1228,3 +1228,20 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 }
 #heroPlaceholder::before,
 #heroPlaceholder::after{display:none!important;content:none!important}
+
+
+/* v0.57 — Marktlabel hervorheben, Begrüßungsblock schmaler zentrieren */
+.v50 .hero{
+  width:88%!important;
+  max-width:360px!important;
+  margin:0 auto!important;
+  padding:12px 0 14px!important;
+}
+.v50 .hero .overline{
+  font-size:13px!important;
+  letter-spacing:1.9px!important;
+}
+@media(max-width:360px){
+  .v50 .hero{width:92%!important}
+  .v50 .hero .overline{font-size:12px!important}
+}
