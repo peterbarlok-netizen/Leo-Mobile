@@ -40,10 +40,11 @@ function draw(raw){
  initTradingViewChart();
  if(!tvChart)throw Error('TradingView Chartbibliothek konnte nicht geladen werden');
  const data=chartData.map(c=>({time:Math.floor(c.t/1000),open:c.o,high:c.h,low:c.l,close:c.c,value:c.c}));
- if(tvSeries)tvChart.removeSeries(tvSeries);
+ if(tvSeries){try{tvChart.removeSeries(tvSeries)}catch(e){}tvSeries=null;}
  Object.values(emaSeries).forEach(series=>{try{tvChart.removeSeries(series)}catch(e){}});
  emaSeries={};
  if(volumeSeries){try{tvChart.removeSeries(volumeSeries)}catch(e){}volumeSeries=null;}
+ // Kursserie zuerst vollständig zeichnen: optionale Indikatoren dürfen den Hauptchart nie blockieren.
  if(chartType==='line'){
   tvSeries=tvChart.addSeries(window.LightweightCharts.AreaSeries,{
    lineColor:'#20e6cf',topColor:'rgba(32,230,207,.28)',bottomColor:'rgba(32,230,207,0)',
@@ -57,30 +58,33 @@ function draw(raw){
   });
   tvSeries.setData(data.map(({time,open,high,low,close})=>({time,open,high,low,close})));
  }
- const emaConfig=[
-  ['ema20',20,'#20e6cf'],['ema50',50,'#f4c65e'],['ema200',200,'#a98aff']
- ];
- emaConfig.forEach(([key,period,color])=>{
-  const series=tvChart.addSeries(window.LightweightCharts.LineSeries,{
-   color,lineWidth:2,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false,
-   visible:indicatorState[key]
-  });
-  series.setData(movingAverageSeries(chartData,period));
-  emaSeries[key]=series;
- });
- if(indicatorState.volume){
-  volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{
-   priceScaleId:'volume',priceFormat:{type:'volume'},base:0,
-   lastValueVisible:false,priceLineVisible:false
-  });
-  tvChart.priceScale('volume').applyOptions({scaleMargins:{top:.82,bottom:0},visible:false});
-  volumeSeries.setData(chartData.map(c=>({
-   time:Math.floor(c.t/1000),value:c.v,
-   color:c.c>=c.o?'rgba(40,224,176,.72)':'rgba(255,113,133,.72)'
-  })));
- }
  if(chartNeedsFit){tvChart.timeScale().fitContent();tvChart.priceScale('right').applyOptions({autoScale:true});chartNeedsFit=false;}
  $('chart-label').textContent=activeCoin+' / USDT · '+interval.toUpperCase().replace('1D','1T');
+ const emaConfig=[['ema20',20,'#20e6cf'],['ema50',50,'#f4c65e'],['ema200',200,'#a98aff']];
+ emaConfig.forEach(([key,period,color])=>{
+  try{
+   const values=movingAverageSeries(chartData,period);
+   if(!values.length)return;
+   const series=tvChart.addSeries(window.LightweightCharts.LineSeries,{
+    color,lineWidth:2,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false,
+    visible:indicatorState[key]
+   });
+   series.setData(values);emaSeries[key]=series;
+  }catch(error){console.warn('EMA '+period+' konnte nicht geladen werden',error);}
+ });
+ if(indicatorState.volume){
+  try{
+   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{
+    priceScaleId:'',priceFormat:{type:'volume'},base:0,
+    lastValueVisible:false,priceLineVisible:false
+   });
+   volumeSeries.setData(chartData.map(c=>({
+    time:Math.floor(c.t/1000),value:c.v,
+    color:c.c>=c.o?'rgba(40,224,176,.72)':'rgba(255,113,133,.72)'
+   })));
+   try{tvChart.priceScale('').applyOptions({scaleMargins:{top:.82,bottom:0},visible:false});}catch(scaleError){console.warn('Volumen-Skala nicht verfügbar',scaleError);}
+  }catch(error){volumeSeries=null;console.warn('Volume konnte nicht geladen werden',error);}
+ }
 }
 function renderAnalysis(){let c=daily.slice(0,-1),cl=c.map(x=>x.c),last=cl.at(-1),e20=ema(cl,20),e50=ema(cl,50),e200=ema(cl,200),old=ema(cl.slice(0,-20),200),a=atr(c),mom=rsi(cl);lastAnalysis={last,e20,e50,e200,old,a,mom,above:last>e200,rising:e200>old};[['ema20',e20],['ema50',e50],['ema200',e200],['atr',a],['rsi',mom]].forEach(([id,v])=>$(id).textContent=v==null?'—':id==='rsi'?v.toFixed(1):fmt(v));$('ema-slope').textContent=e200>old?'STEIGEND':'FALLEND';[['ema20-state',last>e20],['ema50-state',last>e50],['ema200-state',last>e200]].forEach(([id,ok])=>$(id).textContent=ok?'Kurs darüber':'Kurs darunter');let checks=[['Tagesschluss über EMA200',last>e200],['EMA200 steigt',e200>old],['EMA20 über EMA50',e20>e50],['RSI 42–65',mom>=42&&mom<=65]];$('criteria').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'• ')+s+'</li>').join('');$('trend-score').textContent=checks.filter(x=>x[1]).length+'/4';$('trend-list').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+s+'</li>').join('');$('market-verdict').textContent=last>e200&&e200>old?'AUFWÄRTSTREND':'BEOBACHTEN';$('market-verdict-note').textContent=last>e200&&e200>old?'SOL notiert über einer steigenden EMA200.':'Trendbedingungen sind noch nicht vollständig erfüllt.';$('signal-word').textContent=last>e200&&e200>old?'SETUP AKTIV':'ABWARTEN';$('signal-reason').textContent=last>e200&&e200>old?'Tagestrend positiv. Einstieg erst nach bestätigtem Tagesabschluss und Folgetages-Open.':'Kein bestätigter EMA200-Aufwärtstrend. Kein Einstieg.';$('signal-checks').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'○ ')+s+'</li>').join('')+'<li>Initialer Stop: 3,5 ATR</li>'}
 
