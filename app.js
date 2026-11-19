@@ -12,7 +12,7 @@ function initTradingViewChart(){
   width:Math.max(1,host.clientWidth),height:Math.max(1,host.clientHeight),autoSize:false,
   layout:{background:{type:'solid',color:'#06151d'},textColor:'#9bb5bf',fontFamily:'DM Sans, sans-serif',fontSize:10,attributionLogo:false},
   grid:{vertLines:{color:'rgba(18,57,67,.62)',style:2},horzLines:{color:'rgba(23,67,76,.72)',style:2}},
-  rightPriceScale:{visible:true,borderColor:'#24515a',autoScale:true,entireTextOnly:true,minimumWidth:64,scaleMargins:{top:.12,bottom:.12}},
+  rightPriceScale:{visible:true,borderColor:'#24515a',autoScale:true,entireTextOnly:false,alignLabels:false,minimumWidth:56,scaleMargins:{top:.12,bottom:.12}},
   timeScale:{visible:true,borderColor:'#24515a',timeVisible:true,secondsVisible:false,rightOffset:1,barSpacing:7,minBarSpacing:2},
   crosshair:{mode:L.CrosshairMode.Normal,vertLine:{color:'#20e6cf',width:1,style:2,labelBackgroundColor:'#0c5557'},horzLine:{color:'#20e6cf',width:1,style:2,labelBackgroundColor:'#0c5557'}},
   handleScroll:{mouseWheel:true,pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:true},
