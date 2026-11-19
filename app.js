@@ -139,7 +139,7 @@ function drawRsi(candles){
  const data=calculateRsiSeries(candles,14);
  if(rsiSeries){try{rsiChart.removeSeries(rsiSeries)}catch(e){}rsiSeries=null;}
  rsiGuideSeries.forEach(line=>{try{rsiChart.removeSeries(line)}catch(e){}});rsiGuideSeries=[];
- rsiSeries=rsiChart.addSeries(L.LineSeries,{color:'#e5b85c',lineWidth:2,priceLineVisible:false,lastValueVisible:true,crosshairMarkerVisible:false,priceFormat:{type:'price',precision:1,minMove:.1},autoscaleInfoProvider:()=>({priceRange:{minValue:0,maxValue:100}})});
+ rsiSeries=rsiChart.addSeries(L.LineSeries,{color:'#e5b85c',lineWidth:1,priceLineVisible:false,lastValueVisible:true,crosshairMarkerVisible:false,priceFormat:{type:'price',precision:1,minMove:.1},autoscaleInfoProvider:()=>({priceRange:{minValue:0,maxValue:100}})});
  rsiSeries.setData(data);
  [30,70].forEach(level=>{
   const line=rsiChart.addSeries(L.LineSeries,{color:'rgba(145,170,181,.55)',lineWidth:1,lineStyle:L.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});
