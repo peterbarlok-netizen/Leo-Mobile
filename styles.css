@@ -1477,3 +1477,7 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .chart-timeframes button{flex:1;min-width:0;border:0;border-radius:15px;background:transparent;color:#d5e4e8;padding:10px 2px;font:700 12px 'Space Grotesk'}
 .chart-timeframes button.selected{background:#20e6cf;color:#04262b;box-shadow:0 0 14px #20e6cf55}
 @media(max-width:390px){.leo-chart-panel{padding:12px 10px}.coin-select{min-height:68px}.coin-select>img{width:43px;height:43px}.coin-select-copy strong{font-size:16px}.chart-mode-switch button{padding:7px 7px;font-size:10px}.chart-stage{height:195px}.chart-live-price strong{font-size:23px}.chart-timeframes button{font-size:11px;padding:9px 1px}}
+
+
+/* Chart-Plot etwas nach links ziehen; vorhandene spezifische Layoutregel gezielt überschreiben */
+.v50 .chart-stage .price-chart{left:16px!important;width:calc(100% - 31px)!important}
