@@ -77,10 +77,6 @@ $('coin-select').addEventListener('click',()=>{const m=$('coin-menu'),open=m.hid
 document.querySelectorAll('[data-coin]').forEach(b=>b.addEventListener('click',()=>{activeCoin=b.dataset.coin;chartNeedsFit=true;document.querySelectorAll('[data-coin]').forEach(x=>x.classList.toggle('active',x===b));closeCoinMenu();refresh()}));
 document.addEventListener('click',e=>{if(!e.target.closest('.coin-select-wrap'))closeCoinMenu()});
 document.querySelectorAll('[data-chart-type]').forEach(b=>b.addEventListener('click',()=>{chartType=b.dataset.chartType;document.querySelectorAll('[data-chart-type]').forEach(x=>{let on=x===b;x.classList.toggle('selected',on);x.setAttribute('aria-pressed',String(on))});if(chartData.length)draw(chartData.map(c=>[c.t,c.o,c.h,c.l,c.c,c.v]))}));
-$('chart-reset').addEventListener('click',()=>{
- if(tvChart){tvChart.timeScale().fitContent();tvChart.priceScale('right').applyOptions({autoScale:true});}
- chartNeedsFit=false;
-});
 document.querySelectorAll('[data-interval]').forEach(b=>b.addEventListener('click',()=>{
  interval=b.dataset.interval;chartNeedsFit=true;
  document.querySelectorAll('[data-interval]').forEach(x=>x.classList.toggle('selected',x===b));
