@@ -933,3 +933,20 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
  .v50 .reference-top .demo-chip{padding:7px 10px!important;font-size:10px!important}
  .v50 .reference-top .version-tag{padding:7px 8px!important;font-size:10px!important}
 }
+
+
+/* v0.51 – Kopfbereich: DEMO oben, Versionsnummer darunter */
+.v50 .reference-top{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  justify-content:flex-start!important;
+  gap:5px!important;
+}
+.v50 .reference-top .demo-chip,
+.v50 .reference-top .version-tag{
+  margin:0!important;
+}
+.v50 .reference-top .version-tag{
+  align-self:flex-end!important;
+}
