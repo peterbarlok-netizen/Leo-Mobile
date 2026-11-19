@@ -90,7 +90,7 @@ updateGreeting();
 async function refresh(){
  const meta=coins[activeCoin];
  try{
-  let [ticker,raw]=await Promise.all([api('/ticker/24hr?symbol='+meta.symbol),api('/klines?symbol='+meta.symbol+'&interval='+interval+'&limit=120')]);
+  let [ticker,raw]=await Promise.all([api('/ticker/24hr?symbol='+meta.symbol),api('/klines?symbol='+meta.symbol+'&interval='+interval+'&limit=300')]);
   $('sol-price').textContent=fmt(+ticker.lastPrice);
   const dailyChange=+ticker.priceChangePercent;
   $('sol-change').textContent=pct(dailyChange);
