@@ -1,4 +1,4 @@
-const API='https://data-api.binance.vision/api/v3';const $=id=>document.getElementById(id);const fmt=n=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});const pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %';let interval='4h',daily=[],selected='defensiv',lastAnalysis=null,activeCoin='SOL',chartType='line',chartData=[],tvChart=null,tvSeries=null,chartNeedsFit=true;
+const API='https://data-api.binance.vision/api/v3';const $=id=>document.getElementById(id);const fmt=n=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});const pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %';let interval='4h',daily=[],selected='defensiv',lastAnalysis=null,activeCoin='SOL',chartType='line',chartData=[],tvChart=null,tvSeries=null,chartNeedsFit=true,tvResizeObserver=null;
 async function api(path){let r=await fetch(API+path,{cache:'no-store'});if(!r.ok)throw Error('Binance HTTP '+r.status);return r.json()}
 function ema(a,p){if(a.length<p)return null;let v=a.slice(0,p).reduce((x,y)=>x+y,0)/p,k=2/(p+1);for(let i=p;i<a.length;i++)v=a[i]*k+v*(1-k);return v}
 function atr(c,p=14){if(c.length<p+1)return null;let tr=[];for(let i=1;i<c.length;i++)tr.push(Math.max(c[i].h-c[i].l,Math.abs(c[i].h-c[i-1].c),Math.abs(c[i].l-c[i-1].c)));return tr.slice(-p).reduce((a,b)=>a+b,0)/p}
@@ -10,7 +10,7 @@ function initTradingViewChart(){
  const L=window.LightweightCharts;
  tvChart=L.createChart(host,{
   width:host.clientWidth||600,height:host.clientHeight||260,
-  autoSize:true,
+  autoSize:false,
   layout:{background:{type:'solid',color:'#06151d'},textColor:'#9bb5bf',fontFamily:'DM Sans, sans-serif',fontSize:10,attributionLogo:false},
   grid:{vertLines:{color:'rgba(18,57,67,.62)',style:2},horzLines:{color:'rgba(23,67,76,.72)',style:2}},
   rightPriceScale:{visible:true,borderColor:'#24515a',autoScale:true,entireTextOnly:true,scaleMargins:{top:.12,bottom:.12}},
@@ -21,6 +21,10 @@ function initTradingViewChart(){
   kineticScroll:{mouse:true,touch:true},
   localization:{locale:'de-DE',priceFormatter:price=>Number(price).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:8})}
  });
+ const resizeChart=()=>{if(tvChart&&host.clientWidth>0&&host.clientHeight>0)tvChart.resize(host.clientWidth,host.clientHeight)};
+ if(typeof ResizeObserver!=='undefined'){tvResizeObserver=new ResizeObserver(resizeChart);tvResizeObserver.observe(host);}
+ resizeChart();
+ window.addEventListener('orientationchange',()=>requestAnimationFrame(resizeChart),{passive:true});
  $('price-chart').classList.add('tradingview-active');
 }
 function draw(raw){
