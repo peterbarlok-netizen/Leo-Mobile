@@ -1334,3 +1334,15 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .v50 .hero #greeting-title + p{
   margin-top:0!important;
 }
+
+
+/* v0.63 — Überschrift exakt zwischen Marktlabel und Untertitel ausbalancieren */
+.v50 .hero #greeting-title{
+  margin-top:8px!important;
+  margin-bottom:8px!important;
+  margin-block:8px!important;
+  transform:none!important;
+}
+.v50 .hero #greeting-title + p{
+  margin-top:0!important;
+}
