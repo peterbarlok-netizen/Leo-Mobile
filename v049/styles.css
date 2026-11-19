@@ -302,3 +302,75 @@
  .v49 .reference-top .demo-chip{padding:7px 10px!important;font-size:10px!important}
  .v49 .reference-top .version-tag{padding:7px 8px!important;font-size:10px!important}
 }
+
+
+/* Definitive hero layout: preserve the image's full intrinsic height */
+.v49 .lion-hero{
+ display:block!important;
+ position:relative!important;
+ width:calc(100% + 24px)!important;
+ height:auto!important;
+ min-height:0!important;
+ aspect-ratio:auto!important;
+ margin:0 -12px!important;
+ padding:0!important;
+ overflow:hidden!important;
+ background:#02090e!important;
+}
+.v49 .lion-hero img{
+ display:block!important;
+ position:relative!important;
+ inset:auto!important;
+ width:100%!important;
+ height:auto!important;
+ max-height:none!important;
+ object-fit:initial!important;
+ object-position:initial!important;
+ transform:none!important;
+ margin:0!important;
+}
+.v49 .lion-hero:before,.v49 .lion-hero:after{display:none!important;content:none!important}
+.v49 .hero-top-mask{
+ position:absolute!important;
+ z-index:30!important;
+ top:0!important;
+ left:0!important;
+ right:0!important;
+ height:clamp(52px,10vw,68px)!important;
+ background:#02090e!important;
+ pointer-events:none!important;
+}
+.v49 .reference-top{
+ position:absolute!important;
+ z-index:40!important;
+ top:10px!important;
+ left:auto!important;
+ right:14px!important;
+ bottom:auto!important;
+ width:auto!important;
+ height:auto!important;
+ margin:0!important;
+ padding:0!important;
+ display:flex!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ justify-content:flex-end!important;
+ gap:8px!important;
+}
+.v49 .reference-top .demo-chip,
+.v49 .reference-top .version-tag{
+ position:static!important;
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ min-height:34px!important;
+ margin:0!important;
+ white-space:nowrap!important;
+}
+.v49 .lion-title,.v49 .lion-subtitle{display:none!important}
+@media(max-width:390px){
+ .v49 .hero-top-mask{height:54px!important}
+ .v49 .reference-top{top:9px!important;right:10px!important;gap:6px!important}
+ .v49 .reference-top .demo-chip{padding:7px 10px!important;font-size:10px!important}
+ .v49 .reference-top .version-tag{padding:7px 8px!important;font-size:10px!important}
+}
