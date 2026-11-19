@@ -70,14 +70,14 @@ function draw(raw){
  });
  if(indicatorState.volume){
   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{
-   priceScaleId:'',priceFormat:{type:'volume'},base:0,
+   priceScaleId:'volume',priceFormat:{type:'volume'},base:0,
    lastValueVisible:false,priceLineVisible:false
-  },1);
+  });
+  tvChart.priceScale('volume').applyOptions({scaleMargins:{top:.82,bottom:0},visible:false});
   volumeSeries.setData(chartData.map(c=>({
    time:Math.floor(c.t/1000),value:c.v,
    color:c.c>=c.o?'rgba(40,224,176,.72)':'rgba(255,113,133,.72)'
   })));
-  try{const panes=tvChart.panes();if(panes[0]?.setStretchFactor)panes[0].setStretchFactor(3);if(panes[1]?.setStretchFactor)panes[1].setStretchFactor(1);if(panes[1]?.setHeight)panes[1].setHeight(72);}catch(e){console.warn('Volume-Pane konnte nicht angepasst werden',e)}
  }
  if(chartNeedsFit){tvChart.timeScale().fitContent();tvChart.priceScale('right').applyOptions({autoScale:true});chartNeedsFit=false;}
  $('chart-label').textContent=activeCoin+' / USDT · '+interval.toUpperCase().replace('1D','1T');
@@ -114,7 +114,8 @@ document.querySelectorAll('[data-indicator]').forEach(b=>b.addEventListener('cli
  if(key==='volume'){
   if(volumeSeries){tvChart.removeSeries(volumeSeries);volumeSeries=null;}
   else if(chartData.length){
-   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{priceScaleId:'',priceFormat:{type:'volume'},base:0,lastValueVisible:false,priceLineVisible:false},1);
+   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{priceScaleId:'volume',priceFormat:{type:'volume'},base:0,lastValueVisible:false,priceLineVisible:false});
+   tvChart.priceScale('volume').applyOptions({scaleMargins:{top:.82,bottom:0},visible:false});
    volumeSeries.setData(chartData.map(c=>({time:Math.floor(c.t/1000),value:c.v,color:c.c>=c.o?'rgba(40,224,176,.72)':'rgba(255,113,133,.72)'})));
   }
  }else if(emaSeries[key])emaSeries[key].applyOptions({visible:indicatorState[key]});
