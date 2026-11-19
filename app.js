@@ -21,10 +21,27 @@ function initTradingViewChart(){
   localization:{locale:'de-DE',priceFormatter:price=>Number(price).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:8})}
  });
  const stage=$('chart-stage');
- const resizeChart=()=>{if(tvChart&&stage&&stage.clientWidth>0&&stage.clientHeight>0)tvChart.resize(stage.clientWidth,stage.clientHeight)};
+ const debugChartLayout=()=>{
+  const out=$('chart-layout-debug');
+  if(!tvChart||!stage||!out)return;
+  try{
+   const chartWidth=tvChart.chartElement().getBoundingClientRect().width;
+   const pane=tvChart.paneSize(0);
+   const priceWidth=tvChart.priceScale('right').width();
+   const hostWidth=host.getBoundingClientRect().width;
+   const unexplained=Math.max(0,chartWidth-pane.width-priceWidth);
+   out.textContent='Container '+Math.round(stage.clientWidth)+' px · Chart '+Math.round(chartWidth)+' px · Plot '+Math.round(pane.width)+' px · Preisachse '+Math.round(priceWidth)+' px · Rest '+Math.round(unexplained)+' px';
+  }catch(error){out.textContent='Chart-Messung derzeit nicht verfügbar';}
+ };
+ const resizeChart=()=>{
+  if(tvChart&&stage&&stage.clientWidth>0&&stage.clientHeight>0){
+   tvChart.resize(stage.clientWidth,stage.clientHeight);
+   requestAnimationFrame(debugChartLayout);
+  }
+ };
  if(typeof ResizeObserver!=='undefined'&&stage){const chartResizeObserver=new ResizeObserver(()=>resizeChart());chartResizeObserver.observe(stage);host._leoChartResizeObserver=chartResizeObserver;}
  window.addEventListener('orientationchange',()=>requestAnimationFrame(resizeChart),{passive:true});
- requestAnimationFrame(resizeChart);
+ requestAnimationFrame(()=>{resizeChart();debugChartLayout();});
  $('price-chart').classList.add('tradingview-active');
 }
 function movingAverageSeries(candles,period){
@@ -59,6 +76,7 @@ function draw(raw){
  }
  if(chartNeedsFit){tvChart.timeScale().fitContent();tvChart.priceScale('right').applyOptions({autoScale:true});chartNeedsFit=false;}
  $('chart-label').textContent=activeCoin+' / USDT · '+interval.toUpperCase().replace('1D','1T');
+ requestAnimationFrame(()=>{const out=$('chart-layout-debug');if(out&&tvChart){const pane=tvChart.paneSize(0),scale=tvChart.priceScale('right').width(),width=tvChart.chartElement().getBoundingClientRect().width;out.textContent='Container '+Math.round($('chart-stage').clientWidth)+' px · Chart '+Math.round(width)+' px · Plot '+Math.round(pane.width)+' px · Preisachse '+Math.round(scale)+' px · Rest '+Math.round(Math.max(0,width-pane.width-scale))+' px';}});
 }
 function renderAnalysis(){let c=daily.slice(0,-1),cl=c.map(x=>x.c),last=cl.at(-1),e20=ema(cl,20),e50=ema(cl,50),e200=ema(cl,200),old=ema(cl.slice(0,-20),200),a=atr(c),mom=rsi(cl);lastAnalysis={last,e20,e50,e200,old,a,mom,above:last>e200,rising:e200>old};[['ema20',e20],['ema50',e50],['ema200',e200],['atr',a],['rsi',mom]].forEach(([id,v])=>$(id).textContent=v==null?'—':id==='rsi'?v.toFixed(1):fmt(v));$('ema-slope').textContent=e200>old?'STEIGEND':'FALLEND';[['ema20-state',last>e20],['ema50-state',last>e50],['ema200-state',last>e200]].forEach(([id,ok])=>$(id).textContent=ok?'Kurs darüber':'Kurs darunter');let checks=[['Tagesschluss über EMA200',last>e200],['EMA200 steigt',e200>old],['EMA20 über EMA50',e20>e50],['RSI 42–65',mom>=42&&mom<=65]];$('criteria').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'• ')+s+'</li>').join('');$('trend-score').textContent=checks.filter(x=>x[1]).length+'/4';$('trend-list').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+s+'</li>').join('');$('market-verdict').textContent=last>e200&&e200>old?'AUFWÄRTSTREND':'BEOBACHTEN';$('market-verdict-note').textContent=last>e200&&e200>old?'SOL notiert über einer steigenden EMA200.':'Trendbedingungen sind noch nicht vollständig erfüllt.';$('signal-word').textContent=last>e200&&e200>old?'SETUP AKTIV':'ABWARTEN';$('signal-reason').textContent=last>e200&&e200>old?'Tagestrend positiv. Einstieg erst nach bestätigtem Tagesabschluss und Folgetages-Open.':'Kein bestätigter EMA200-Aufwärtstrend. Kein Einstieg.';$('signal-checks').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'○ ')+s+'</li>').join('')+'<li>Initialer Stop: 3,5 ATR</li>'}
 
