@@ -30,7 +30,8 @@ function draw(raw){
  svg.innerHTML=defs+'<defs><filter id="leoGlow"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>'+grid+marks+'<line x1="38" y1="'+lastY+'" x2="955" y2="'+lastY+'" stroke="#20e6cf" stroke-dasharray="7 5" opacity=".85"/><circle cx="955" cy="'+lastY+'" r="4" fill="#20e6cf"/>';
  $('chart-axis').innerHTML=priceLabels.join('');
  const labels=[0,Math.floor((cs.length-1)/3),Math.floor(2*(cs.length-1)/3),cs.length-1];
- $('chart-x-axis').innerHTML=labels.map(i=>'<span>'+new Date(cs[i].t).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+'</span>').join('');
+ const intraday=['5m','30m','1h','4h'].includes(interval);
+ $('chart-x-axis').innerHTML=labels.map(i=>'<span>'+new Date(cs[i].t).toLocaleString('de-DE',intraday?{hour:'2-digit',minute:'2-digit'}:{day:'2-digit',month:'2-digit'})+'</span>').join('');
  $('chart-label').textContent=activeCoin+' / USDT · '+interval.toUpperCase().replace('1D','1T');
 }
 function renderAnalysis(){let c=daily.slice(0,-1),cl=c.map(x=>x.c),last=cl.at(-1),e20=ema(cl,20),e50=ema(cl,50),e200=ema(cl,200),old=ema(cl.slice(0,-20),200),a=atr(c),mom=rsi(cl);lastAnalysis={last,e20,e50,e200,old,a,mom,above:last>e200,rising:e200>old};[['ema20',e20],['ema50',e50],['ema200',e200],['atr',a],['rsi',mom]].forEach(([id,v])=>$(id).textContent=v==null?'—':id==='rsi'?v.toFixed(1):fmt(v));$('ema-slope').textContent=e200>old?'STEIGEND':'FALLEND';[['ema20-state',last>e20],['ema50-state',last>e50],['ema200-state',last>e200]].forEach(([id,ok])=>$(id).textContent=ok?'Kurs darüber':'Kurs darunter');let checks=[['Tagesschluss über EMA200',last>e200],['EMA200 steigt',e200>old],['EMA20 über EMA50',e20>e50],['RSI 42–65',mom>=42&&mom<=65]];$('criteria').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'• ')+s+'</li>').join('');$('trend-score').textContent=checks.filter(x=>x[1]).length+'/4';$('trend-list').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+s+'</li>').join('');$('market-verdict').textContent=last>e200&&e200>old?'AUFWÄRTSTREND':'BEOBACHTEN';$('market-verdict-note').textContent=last>e200&&e200>old?'SOL notiert über einer steigenden EMA200.':'Trendbedingungen sind noch nicht vollständig erfüllt.';$('signal-word').textContent=last>e200&&e200>old?'SETUP AKTIV':'ABWARTEN';$('signal-reason').textContent=last>e200&&e200>old?'Tagestrend positiv. Einstieg erst nach bestätigtem Tagesabschluss und Folgetages-Open.':'Kein bestätigter EMA200-Aufwärtstrend. Kein Einstieg.';$('signal-checks').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'○ ')+s+'</li>').join('')+'<li>Initialer Stop: 3,5 ATR</li>'}
@@ -43,7 +44,7 @@ async function refresh(){
  try{
   let [ticker,raw]=await Promise.all([api('/ticker/24hr?symbol='+meta.symbol),api('/klines?symbol='+meta.symbol+'&interval='+interval+'&limit=120')]);
   $('sol-price').textContent=fmt(+ticker.lastPrice);
-  $('sol-change').textContent=pct(+ticker.priceChangePercent);
+  const visibleStart=raw.length?+raw[Math.max(0,raw.length-Math.max(8,Math.round(raw.length/chartZoom)))][1]:+ticker.lastPrice;const periodChange=visibleStart?((+ticker.lastPrice-visibleStart)/visibleStart)*100:+ticker.priceChangePercent;$('sol-change').textContent=pct(periodChange);
   $('sol-change').className='change chart-change '+(+ticker.priceChangePercent>=0?'positive':'negative');
   $('coin-name').textContent=meta.name.toUpperCase();$('coin-pair').textContent=activeCoin+'-USDT';$('coin-logo').src=meta.logo;$('coin-logo').alt=meta.name;
   if($('connection-status'))$('connection-status').textContent='LIVE';
