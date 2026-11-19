@@ -42,10 +42,9 @@ updateGreeting();
 async function refresh(){
  const meta=coins[activeCoin];
  try{
-  let [ticker,raw,day]=await Promise.all([api('/ticker/24hr?symbol='+meta.symbol),api('/klines?symbol='+meta.symbol+'&interval='+interval+'&limit=120'),api('/klines?symbol='+meta.symbol+'&interval=1d&limit=1')]);
+  let [ticker,raw]=await Promise.all([api('/ticker/24hr?symbol='+meta.symbol),api('/klines?symbol='+meta.symbol+'&interval='+interval+'&limit=120')]);
   $('sol-price').textContent=fmt(+ticker.lastPrice);
-  const dayOpen=day.length?+day[0][1]:0;
-  const dailyChange=dayOpen?((+ticker.lastPrice-dayOpen)/dayOpen)*100:+ticker.priceChangePercent;
+  const dailyChange=+ticker.priceChangePercent;
   $('sol-change').textContent=pct(dailyChange);
   $('sol-change').className='change chart-change '+(dailyChange>=0?'positive':'negative');
   $('coin-name').textContent=meta.name.toUpperCase();$('coin-pair').textContent=activeCoin+'-USDT';$('coin-logo').src=meta.logo;$('coin-logo').alt=meta.name;
