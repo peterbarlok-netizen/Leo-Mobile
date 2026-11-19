@@ -118,8 +118,7 @@ document.querySelectorAll('[data-indicator]').forEach(b=>b.addEventListener('cli
  if(key==='volume'){
   if(volumeSeries){tvChart.removeSeries(volumeSeries);volumeSeries=null;}
   else if(chartData.length){
-   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{priceScaleId:'volume',priceFormat:{type:'volume'},base:0,lastValueVisible:false,priceLineVisible:false});
-   tvChart.priceScale('volume').applyOptions({scaleMargins:{top:.82,bottom:0},visible:false});
+   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{priceScaleId:'',priceFormat:{type:'volume'},base:0,lastValueVisible:false,priceLineVisible:false});
    volumeSeries.setData(chartData.map(c=>({time:Math.floor(c.t/1000),value:c.v,color:c.c>=c.o?'rgba(40,224,176,.72)':'rgba(255,113,133,.72)'})));
   }
  }else if(emaSeries[key])emaSeries[key].applyOptions({visible:indicatorState[key]});
