@@ -1646,3 +1646,21 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .leo-chart-panel .rsi-heading span:last-child{font-weight:400;color:#718f9a;letter-spacing:0;}
 .leo-chart-panel .rsi-chart{height:104px;width:100%;position:relative;touch-action:pan-y;}
 .leo-chart-panel .chart-indicators{margin-top:8px!important;}
+
+
+/* v0.98 — LEO coin selector control */
+.leo-chart-panel .coin-chevron{
+  width:38px;height:38px;flex:0 0 38px;margin-left:auto;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(32,230,207,.58);border-radius:13px;
+  background:linear-gradient(145deg,rgba(13,62,67,.92),rgba(5,27,36,.96));
+  color:#36f0dc;font-size:25px;font-weight:400;line-height:1;
+  box-shadow:0 0 12px rgba(32,230,207,.12),inset 0 0 9px rgba(32,230,207,.08);
+  transform:none;transition:transform .22s ease,background .22s ease,box-shadow .22s ease;
+}
+.leo-chart-panel .coin-select[aria-expanded="true"] .coin-chevron{
+  transform:rotate(180deg);
+  background:linear-gradient(145deg,rgba(18,83,83,.98),rgba(6,35,42,.98));
+  box-shadow:0 0 15px rgba(32,230,207,.24),inset 0 0 10px rgba(32,230,207,.12);
+}
+@media(max-width:390px){.leo-chart-panel .coin-chevron{width:36px;height:36px;flex-basis:36px;border-radius:12px;font-size:24px}}
