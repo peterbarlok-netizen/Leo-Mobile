@@ -1356,3 +1356,36 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .v50 .hero #greeting-title + p{
   text-align:left!important;
 }
+
+
+/* v0.66 — Originalgrafik im Hero vollständig und unverändert darstellen */
+#heroPlaceholder{
+  display:block!important;
+  position:relative!important;
+  width:calc(100% + 24px)!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0 -12px!important;
+  padding:0!important;
+  overflow:visible!important;
+  border:0!important;
+  background:transparent!important;
+}
+#heroPlaceholder > img{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+  height:auto!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  object-fit:initial!important;
+  object-position:initial!important;
+  transform:none!important;
+  filter:none!important;
+}
+#heroPlaceholder::before,#heroPlaceholder::after{
+  display:none!important;
+  content:none!important;
+}
