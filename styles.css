@@ -1636,3 +1636,13 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .leo-chart-panel .indicator-toggle[data-indicator="ema50"]{border-bottom:2px solid #f4c65e;}
 .leo-chart-panel .indicator-toggle[data-indicator="ema200"]{border-bottom:2px solid #a98aff;}
 @media(max-width:390px){.leo-chart-panel .indicator-toggle{padding:7px 8px;font-size:9px}}
+
+
+/* v0.95 — RSI eigenständig unter dem Hauptchart; Zeitintervalle nach oben */
+.leo-chart-panel .chart-timeframes{margin:4px 0 10px!important;}
+.leo-chart-panel .chart-stage{margin-top:0!important;}
+.leo-chart-panel .rsi-panel{margin:7px 0 2px;padding:8px 9px 5px;border:1px solid #24515a;border-radius:12px;background:#06151d;}
+.leo-chart-panel .rsi-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#9bb5bf;font:600 9px 'DM Sans',sans-serif;letter-spacing:.35px;margin:0 2px 3px;}
+.leo-chart-panel .rsi-heading span:last-child{font-weight:400;color:#718f9a;letter-spacing:0;}
+.leo-chart-panel .rsi-chart{height:104px;width:100%;position:relative;touch-action:pan-y;}
+.leo-chart-panel .chart-indicators{margin-top:8px!important;}
