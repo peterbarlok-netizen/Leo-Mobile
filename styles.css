@@ -1436,3 +1436,48 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
   #heroPlaceholder .hero-badges{top:8px;right:8px;gap:5px}
   #heroPlaceholder .hero-badge{min-height:26px;padding:5px 9px;font-size:9px;letter-spacing:.7px}
 }
+
+/* v0.68 — Chartbereich: Coinwahl, Darstellungsmodus, Achsen und Navigation */
+.leo-chart-panel{position:relative;padding:15px 13px 13px;overflow:visible}
+.coin-select-wrap{position:relative;z-index:8}
+.coin-select{width:100%;min-height:76px;display:flex;align-items:center;gap:13px;padding:10px 14px;border:1px solid #287c7d;border-radius:20px;background:linear-gradient(120deg,#092b32,#071923);color:var(--text);text-align:left;box-shadow:0 0 16px #20e6cf18,inset 0 0 15px #20e6cf0c}
+.coin-select>img{width:49px;height:49px;object-fit:contain;border-radius:50%;background:#061017}
+.coin-select-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.coin-select-copy strong{font:700 18px 'Space Grotesk';letter-spacing:.5px}
+.coin-select-copy small{font-size:12px;color:#9bb3bd}
+.coin-chevron{margin-left:auto;font-size:27px;line-height:1;color:#e8ffff;transform:translateY(-4px)}
+.coin-menu{position:absolute;top:calc(100% + 7px);left:0;right:0;padding:7px;border:1px solid #39cfc6;border-radius:16px;background:#061820;box-shadow:0 14px 35px #000b;z-index:20}
+.coin-menu[hidden]{display:none}
+.coin-menu button{width:100%;display:flex;align-items:center;gap:10px;padding:8px;border:0;border-radius:11px;background:transparent;color:var(--text);text-align:left}
+.coin-menu button:hover,.coin-menu button.active{background:#0c4548}
+.coin-menu img{width:34px;height:34px;object-fit:contain;border-radius:50%}
+.coin-menu button span{font-size:13px;font-weight:700}
+.coin-menu button small{display:block;font-size:10px;color:#91aab5;font-weight:400;margin-top:2px}
+.chart-price-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:20px 2px 12px}
+.chart-live-price{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.chart-live-price strong{font:600 clamp(22px,6vw,30px) 'Space Grotesk';letter-spacing:-.8px}
+.chart-live-price small{font-size:12px;color:#d4e4e7}
+.chart-change{padding:8px 10px;border:1px solid #267c78;border-radius:18px;background:#0b3435;font-size:12px;white-space:nowrap;margin:0}
+.chart-mode-switch{display:flex;margin-left:auto;padding:3px;border:1px solid #2d8585;border-radius:13px;background:#071c25;gap:2px}
+.chart-mode-switch button{border:0;border-radius:10px;background:transparent;color:#b6cbd0;padding:8px 9px;font-size:11px;white-space:nowrap}
+.chart-mode-switch button.selected{background:#20e6cf;color:#032329;font-weight:700;box-shadow:0 0 12px #20e6cf66}
+.chart-current-label{font-size:9px;color:#71929c;letter-spacing:1px;margin:2px 0 7px}
+.chart-tools{position:relative;z-index:2;display:flex;align-items:center;gap:7px;margin-bottom:-34px;padding:8px 7px 0}
+.chart-tools button{min-width:31px;height:29px;border:1px solid #268d8c;border-radius:9px;background:#061c25;color:#e5ffff;font-size:17px;line-height:1}
+.chart-zoom-tools{display:flex;gap:3px}
+.chart-zoom-tools button{width:32px}
+.chart-tools .chart-reset{margin-left:auto;padding:0 9px;font-size:10px}
+.chart-stage{height:220px;position:relative;padding-right:48px;padding-top:0;touch-action:pan-y;user-select:none}
+.price-chart{position:absolute;left:0;top:0;width:calc(100% - 48px);height:100%;overflow:visible;touch-action:none;cursor:grab}
+.chart-stage.is-panning .price-chart{cursor:grabbing}
+.chart-axis-right{position:absolute;right:0;top:0;bottom:0;width:43px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:4px 0;color:#a4bbc3;font-size:9px;font-variant-numeric:tabular-nums}
+.chart-axis-right span{position:relative;white-space:nowrap}
+.chart-axis-right span:before{content:"";position:absolute;width:5px;border-top:1px solid #3b7278;left:-7px;top:50%}
+.chart-x-axis{display:flex;justify-content:space-between;padding:5px 48px 0 2px;color:#a4bbc3;font-size:9px;font-variant-numeric:tabular-nums}
+.chart-hint{text-align:center;color:#77949e;font-size:9px;padding:8px 0 3px}
+.chart-timeframes{display:flex;justify-content:space-between;gap:2px;margin-top:8px;padding:5px;border:1px solid #287c7d;border-radius:22px;background:#06232c}
+.chart-timeframes button{flex:1;min-width:0;border:0;border-radius:15px;background:transparent;color:#d5e4e8;padding:10px 2px;font:700 12px 'Space Grotesk'}
+.chart-timeframes button.selected{background:#20e6cf;color:#04262b;box-shadow:0 0 14px #20e6cf55}
+.leo-chart-panel:fullscreen{background:#06131c;padding:18px;overflow:auto}
+.leo-chart-panel:fullscreen .chart-stage{height:min(65vh,620px)}
+@media(max-width:390px){.leo-chart-panel{padding:12px 10px}.coin-select{min-height:68px}.coin-select>img{width:43px;height:43px}.coin-select-copy strong{font-size:16px}.chart-mode-switch button{padding:7px 7px;font-size:10px}.chart-stage{height:195px}.chart-live-price strong{font-size:23px}.chart-timeframes button{font-size:11px;padding:9px 1px}}
