@@ -1495,3 +1495,18 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 /* v0.74 — place chart reset directly below the live price */
 .leo-chart-panel .chart-tools{margin:0;padding:0 2px 7px;justify-content:flex-start}
 .leo-chart-panel .chart-tools .chart-reset{margin-left:0}
+
+
+/* v0.75 — normalize coin selector and dropdown row geometry */
+.leo-chart-panel .coin-select{box-sizing:border-box;height:56px;min-height:56px;padding:6px 11px;gap:10px;line-height:1;}
+.leo-chart-panel .coin-select>img{display:block;width:38px;height:38px;flex:0 0 38px;}
+.leo-chart-panel .coin-select-copy{gap:2px;line-height:1.15;}
+.leo-chart-panel .coin-select-copy strong{display:block;line-height:1.1;}
+.leo-chart-panel .coin-select-copy small{display:block;line-height:1.1;}
+.leo-chart-panel .coin-chevron{display:block;line-height:1;margin-left:auto;transform:none;}
+.leo-chart-panel .coin-menu{box-sizing:border-box;padding:5px;}
+.leo-chart-panel .coin-menu button{box-sizing:border-box;min-height:40px;padding:5px 7px;gap:9px;line-height:1.15;}
+.leo-chart-panel .coin-menu img{display:block;width:30px;height:30px;flex:0 0 30px;}
+.leo-chart-panel .coin-menu button span{line-height:1.15;}
+.leo-chart-panel .coin-menu button small{line-height:1.15;margin-top:2px;}
+@media(max-width:390px){.leo-chart-panel .coin-select{height:54px;min-height:54px;padding:5px 9px}.leo-chart-panel .coin-select>img{width:36px;height:36px;flex-basis:36px}}
