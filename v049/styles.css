@@ -173,3 +173,21 @@
 .v49 .view .hero h1{font-size:clamp(38px,8vw,52px)!important;line-height:1.12!important;margin:24px 0 8px!important}
 .v49 .view .hero p{font-size:clamp(16px,3.5vw,21px)!important;color:#c0d2d8!important}
 @media(max-width:390px){.v49 .lion-hero{height:clamp(320px,88vw,370px)!important}}
+
+
+/* Screenshot corrections: clean hero controls, full wordmark and restored chart */
+.v49 .reference-top{position:absolute!important;top:20px!important;right:22px!important;left:auto!important;width:auto!important;max-width:none!important;height:auto!important;z-index:8!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:10px!important;padding:0!important;margin:0!important}
+.v49 .reference-top .menu-button{display:none!important}
+.v49 .reference-top .demo-chip{display:inline-flex!important;align-items:center!important;gap:7px!important;padding:9px 15px!important}
+.v49 .reference-top .demo-chip i{margin:0!important}
+.v49 .reference-top .version-tag{display:inline-flex!important;align-items:center!important;padding:9px 11px!important;border:1px solid #1d7777!important;border-radius:10px!important;color:#82e6dc!important;background:rgba(6,37,43,.94)!important;font-size:11px!important;font-weight:700!important;white-space:nowrap!important}
+.v49 .lion-hero{height:clamp(350px,88vw,410px)!important;min-height:350px!important;overflow:hidden!important}
+.v49 .lion-hero img{height:calc(100% - 4px)!important;top:0!important;object-fit:contain!important;object-position:center center!important}
+.v49 .lion-title{position:absolute!important;left:0!important;right:0!important;bottom:58px!important;z-index:4!important;display:block!important;text-align:center!important;line-height:1!important;font-size:clamp(52px,12vw,68px)!important;letter-spacing:7px!important}
+.v49 .lion-subtitle{position:absolute!important;left:0!important;right:0!important;bottom:20px!important;z-index:4!important;display:block!important;text-align:center!important;margin:0!important;font-size:clamp(10px,2.7vw,13px)!important;letter-spacing:clamp(2px,.8vw,5px)!important;white-space:nowrap!important}
+.v49 .chart-wrap{height:190px!important;min-height:190px!important;position:relative!important;display:block!important;margin-top:8px!important;overflow:visible!important}
+.v49 .price-chart{display:block!important;position:absolute!important;left:31px!important;top:0!important;width:calc(100% - 31px)!important;height:100%!important;min-height:190px!important;visibility:visible!important;opacity:1!important}
+.v49 .chart-axis-right{display:flex!important}
+.v49 .chart-x-axis{min-height:13px!important}
+.v49 .market{overflow:visible!important}
+.v49 .dock{z-index:20!important}
