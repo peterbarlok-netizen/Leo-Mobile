@@ -1,95 +1,20 @@
 <!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#050b13">
-<meta name="description" content="LEO – dein KI-Trading-Assistent">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./styles.css?v=48">
-<title>LEO — KI Trading Intelligence</title>
-</head>
-<body>
-<div class="shell">
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#02090e"><meta name="description" content="LEO – SOL Trading Intelligence"><link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./styles.css?v=50"><title>LEO — v0.50 DEV</title></head>
+<body><div class="shell v50 overview-active">
 
-<main>
 <section class="lion-hero" aria-label="LEO Cyber-Löwe">
- <div class="hero-status"><span class="demo-chip" id="connection-status"><i></i> DEMO</span><span class="version-tag version-fixed">v0.48</span></div>
- <img src="./assets/leo-cyber-hero-1.jpg" alt="Majestätischer goldener Cyber-Löwe mit leuchtenden türkisfarbenen Augen">
- <div class="lion-title">LEO<span>✦</span></div><div class="lion-subtitle">DEIN KI-TRADING-ASSISTENT</div>
-</section>
-<section class="hero">
-  <div><div class="overline" id="market-date-label">MARKTÜBERSICHT</div><h1 id="greeting-title">Willkommen<span>.</span></h1><p>Geduld ist auch eine Strategie.</p></div>
-</section>
-<section class="market panel">
- <div class="panel-heading"><div><div class="overline">FOKUS-ASSET</div><h2>Bitcoin <span class="ticker">BTC / USDT</span></h2></div><span class="demo-chip" id="market-status">VERBINDE…</span></div>
- <div class="asset-summary"><div class="asset-badge" id="focus-asset-badge">₿</div><div class="asset-copy"><div class="asset-name">Bitcoin <span class="ticker">BTC / USDT</span></div><div class="asset-quote"><span class="big-price">Lade Kurs… <small>USDT</small></span><span class="change">—</span></div></div></div>
- <div class="chart-current-label" id="chart-current-label">BTC / USDT · 4H</div>
- <div class="chart-wrap">
-  <svg class="price-chart" viewBox="0 0 600 180" preserveAspectRatio="none" aria-label="BTC Kurschart – wird mit Marktdaten aktualisiert">
-   <defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16e6ce" stop-opacity=".27"/><stop offset="1" stop-color="#16e6ce" stop-opacity="0"/></linearGradient></defs>
-   <path d="M0 142 C25 136 32 120 55 127 S88 148 112 119 S145 88 168 105 S203 119 226 87 S260 62 282 79 S316 101 338 68 S371 42 394 60 S427 83 450 47 S482 29 505 44 S543 57 563 26 S586 20 600 12 V180 H0Z" fill="url(#fill)"/>
-   <path d="M0 142 C25 136 32 120 55 127 S88 148 112 119 S145 88 168 105 S203 119 226 87 S260 62 282 79 S316 101 338 68 S371 42 394 60 S427 83 450 47 S482 29 505 44 S543 57 563 26 S586 20 600 12" fill="none" stroke="#20e6cf" stroke-width="3" vector-effect="non-scaling-stroke"/>
-  <g class="volume-bars" fill="#12bcb4" opacity=".23"><rect x="0" y="165" width="8" height="15"/><rect x="15" y="160" width="8" height="20"/><rect x="30" y="168" width="8" height="12"/><rect x="45" y="155" width="8" height="25"/><rect x="60" y="162" width="8" height="18"/><rect x="75" y="150" width="8" height="30"/><rect x="90" y="158" width="8" height="22"/><rect x="105" y="148" width="8" height="32"/><rect x="120" y="160" width="8" height="20"/><rect x="135" y="151" width="8" height="29"/><rect x="150" y="157" width="8" height="23"/><rect x="165" y="145" width="8" height="35"/><rect x="180" y="154" width="8" height="26"/><rect x="195" y="148" width="8" height="32"/><rect x="210" y="158" width="8" height="22"/><rect x="225" y="146" width="8" height="34"/><rect x="240" y="152" width="8" height="28"/><rect x="255" y="140" width="8" height="40"/><rect x="270" y="154" width="8" height="26"/><rect x="285" y="147" width="8" height="33"/><rect x="300" y="156" width="8" height="24"/><rect x="315" y="143" width="8" height="37"/><rect x="330" y="151" width="8" height="29"/><rect x="345" y="138" width="8" height="42"/><rect x="360" y="149" width="8" height="31"/><rect x="375" y="141" width="8" height="39"/><rect x="390" y="153" width="8" height="27"/><rect x="405" y="137" width="8" height="43"/><rect x="420" y="147" width="8" height="33"/><rect x="435" y="132" width="8" height="48"/><rect x="450" y="145" width="8" height="35"/><rect x="465" y="137" width="8" height="43"/><rect x="480" y="148" width="8" height="32"/><rect x="495" y="130" width="8" height="50"/><rect x="510" y="142" width="8" height="38"/><rect x="525" y="134" width="8" height="46"/><rect x="540" y="145" width="8" height="35"/><rect x="555" y="127" width="8" height="53"/><rect x="570" y="139" width="8" height="41"/><rect x="585" y="125" width="8" height="55"/></g></svg><div class="chart-axis-right" aria-label="Preisskala"></div>
- </div>
- <div class="chart-x-axis"><span>—</span><span>—</span><span>—</span></div>
- <div class="chart-timeframes" aria-label="Chart-Zeitraum"><button type="button" data-interval="5m">5M</button><button type="button" data-interval="30m">30M</button><button type="button" data-interval="1h">1H</button><button type="button" data-interval="4h" class="selected">4H</button><button type="button" data-interval="1d">1T</button><button type="button" data-interval="1w">1W</button><button type="button" data-interval="1M">1M</button></div>
-</section>
-<section class="signal-overview" aria-label="LEO Markturteil und Filter">
- <article class="verdict-card panel">
-  <div class="overline">LEO-MARKTURTEIL</div>
-  <div class="assessment-basis">BEWERTUNGSBASIS: 1D TAGESDATEN + 1W WOCHENFILTER</div>
-  <div class="verdict-pill"><span>✧</span> BEOBACHTEN</div>
-  <p>Leichte Stärke · keine klare Trendphase.</p>
- </article>
- <article class="filter-card panel">
-  <div class="overline">LEO-FILTER</div>
-  <div class="filter-layout">
-   <div class="score-ring"><strong>5/6</strong></div>
-   <ul class="filter-list">
-    <li class="active">Trend</li><li class="active">Momentum</li><li class="active">Volumen</li><li class="active">Struktur</li><li class="active">Sentiment</li><li>Volatilität</li>
-   </ul>
-  </div>
- </article>
-</section>
-<section class="filter-status-grid" aria-label="Filterstatus">
- <div class="status-tile"><span class="status-icon">↗</span><span>Trend<b>AKTIV</b></span></div>
- <div class="status-tile"><span class="status-icon">ϟ</span><span>Momentum<b>AKTIV</b></span></div>
- <div class="status-tile"><span class="status-icon">▥</span><span>Volumen<b>AKTIV</b></span></div>
- <div class="status-tile"><span class="status-icon">◈</span><span>Struktur<b>AKTIV</b></span></div>
- <div class="status-tile"><span class="status-icon">✺</span><span>Sentiment<b>AKTIV</b></span></div>
- <div class="status-tile inactive"><span class="status-icon">∿</span><span>Volatilität<b>INAKTIV</b></span></div>
-</section>
+ <div class="reference-top"><span class="demo-chip"><i></i> DEMO</span><span class="version-tag">v0.50 DEV</span></div>
 
-<section class="watch">
- <div class="section-title"><div><div class="overline">IM AUGE BEHALTEN</div><h2>Deine Watchlist</h2></div><button class="text-button" data-action="watch">Alle ansehen ↗</button></div>
- <div class="watch-grid">
-  <article class="watch-card" role="button" tabindex="0" aria-label="Solana als Fokus-Asset anzeigen" data-symbol="SOLUSDT"><div class="coin-head"><span class="coin-symbol sol">◎</span><span class="coin-trend positive" data-change>—</span></div><b>Solana</b><small>SOL / USDT</small><strong data-price>—</strong></article>
-  <article class="watch-card" role="button" tabindex="0" aria-label="Bitcoin als Fokus-Asset anzeigen" data-symbol="BTCUSDT"><div class="coin-head"><span class="coin-symbol btc">₿</span><span class="coin-trend positive" data-change>—</span></div><b>Bitcoin</b><small>BTC / USDT</small><strong data-price>—</strong></article>
-  <article class="watch-card" role="button" tabindex="0" aria-label="Chainlink als Fokus-Asset anzeigen" data-symbol="LINKUSDT"><div class="coin-head"><span class="coin-symbol link">↗</span><span class="coin-trend" data-change>—</span></div><b>Chainlink</b><small>LINK / USDT</small><strong data-price>—</strong></article>
-  <article class="watch-card" role="button" tabindex="0" aria-label="Sui als Fokus-Asset anzeigen" data-symbol="SUIUSDT"><div class="coin-head"><span class="coin-symbol sui">S</span><span class="coin-trend" data-change>—</span></div><b>Sui</b><small>SUI / USDT</small><strong data-price>—</strong></article>
- </div>
+ <img src="./assets/leo-cyber-hero-1.jpg" alt="Majestätischer goldener Cyber-Löwe mit leuchtend türkisfarbenen Augen">
+ <div class="hero-top-mask" aria-hidden="true"></div>
 </section>
-<section class="insight panel"><div class="insight-icon">✧</div><div><div class="overline">LEOS GEDANKE</div><p>„Der beste Einstieg ist nicht der schnellste – sondern der, den der Markt bestätigt.“</p></div></section>
-<section class="backtest-panel panel" id="backtest-panel" hidden>
- <div class="overline">LEO STRATEGIE-TEST</div><h2>Historischer Backtest</h2>
- <p class="bt-intro">Drei Strategievarianten · vier Märkte · identische Tagesdaten · je Variante 500 € virtuelles Vergleichskapital</p>
- <button class="bt-run" id="bt-run" type="button">STRATEGIEN VERGLEICHEN</button>
- <p class="bt-status" id="bt-status" aria-live="polite">Noch nicht ausgeführt. Der Test lädt öffentliche historische Binance-Daten und den historischen Fear-&amp;-Greed-Index.</p>
- <p class="bt-period" id="bt-period"></p><div class="bt-summary" id="bt-summary"></div><div class="bt-assets" id="bt-assets"></div><h3>Wie oft waren die Filter erfüllt?</h3><p class="bt-intro">Anteil der Prüftage, an denen der jeweilige Filter je Coin erfüllt war. Das zeigt, wo die Strategie am stärksten einschränkt.</p><div class="bt-diagnostics" id="bt-diagnostics"></div>
- <h3>Letzte abgeschlossene Trades</h3><div id="bt-trades" class="bt-trades"></div>
- <details class="bt-rules"><summary>Getestete Regeln &amp; Annahmen</summary>
- <ul><li>Kauf nach Tagesabschluss, Ausführung zum Open der Folgetageskerze.</li><li>Trend: Kurs über EMA 200, EMA 20 über EMA 50 und steigende EMA 200.</li><li>Wochenfilter: letzter abgeschlossener Wochenschluss über Wochen-EMA 50.</li><li>Struktur: zwei höhere Pivot-Tiefs; jüngstes höchstens 20, vorheriges höchstens 45 Tageskerzen alt.</li><li>RSI 42–65; relative Stärke über BTC; Volumen über 20-Tage-Mittel; Pullback maximal 2,5 % zur EMA 20/50; Ausbruch über die letzten drei Tageshochs.</li><li>CRV mindestens 2:1 zum höchsten Hoch der vorherigen 60 Tageskerzen.</li><li>Sentiment: Fear &amp; Greed 25–75. Volatilität: ATR(14) 1,5–8 % des Kurses.</li><li>Verkauf bei Stop, Kursziel oder Tagesschluss unter EMA 20. Werden Stop und Ziel in derselben Kerze berührt, zählt konservativ der Stop.</li><li>Gebühren 0,10 % und Slippage 0,05 % je Kauf-/Verkaufsseite. Startkapital 375 € je Coin; Gewinne werden je Coin reinvestiert.</li></ul>
- <p>Das ist ein historischer Modelltest, keine Prognose. Öffentliche API-Historie ist auf 1.000 Tageskerzen pro Markt begrenzt; Datenlücken oder abweichende Ausführung in der Realität können Ergebnisse verändern.</p>
- </details>
-</section>
-<p class="disclaimer" id="data-disclaimer">LEO · Marktdaten werden verbunden. Signale sind noch nicht live validiert. Keine Anlageberatung.</p>
-</main>
-<nav class="dock" aria-label="Hauptnavigation">
- <button class="active" data-tab="Übersicht"><span>⌂</span>Übersicht</button><button data-tab="Analyse"><span>⌁</span>Analyse</button><button data-tab="Signale"><span>ϟ</span>Signale</button><button data-tab="Backtest"><span>▤</span>Backtest</button><button data-tab="Mehr"><span>•••</span>Mehr</button>
-</nav>
-<div class="toast" id="toast" role="status"></div>
-</div>
-<script src="./app.js?v=48"></script>
-<script src="./backtest.js?v=48"></script>
-</body></html>
+<main>
+<section class="view active" data-view="Übersicht"><div class="hero"><div><div class="overline" id="market-date-label">MONTAG · MARKTÜBERSICHT</div><h1 id="greeting-title">Guten Abend<span>.</span></h1><p>Geduld ist auch eine Strategie.</p></div></div>
+<article class="market panel"><div class="panel-heading"><div><div class="overline">FOKUS-ASSET</div><h2>Solana <span class="ticker">SOL / USDT</span></h2></div><span class="demo-chip" id="market-status">LÄDT…</span></div><div class="asset-summary"><img class="asset-badge" src="./assets/LEO_SOL_Solana.png" alt="Solana"><div class="asset-copy"><div class="asset-name">Solana <span class="ticker">SOL / USDT</span></div><div class="asset-quote"><span class="big-price" id="sol-price">— <small>USDT</small></span><span class="change" id="sol-change">—</span></div></div></div><div class="chart-current-label" id="chart-label">SOL / USDT · 4H</div><div class="chart-wrap"><svg id="price-chart" class="price-chart" viewBox="0 0 600 180" preserveAspectRatio="none" aria-label="Solana Kurschart"></svg><div class="chart-axis-right" id="chart-axis"></div></div><div class="chart-x-axis" id="chart-x-axis"></div><div class="chart-timeframes"><button data-interval="5m">5M</button><button data-interval="30m">30M</button><button data-interval="1h">1H</button><button class="selected" data-interval="4h">4H</button><button data-interval="1d">1T</button><button data-interval="1w">1W</button><button data-interval="1M">1M</button></div></article>
+<div class="signal-overview"><article class="verdict-card panel"><div class="overline">LEO-MARKTURTEIL</div><div class="verdict-pill" id="market-verdict">DATEN WERDEN ANALYSIERT</div><p id="market-verdict-note">SOL Trendstatus wird geladen.</p></article><article class="filter-card panel"><div class="overline">EMA200-TRENDSTATUS</div><div class="filter-layout"><div class="score-ring"><strong id="trend-score">—</strong></div><ul class="filter-list" id="trend-list"><li>EMA 200</li><li>EMA 50</li><li>EMA 20</li></ul></div></article></div>
+<div class="insight panel"><div class="insight-icon">✧</div><div><div class="overline">LEOS GEDANKE</div><p>„Wir handeln den bestätigten Trend – nicht die Hoffnung.“</p></div></div></section>
+<section class="view" data-view="Analyse" hidden><div class="hero"><div><div class="overline">SOLANA · TECHNISCHE AUSWERTUNG</div><h1>Analyse<span>.</span></h1><p>Trendfilter auf Tages- und Wochenbasis.</p></div></div><div class="metric-grid"><article class="panel metric"><small>EMA 20 · 1D</small><strong id="ema20">—</strong><span id="ema20-state">Wird berechnet</span></article><article class="panel metric"><small>EMA 50 · 1D</small><strong id="ema50">—</strong><span id="ema50-state">Wird berechnet</span></article><article class="panel metric"><small>EMA 200 · 1D</small><strong id="ema200">—</strong><span id="ema200-state">Wird berechnet</span></article><article class="panel metric"><small>ATR 14 · 1D</small><strong id="atr">—</strong><span>Initialer Risikoabstand</span></article><article class="panel metric"><small>RSI 14 · 1D</small><strong id="rsi">—</strong><span>Momentum</span></article><article class="panel metric"><small>EMA200-Steigung</small><strong id="ema-slope">—</strong><span>Vergleich 20 Handelstage</span></article></div><article class="panel detail-panel"><div class="overline">STRATEGIEBEDINGUNGEN</div><ul class="criteria" id="criteria"><li>Warte auf Marktdaten…</li></ul></article></section>
+<section class="view" data-view="Signale" hidden><div class="hero"><div><div class="overline">SOLANA · HANDELSSTATUS</div><h1>Signale<span>.</span></h1><p>Regelbasiert statt Bauchgefühl.</p></div></div><article class="panel signal-card"><div class="overline">EMA200-TRENDSTRATEGIE</div><div class="signal-word" id="signal-word">ABWARTEN</div><p id="signal-reason">Ein Signal wird erst nach bestätigtem Tagesabschluss bewertet.</p><div class="signal-meter"><i></i><i></i><i></i><i></i><i></i></div></article><article class="panel detail-panel"><div class="overline">EINSTIEGS-CHECKLISTE</div><ul class="criteria" id="signal-checks"><li>Tagesschluss über EMA200</li><li>Einstieg am Open der Folgetageskerze</li><li>Initialer Stop: 3,5 ATR</li><li>Keine Ausführung vor Kerzenschluss</li></ul></article><p class="disclaimer">Signale sind Analysehinweise, keine Anlageberatung oder automatische Orderausführung.</p></section>
+<section class="view" data-view="Backtest" hidden><div class="hero"><div><div class="overline">SOLANA · HISTORISCHE SIMULATION</div><h1>Backtest<span>.</span></h1><p>Drei Risikoprofile – gleiche Einstiegsmethode.</p></div></div><article class="panel detail-panel"><div class="overline">STRATEGIEAUSWAHL</div><div class="strategy-tabs"><button class="selected" data-strategy="defensiv">DEFENSIV</button><button data-strategy="balance">BALANCE</button><button data-strategy="trend">100 % TREND</button></div><div id="strategy-description">50 % Teilverkauf bei +2R · Rest mit ATR-Trailing-Stop.</div><button class="bt-run" id="run-backtest">SOL-BACKTEST STARTEN</button><p id="bt-status" class="bt-status">Noch nicht ausgeführt.</p></article><div class="metric-grid"><article class="panel metric"><small>GESAMTRENDITE</small><strong id="bt-return">—</strong></article><article class="panel metric"><small>MAX. DRAWDOWN</small><strong id="bt-dd">—</strong></article><article class="panel metric"><small>ANZAHL TRADES</small><strong id="bt-count">—</strong></article><article class="panel metric"><small>TREFFERQUOTE</small><strong id="bt-winrate">—</strong></article><article class="panel metric"><small>BESTER TRADE</small><strong id="bt-best">—</strong></article><article class="panel metric"><small>SCHLECHTESTER TRADE</small><strong id="bt-worst">—</strong></article></div><article class="panel detail-panel"><div class="overline">ERGEBNISSE ALLER DREI VARIANTEN</div><div class="table-scroll"><table class="results-table"><thead><tr><th>Strategie</th><th>Rendite</th><th>Max. DD</th><th>Trades</th></tr></thead><tbody id="bt-comparison"><tr><td colspan="4">Backtest noch nicht ausgeführt.</td></tr></tbody></table></div></article><article class="panel detail-panel"><div class="overline">LETZTE EINZELTRADES</div><div id="bt-trades">Noch keine Ergebnisse.</div></article><p class="disclaimer">Historische Simulation, keine Prognose. Gebühren und Slippage sind in den ausgewiesenen Kennzahlen nicht berücksichtigt.</p></section>
+<section class="view" data-view="Mehr" hidden><div class="hero"><div><div class="overline">LEO · KONFIGURATION</div><h1>Mehr<span>.</span></h1><p>Strategie, Risiko und Datenquellen.</p></div></div><article class="panel detail-panel"><div class="overline">AKTIVE STRATEGIE</div><h2>SOL EMA200 Major Trend</h2><p>Wochenfilter als Regimekontext · Tagesabschluss als Einstieg · ATR-basierte Positionsführung.</p></article><article class="panel detail-panel"><div class="overline">RISIKOPARAMETER</div><div class="setting-row"><span>Initialer Stop</span><b>3,5 ATR</b></div><div class="setting-row"><span>Teilgewinn BALANCE</span><b>75 % bei +2R</b></div><div class="setting-row"><span>Trendvariante</span><b>100 % · 4,0 ATR</b></div></article><article class="panel detail-panel"><div class="overline">DATEN & VERSION</div><div class="setting-row"><span>Marktdaten</span><b>Binance Public API</b></div><div class="setting-row"><span>Gebühren in Backtests</span><b>Nicht berücksichtigt</b></div><p class="bt-status">Hinweis: Börsengebühren und Slippage fallen beim realen Handel an, werden aber bewusst nicht in die Strategie-Kennzahlen eingerechnet.</p><div class="setting-row"><span>Version</span><b>v0.50 DEV</b></div><div class="setting-row"><span>Basis</span><b>v0.49 DEV · bereinigte Basis</b></div></article></section>
+</main><nav class="dock" aria-label="Hauptnavigation"><button class="active" data-tab="Übersicht"><span>⌂</span>Übersicht</button><button data-tab="Analyse"><span>⌁</span>Analyse</button><button data-tab="Signale"><span>ϟ</span>Signale</button><button data-tab="Backtest"><span>▤</span>Backtest</button><button data-tab="Mehr"><span>•••</span>Mehr</button></nav><div class="toast" id="toast"></div></div><script src="./app.js?v=50"></script></body></html>
