@@ -1535,3 +1535,26 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .leo-chart-panel .chart-attribution a{color:#77949e;text-decoration:none}
 .leo-chart-panel .chart-attribution a:hover{color:#20e6cf;text-decoration:underline}
 @media(max-width:390px){.leo-chart-panel .chart-stage{height:255px!important}}
+
+
+/* v0.80 — Chart ohne Kartenrahmen und über die volle Panelbreite */
+.leo-chart-panel{
+ border:0!important;
+ box-shadow:none!important;
+}
+.leo-chart-panel .chart-stage{
+ width:calc(100% + 26px)!important;
+ margin-left:-13px!important;
+ border:0!important;
+ border-radius:0!important;
+}
+.leo-chart-panel #price-chart.price-chart{
+ border:0!important;
+ border-radius:0!important;
+}
+@media(max-width:390px){
+ .leo-chart-panel .chart-stage{
+  width:calc(100% + 20px)!important;
+  margin-left:-10px!important;
+ }
+}
