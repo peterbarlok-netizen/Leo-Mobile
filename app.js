@@ -1,4 +1,4 @@
-const API='https://data-api.binance.vision/api/v3';const $=id=>document.getElementById(id);const fmt=n=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});const pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %';let interval='4h',daily=[],selected='defensiv',lastAnalysis=null,activeCoin='SOL',chartType='line',chartData=[],tvChart=null,tvSeries=null,emaSeries={},volumeSeries=null,rsiChart=null,rsiSeries=null,rsiResizeObserver=null,chartSyncing=false,indicatorState={ema20:true,ema50:true,ema200:true,volume:true},chartNeedsFit=true,tvResizeObserver=null;
+const API='https://data-api.binance.vision/api/v3';const $=id=>document.getElementById(id);const fmt=n=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});const pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %';let interval='4h',daily=[],selected='defensiv',lastAnalysis=null,activeCoin='SOL',chartType='line',chartData=[],tvChart=null,tvSeries=null,emaSeries={},volumeSeries=null,rsiChart=null,rsiSeries=null,rsiGuideSeries=[],rsiResizeObserver=null,chartSyncing=false,indicatorState={ema20:true,ema50:true,ema200:true,volume:true},chartNeedsFit=true,tvResizeObserver=null;
 async function api(path){let r=await fetch(API+path,{cache:'no-store'});if(!r.ok)throw Error('Binance HTTP '+r.status);return r.json()}
 function ema(a,p){if(a.length<p)return null;let v=a.slice(0,p).reduce((x,y)=>x+y,0)/p,k=2/(p+1);for(let i=p;i<a.length;i++)v=a[i]*k+v*(1-k);return v}
 function atr(c,p=14){if(c.length<p+1)return null;let tr=[];for(let i=1;i<c.length;i++)tr.push(Math.max(c[i].h-c[i].l,Math.abs(c[i].h-c[i-1].c),Math.abs(c[i].l-c[i-1].c)));return tr.slice(-p).reduce((a,b)=>a+b,0)/p}
@@ -83,6 +83,13 @@ function draw(raw){
    series.setData(values);emaSeries[key]=series;
   }catch(error){console.warn('EMA '+period+' konnte nicht geladen werden',error);}
  });
+ if(indicatorState.volume){
+  try{
+   volumeSeries=tvChart.addSeries(window.LightweightCharts.HistogramSeries,{priceScaleId:'leo-volume',priceFormat:{type:'volume'},base:0,lastValueVisible:false,priceLineVisible:false});
+   tvChart.priceScale('leo-volume').applyOptions({scaleMargins:{top:.82,bottom:0},visible:false});
+   volumeSeries.setData(chartData.map(c=>({time:Math.floor(c.t/1000),value:c.v,color:c.c>=c.o?'rgba(40,224,176,.68)':'rgba(255,113,133,.68)'})));
+  }catch(error){volumeSeries=null;console.warn('Volume konnte nicht geladen werden',error);}
+ }
  if($('rsi-stage'))drawRsi(chartData);
 }
 function calculateRsiSeries(candles,period=14){
@@ -131,13 +138,13 @@ function drawRsi(candles){
  }
  const data=calculateRsiSeries(candles,14);
  if(rsiSeries){try{rsiChart.removeSeries(rsiSeries)}catch(e){}rsiSeries=null;}
- rsiSeries=rsiChart.addSeries(L.LineSeries,{color:'#e5b85c',lineWidth:2,priceLineVisible:false,lastValueVisible:true,crosshairMarkerVisible:false,priceFormat:{type:'price',precision:1,minMove:.1}});
+ rsiGuideSeries.forEach(line=>{try{rsiChart.removeSeries(line)}catch(e){}});rsiGuideSeries=[];
+ rsiSeries=rsiChart.addSeries(L.LineSeries,{color:'#e5b85c',lineWidth:2,priceLineVisible:false,lastValueVisible:true,crosshairMarkerVisible:false,priceFormat:{type:'price',precision:1,minMove:.1},autoscaleInfoProvider:()=>({priceRange:{minValue:0,maxValue:100}})});
  rsiSeries.setData(data);
  [30,70].forEach(level=>{
   const line=rsiChart.addSeries(L.LineSeries,{color:'rgba(145,170,181,.55)',lineWidth:1,lineStyle:L.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});
-  line.setData(data.map(point=>({time:point.time,value:level})));
+  line.setData(data.map(point=>({time:point.time,value:level})));rsiGuideSeries.push(line);
  });
- try{rsiChart.priceScale('right').setVisibleRange({from:0,to:100})}catch(e){console.warn('RSI-Skala konnte nicht fixiert werden',e)}
  if(tvChart){const range=tvChart.timeScale().getVisibleLogicalRange();if(range)try{rsiChart.timeScale().setVisibleLogicalRange(range)}catch(e){}}
 }
 function renderAnalysis(){let c=daily.slice(0,-1),cl=c.map(x=>x.c),last=cl.at(-1),e20=ema(cl,20),e50=ema(cl,50),e200=ema(cl,200),old=ema(cl.slice(0,-20),200),a=atr(c),mom=rsi(cl);lastAnalysis={last,e20,e50,e200,old,a,mom,above:last>e200,rising:e200>old};[['ema20',e20],['ema50',e50],['ema200',e200],['atr',a],['rsi',mom]].forEach(([id,v])=>$(id).textContent=v==null?'—':id==='rsi'?v.toFixed(1):fmt(v));$('ema-slope').textContent=e200>old?'STEIGEND':'FALLEND';[['ema20-state',last>e20],['ema50-state',last>e50],['ema200-state',last>e200]].forEach(([id,ok])=>$(id).textContent=ok?'Kurs darüber':'Kurs darunter');let checks=[['Tagesschluss über EMA200',last>e200],['EMA200 steigt',e200>old],['EMA20 über EMA50',e20>e50],['RSI 42–65',mom>=42&&mom<=65]];$('criteria').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'• ')+s+'</li>').join('');$('trend-score').textContent=checks.filter(x=>x[1]).length+'/4';$('trend-list').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+s+'</li>').join('');$('market-verdict').textContent=last>e200&&e200>old?'AUFWÄRTSTREND':'BEOBACHTEN';$('market-verdict-note').textContent=last>e200&&e200>old?'SOL notiert über einer steigenden EMA200.':'Trendbedingungen sind noch nicht vollständig erfüllt.';$('signal-word').textContent=last>e200&&e200>old?'SETUP AKTIV':'ABWARTEN';$('signal-reason').textContent=last>e200&&e200>old?'Tagestrend positiv. Einstieg erst nach bestätigtem Tagesabschluss und Folgetages-Open.':'Kein bestätigter EMA200-Aufwärtstrend. Kein Einstieg.';$('signal-checks').innerHTML=checks.map(([s,ok])=>'<li class="'+(ok?'pass':'fail')+'">'+(ok?'✓ ':'○ ')+s+'</li>').join('')+'<li>Initialer Stop: 3,5 ATR</li>'}
