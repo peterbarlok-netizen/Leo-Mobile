@@ -145,3 +145,12 @@
 .v49 .lion-subtitle{display:block!important;position:absolute!important;z-index:2!important;left:0!important;right:0!important;bottom:18px!important;text-align:center!important;font-size:clamp(10px,2.9vw,15px)!important;letter-spacing:clamp(3px,1vw,6px)!important;color:#f1f5f6!important;text-shadow:0 2px 6px #000!important}
 .v49 main{padding-top:0!important}
 @media(max-width:390px){.v49 .lion-hero{height:370px!important}.v49 .app-topbar{height:86px!important;padding:14px 22px!important}}
+
+
+/* Exact supplied hero artwork already contains menu, DEMO badge, LEO title and subtitle */
+.v49 .lion-hero{display:block!important;height:auto!important;aspect-ratio:1536/880!important;min-height:0!important;margin:0 -12px 0!important;padding:0!important;position:relative!important;overflow:hidden!important;background:#02090e!important}
+.v49 .lion-hero img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center top!important;transform:none!important}
+.v49 .lion-hero .hero-status,.v49 .lion-hero .lion-menu-mark,.v49 .lion-hero .lion-title,.v49 .lion-hero .lion-subtitle{display:none!important}
+.v49 .app-topbar{display:none!important}
+.v49 main{padding-top:0!important}
+@media(max-width:390px){.v49 .lion-hero{aspect-ratio:1536/900!important;height:auto!important}}
