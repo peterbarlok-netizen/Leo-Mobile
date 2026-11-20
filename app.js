@@ -1,4 +1,4 @@
-const API='https://data-api.binance.vision/api/v3';const $=id=>document.getElementById(id);const fmt=n=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});const pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %';let interval='4h',daily=[],selected='defensiv',lastAnalysis=null,activeCoin='SOL',chartType='line',chartData=[],tvChart=null,tvSeries=null,emaSeries={},volumeSeries=null,rsiChart=null,rsiSeries=null,rsiGuideSeries=[],rsiResizeObserver=null,chartSyncing=false,indicatorState={ema20:true,ema50:true,ema200:true,volume:true},chartNeedsFit=true,tvResizeObserver=null;
+const API='https://data-api.binance.vision/api/v3';const $=id=>document.getElementById(id);const fmt=n=>Number(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});const pct=n=>(n>=0?'+':'')+n.toFixed(2).replace('.',',')+' %';let interval='4h',daily=[],selected='defensiv',lastAnalysis=null,activeCoin='SOL',chartType='line',chartData=[],tvChart=null,tvSeries=null,emaSeries={},volumeSeries=null,rsiChart=null,rsiSeries=null,rsiGuideSeries=[],rsiResizeObserver=null,rsiScaleInitialized=false,chartSyncing=false,indicatorState={ema20:true,ema50:true,ema200:true,volume:true},chartNeedsFit=true,tvResizeObserver=null;
 async function api(path){let r=await fetch(API+path,{cache:'no-store'});if(!r.ok)throw Error('Binance HTTP '+r.status);return r.json()}
 function ema(a,p){if(a.length<p)return null;let v=a.slice(0,p).reduce((x,y)=>x+y,0)/p,k=2/(p+1);for(let i=p;i<a.length;i++)v=a[i]*k+v*(1-k);return v}
 function atr(c,p=14){if(c.length<p+1)return null;let tr=[];for(let i=1;i<c.length;i++)tr.push(Math.max(c[i].h-c[i].l,Math.abs(c[i].h-c[i-1].c),Math.abs(c[i].l-c[i-1].c)));return tr.slice(-p).reduce((a,b)=>a+b,0)/p}
@@ -139,8 +139,13 @@ function drawRsi(candles){
  const data=calculateRsiSeries(candles,14);
  if(rsiSeries){try{rsiChart.removeSeries(rsiSeries)}catch(e){}rsiSeries=null;}
  rsiGuideSeries.forEach(line=>{try{rsiChart.removeSeries(line)}catch(e){}});rsiGuideSeries=[];
- rsiSeries=rsiChart.addSeries(L.LineSeries,{color:'#e5b85c',lineWidth:1,priceLineVisible:false,lastValueVisible:true,crosshairMarkerVisible:false,priceFormat:{type:'price',precision:1,minMove:.1},autoscaleInfoProvider:()=>({priceRange:{minValue:0,maxValue:100}})});
+ rsiSeries=rsiChart.addSeries(L.LineSeries,{color:'#e5b85c',lineWidth:1,priceLineVisible:false,lastValueVisible:true,crosshairMarkerVisible:false,priceFormat:{type:'price',precision:1,minMove:.1}});
  rsiSeries.setData(data);
+ if(!rsiScaleInitialized){
+  rsiChart.priceScale('right').setAutoScale(false);
+  rsiChart.priceScale('right').setVisibleRange({from:0,to:100});
+  rsiScaleInitialized=true;
+ }
  [30,70].forEach(level=>{
   const line=rsiChart.addSeries(L.LineSeries,{color:'rgba(145,170,181,.55)',lineWidth:1,lineStyle:L.LineStyle.Dashed,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});
   line.setData(data.map(point=>({time:point.time,value:level})));rsiGuideSeries.push(line);
