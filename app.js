@@ -110,6 +110,40 @@ function calculateRsiSeries(candles,period=14){
 function drawRsi(candles){
  const host=$('rsi-chart');if(!host||!window.LightweightCharts)return;
  const L=window.LightweightCharts;
+ let scaleTouch=host.querySelector('.rsi-scale-touch');
+ if(!scaleTouch){
+  scaleTouch=document.createElement('div');
+  scaleTouch.className='rsi-scale-touch';
+  scaleTouch.setAttribute('aria-label','RSI-Skala vertikal zoomen: nach oben zum Vergrößern, nach unten zum Verkleinern');
+  scaleTouch.setAttribute('role','slider');
+  scaleTouch.setAttribute('aria-orientation','vertical');
+  host.appendChild(scaleTouch);
+  let scaleGesture=null;
+  scaleTouch.addEventListener('pointerdown',event=>{
+   if(event.pointerType!=='touch'||!rsiChart)return;
+   const range=rsiChart.priceScale('right').getVisibleRange();
+   if(!range)return;
+   event.preventDefault();
+   scaleGesture={pointerId:event.pointerId,startY:event.clientY,from:range.from,to:range.to};
+   try{scaleTouch.setPointerCapture(event.pointerId)}catch(e){}
+  });
+  scaleTouch.addEventListener('pointermove',event=>{
+   if(!scaleGesture||scaleGesture.pointerId!==event.pointerId||!rsiChart)return;
+   event.preventDefault();
+   const startSpan=scaleGesture.to-scaleGesture.from;
+   const span=Math.max(5,Math.min(100,startSpan*Math.exp((event.clientY-scaleGesture.startY)*.012)));
+   const center=(scaleGesture.from+scaleGesture.to)/2;
+   const half=span/2;
+   const boundedCenter=Math.max(half,Math.min(100-half,center));
+   rsiChart.priceScale('right').setVisibleRange({from:boundedCenter-half,to:boundedCenter+half});
+  });
+  const endScaleGesture=event=>{
+   if(!scaleGesture||scaleGesture.pointerId!==event.pointerId)return;
+   scaleGesture=null;
+  };
+  scaleTouch.addEventListener('pointerup',endScaleGesture);
+  scaleTouch.addEventListener('pointercancel',endScaleGesture);
+ }
  if(!rsiChart){
   rsiChart=L.createChart(host,{
    width:Math.max(1,host.clientWidth),height:Math.max(1,host.clientHeight),autoSize:false,
