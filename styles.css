@@ -1671,3 +1671,9 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
   box-shadow:0 0 15px rgba(32,230,207,.24),inset 0 0 10px rgba(32,230,207,.12);
 }
 @media(max-width:390px){.leo-chart-panel .coin-chevron{width:36px;height:36px;flex-basis:36px;border-radius:12px}}
+
+
+/* v1.00 — RSI-Plot exakt an den Hauptchart ausrichten; Skalenbereich bleibt manuell zoombar */
+.leo-chart-panel .rsi-panel{padding:8px 0 5px!important;}
+.leo-chart-panel .rsi-heading{margin-left:11px!important;margin-right:11px!important;}
+.leo-chart-panel .rsi-chart{display:block!important;width:100%!important;}
