@@ -1,5 +1,5 @@
-const CACHE='leo-mobile-v100';
-const FILES=['./','./index.html','./styles.css?v=100','./app.js?v=100','./manifest.webmanifest','./assets/LEO_SOL_Solana.png','./assets/LEO_BTC_Bitcoin.png','./assets/LEO_LINK_Chainlink.png','./assets/LEO_SUI_Sui.png','./assets/a_vivid_high_contrast_digital_illustration_identi.png'];
+const CACHE='leo-mobile-v101';
+const FILES=['./','./index.html','./styles.css?v=101','./app.js?v=101','./manifest.webmanifest','./assets/LEO_SOL_Solana.png','./assets/LEO_BTC_Bitcoin.png','./assets/LEO_LINK_Chainlink.png','./assets/LEO_SUI_Sui.png','./assets/a_vivid_high_contrast_digital_illustration_identi.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('leo-mobile-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
