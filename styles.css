@@ -1677,3 +1677,12 @@ body{background:#02090e radial-gradient(ellipse at 50% 18%,#07333a 0,#03141d 44%
 .leo-chart-panel .rsi-panel{padding:8px 0 5px!important;}
 .leo-chart-panel .rsi-heading{margin-left:11px!important;margin-right:11px!important;}
 .leo-chart-panel .rsi-chart{display:block!important;width:100%!important;}
+
+
+/* v1.01 — dedizierte Touch-Zone auf der RSI-Preisskala für vertikales Zoomen */
+.leo-chart-panel .rsi-chart{position:relative!important;}
+.leo-chart-panel .rsi-chart .rsi-scale-touch{
+ position:absolute;z-index:5;top:0;right:0;bottom:0;width:48px;
+ background:transparent;touch-action:none;user-select:none;-webkit-user-select:none;
+ cursor:ns-resize;
+}
